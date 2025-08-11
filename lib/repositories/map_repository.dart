@@ -1,3 +1,4 @@
+import 'package:circle_marker/models/map_detail.dart';
 import 'package:circle_marker/models/map_summary.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -17,5 +18,15 @@ class MapRepository {
       MapSummary(mapId: 2, title: 'C106 東7'),
       MapSummary(mapId: 3, title: 'C106 西12')
     ];
+  }
+
+  Future<MapDetail> getMapDetail(int mapId) async {
+    // Return a dummy MapDetail for the given mapId
+    return MapDetail(
+      mapId: mapId,
+      title: 'Map $mapId',
+      baseImagePath: '/path/to/image_$mapId.png',
+      circleIds: [1, 2, 3],
+    );
   }
 }

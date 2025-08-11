@@ -1,4 +1,5 @@
 import 'package:circle_marker/views/app_layout.dart';
+import 'package:circle_marker/views/screens/map_detail_screen.dart';
 import 'package:circle_marker/views/screens/map_list_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,9 @@ class AppRouter extends _$AppRouter {
             if (mapId == null) {
               return const MaterialPage(child: SizedBox.shrink());
             }
-            return MaterialPage(child: Center(child: Text('Map ID: $mapId')));
+            return MaterialPage(
+              child: MapDetailScreen(mapId: int.parse(mapId)),
+            );
           },
         ),
       ],
