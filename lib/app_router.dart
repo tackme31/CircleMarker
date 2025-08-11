@@ -9,7 +9,9 @@ part "app_router.g.dart";
 
 final _rootNavigationKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _mapListNavigationKey = GlobalKey<NavigatorState>(debugLabel: 'mapList');
-final _circleListNavigationKey = GlobalKey<NavigatorState>(debugLabel: 'circleList');
+final _circleListNavigationKey = GlobalKey<NavigatorState>(
+  debugLabel: 'circleList',
+);
 
 @riverpod
 class AppRouter extends _$AppRouter {
@@ -48,6 +50,16 @@ class AppRouter extends _$AppRouter {
               ],
             ),
           ],
+        ),
+        GoRoute(
+          path: '/mapList/:mapId',
+          pageBuilder: (context, state) {
+            final mapId = state.pathParameters['mapId'];
+            if (mapId == null) {
+              return const MaterialPage(child: SizedBox.shrink());
+            }
+            return MaterialPage(child: Center(child: Text('Map ID: $mapId')));
+          },
         ),
       ],
     );
