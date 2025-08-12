@@ -9,6 +9,7 @@ class DraggableLine extends StatefulWidget {
   final Size imageDisplaySize;
   final void Function(int newEndX, int newEndY)? onEndPointDragEnd;
   final double dragIconScale;
+  final bool showIcon;
 
   const DraggableLine({
     super.key,
@@ -20,6 +21,7 @@ class DraggableLine extends StatefulWidget {
     required this.imageDisplaySize,
     this.onEndPointDragEnd,
     this.dragIconScale = 1.0,
+    required this.showIcon,
   });
 
   @override
@@ -109,41 +111,47 @@ class _DraggableLineState extends State<DraggableLine> {
 
     final iconSize = 24.0;
     final scale = 1 / widget.dragIconScale;
-    final fixedDistance = 10.0;
+    final fixedDistance = 50.0;
 
     return Stack(
       children: [
-        CustomPaint(
-          size: widget.imageDisplaySize,
-          painter: _LinePainter(start: start, end: _endPosition),
+        IgnorePointer(
+          child: CustomPaint(
+            size: widget.imageDisplaySize,
+            painter: _LinePainter(start: start, end: _endPosition),
+          ),
         ),
-        Positioned(
-          left: _endPosition.dx - iconSize / 2,
-          top: _endPosition.dy + fixedDistance * scale,
-          child: Transform.scale(
-            scale: scale,
-            alignment: Alignment.center,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                setState(() {
-                  _endPosition += details.delta;
-                });
-              },
-              onPanEnd: (details) {
-                final newPixel = _calcPixelOffset(_endPosition);
-                widget.onEndPointDragEnd?.call(
-                  newPixel.dx.round(),
-                  newPixel.dy.round(),
-                );
-              },
-              child: const Icon(
-                Icons.open_with,
-                size: 24,
-                color: Colors.blueAccent,
+        if (widget.showIcon)
+          Positioned(
+            left: _endPosition.dx - iconSize / 2,
+            top: _endPosition.dy - iconSize / 2 + fixedDistance * scale,
+            child: Transform.scale(
+              scale: scale,
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    _endPosition += details.delta / widget.dragIconScale;
+                  });
+                },
+                onPanEnd: (details) {
+                  final newPixel = _calcPixelOffset(_endPosition);
+                  widget.onEndPointDragEnd?.call(
+                    newPixel.dx.round(),
+                    newPixel.dy.round(),
+                  );
+                },
+                child: Opacity(
+                  opacity: 0.75,
+                  child: const Icon(
+                    Icons.open_with,
+                    size: 24,
+                    color: Colors.red,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -158,8 +166,8 @@ class _LinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 1
+      ..color = Colors.red
+      ..strokeWidth = 0.8
       ..strokeCap = StrokeCap.round;
 
     canvas.drawLine(start, end, paint);

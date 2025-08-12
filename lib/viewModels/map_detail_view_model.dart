@@ -79,6 +79,8 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       positionY: positionY,
       sizeHeight: sizeHeight,
       sizeWidth: sizeWidth,
+      pointerX: positionX + sizeWidth + 50,
+      pointerY: positionY + sizeHeight ~/ 2,
       circleName: 'New Circle',
       spaceNo: 'X-99a',
       imagePath: null,
@@ -96,23 +98,13 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     return insertedCircle;
   }
 
-  Future<void> updateCirclePosition(
-    int circleId,
-    double positionX,
-    double positionY,
-  ) async {
-    await _circleRepository.updateCirclePosition(
-      circleId,
-      positionX,
-      positionY,
-    );
-  }
-
   Future<void> removeCircle(int circleId) async {
     await _circleRepository.deleteCircle(circleId);
 
     // 削除後に最新のリストを取得して状態更新
-    final circles = await _circleRepository.getCircles(state.value!.mapDetail.mapId!);
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
 
@@ -125,7 +117,9 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   }
 
   Future<void> updateCircleDetail(CircleDetail circleDetail) async {
-    final updatedCircle = await _circleRepository.updateCircleDetail(circleDetail);
+    final updatedCircle = await _circleRepository.updateCircleDetail(
+      circleDetail,
+    );
 
     // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(updatedCircle.mapId!);

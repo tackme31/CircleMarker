@@ -12,6 +12,8 @@ class CircleDetail with _$CircleDetail {
     int? positionY,
     int? sizeHeight,
     int? sizeWidth,
+    int? pointerX,
+    int? pointerY,
     String? circleName,
     String? spaceNo,
     String? imagePath,

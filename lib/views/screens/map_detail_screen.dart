@@ -85,11 +85,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
   }
 
-  Future _onCircleDragEnd(int newPixelX, int newPixelY, int circleId) async {
-    await viewModel.updateCirclePosition(
-      circleId,
-      newPixelX.toDouble(),
-      newPixelY.toDouble(),
+  Future _onCircleDragEnd(
+    int newPixelX,
+    int newPixelY,
+    CircleDetail circle,
+  ) async {
+    await viewModel.updateCircleDetail(
+      circle.copyWith(positionX: newPixelX, positionY: newPixelY),
     );
   }
 
@@ -211,8 +213,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                     Gap(8),
                     ElevatedButton.icon(
                       onPressed: () async {
+                        await viewModel.removeCircle(selectedCircleId!);
                         Navigator.pop(context);
-                        await viewModel.removeCircle(circle.circleId!);
                       },
                       icon: const Icon(Icons.delete, color: Colors.white),
                       label: const Text(
@@ -302,16 +304,6 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          DraggableLine(
-                            startPixelX: 10,
-                            startPixelY: 40,
-                            endPixelX: 2500,
-                            endPixelY: 2000,
-                            imageOriginalSize: value.baseImageSize,
-                            imageDisplaySize: imageDisplaySize,
-                            dragIconScale: _transformController.value
-                                .getMaxScaleOnAxis(),
-                          ),
                           ...value.circles.map((circle) {
                             return Opacity(
                               key: Key(circle.circleId.toString()),
@@ -322,33 +314,37 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                   : 0.5,
                               child: Stack(
                                 children: [
-                                  /* IgnorePointer(
-                                    child: LineBetweenPixels(
-                                      startPixelX:
-                                          circle.positionX! +
-                                          circle.sizeWidth! ~/ 2,
-                                      startPixelY:
-                                          circle.positionY! +
-                                          circle.sizeHeight! ~/ 2,
-                                      endPixelX: 1000,
-                                      endPixelY: 1000,
-                                      imageOriginalSize: value.baseImageSize,
-                                      imageDisplaySize: imageDisplaySize,
-                                      color: Colors.blue,
-                                      strokeWidth: 3,
-                                    ),
-                                  ), */
+                                  DraggableLine(
+                                    startPixelX:
+                                        circle.positionX! +
+                                        circle.sizeWidth! ~/ 2,
+                                    startPixelY:
+                                        circle.positionY! +
+                                        circle.sizeHeight! ~/ 2,
+                                    endPixelX: circle.pointerX!,
+                                    endPixelY: circle.pointerY!,
+                                    imageOriginalSize: value.baseImageSize,
+                                    imageDisplaySize: imageDisplaySize,
+                                    dragIconScale: _transformController.value
+                                        .getMaxScaleOnAxis(),
+                                    showIcon: selectedCircleId == circle.circleId,
+                                    onEndPointDragEnd: (newEndX, newEndY) {
+                                      viewModel.updateCircleDetail(
+                                        circle.copyWith(
+                                          pointerX: newEndX,
+                                          pointerY: newEndY,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   PixelPositioned(
                                     pixelX: circle.positionX!,
                                     pixelY: circle.positionY!,
                                     imageDisplaySize: imageDisplaySize,
                                     imageOriginalSize: value.baseImageSize,
                                     onTap: () => _onCircleTap(context, circle),
-                                    onDragEnd: (x, y) => _onCircleDragEnd(
-                                      x,
-                                      y,
-                                      circle.circleId!,
-                                    ),
+                                    onDragEnd: (x, y) =>
+                                        _onCircleDragEnd(x, y, circle!),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [

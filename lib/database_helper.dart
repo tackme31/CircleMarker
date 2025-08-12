@@ -12,7 +12,7 @@ class DatabaseHelper {
     if (_database != null) return _database!;
     // データベースのパスを決定
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'circle_marker.db');
+    final path = join(dbPath, 'circlemarker.db');
     // データベースを開く（なければ作成）
     _database = await openDatabase(path, version: 1, onCreate: _onCreate);
     return _database!;
@@ -35,6 +35,8 @@ class DatabaseHelper {
     positionY INTEGER NOT NULL,
     sizeWidth INTEGER NOT NULL,
     sizeHeight INTEGER NOT NULL,
+    pointerX INTEGER NOT NULL,
+    pointerY INTEGER NOT NULL,
     mapId INTEGER NOT NULL,
     circleName TEXT NOT NULL,
     spaceNo TEXT NOT NULL,
@@ -44,5 +46,9 @@ class DatabaseHelper {
     FOREIGN KEY (mapId) REFERENCES map_detail(mapId)
   )
 ''');
+  }
+
+  Future<void> deleteTable(Database db) async {
+    await db.execute('DROP TABLE IF EXISTS circle_detail');
   }
 }

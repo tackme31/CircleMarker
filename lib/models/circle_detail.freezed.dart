@@ -27,6 +27,8 @@ mixin _$CircleDetail {
   int? get positionY => throw _privateConstructorUsedError;
   int? get sizeHeight => throw _privateConstructorUsedError;
   int? get sizeWidth => throw _privateConstructorUsedError;
+  int? get pointerX => throw _privateConstructorUsedError;
+  int? get pointerY => throw _privateConstructorUsedError;
   String? get circleName => throw _privateConstructorUsedError;
   String? get spaceNo => throw _privateConstructorUsedError;
   String? get imagePath => throw _privateConstructorUsedError;
@@ -57,6 +59,8 @@ abstract class $CircleDetailCopyWith<$Res> {
     int? positionY,
     int? sizeHeight,
     int? sizeWidth,
+    int? pointerX,
+    int? pointerY,
     String? circleName,
     String? spaceNo,
     String? imagePath,
@@ -86,6 +90,8 @@ class _$CircleDetailCopyWithImpl<$Res, $Val extends CircleDetail>
     Object? positionY = freezed,
     Object? sizeHeight = freezed,
     Object? sizeWidth = freezed,
+    Object? pointerX = freezed,
+    Object? pointerY = freezed,
     Object? circleName = freezed,
     Object? spaceNo = freezed,
     Object? imagePath = freezed,
@@ -117,6 +123,14 @@ class _$CircleDetailCopyWithImpl<$Res, $Val extends CircleDetail>
             sizeWidth: freezed == sizeWidth
                 ? _value.sizeWidth
                 : sizeWidth // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            pointerX: freezed == pointerX
+                ? _value.pointerX
+                : pointerX // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            pointerY: freezed == pointerY
+                ? _value.pointerY
+                : pointerY // ignore: cast_nullable_to_non_nullable
                       as int?,
             circleName: freezed == circleName
                 ? _value.circleName
@@ -160,6 +174,8 @@ abstract class _$$CircleDetailImplCopyWith<$Res>
     int? positionY,
     int? sizeHeight,
     int? sizeWidth,
+    int? pointerX,
+    int? pointerY,
     String? circleName,
     String? spaceNo,
     String? imagePath,
@@ -188,6 +204,8 @@ class __$$CircleDetailImplCopyWithImpl<$Res>
     Object? positionY = freezed,
     Object? sizeHeight = freezed,
     Object? sizeWidth = freezed,
+    Object? pointerX = freezed,
+    Object? pointerY = freezed,
     Object? circleName = freezed,
     Object? spaceNo = freezed,
     Object? imagePath = freezed,
@@ -219,6 +237,14 @@ class __$$CircleDetailImplCopyWithImpl<$Res>
         sizeWidth: freezed == sizeWidth
             ? _value.sizeWidth
             : sizeWidth // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        pointerX: freezed == pointerX
+            ? _value.pointerX
+            : pointerX // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        pointerY: freezed == pointerY
+            ? _value.pointerY
+            : pointerY // ignore: cast_nullable_to_non_nullable
                   as int?,
         circleName: freezed == circleName
             ? _value.circleName
@@ -255,6 +281,8 @@ class _$CircleDetailImpl implements _CircleDetail {
     this.positionY,
     this.sizeHeight,
     this.sizeWidth,
+    this.pointerX,
+    this.pointerY,
     this.circleName,
     this.spaceNo,
     this.imagePath,
@@ -278,6 +306,10 @@ class _$CircleDetailImpl implements _CircleDetail {
   @override
   final int? sizeWidth;
   @override
+  final int? pointerX;
+  @override
+  final int? pointerY;
+  @override
   final String? circleName;
   @override
   final String? spaceNo;
@@ -290,7 +322,7 @@ class _$CircleDetailImpl implements _CircleDetail {
 
   @override
   String toString() {
-    return 'CircleDetail(circleId: $circleId, mapId: $mapId, positionX: $positionX, positionY: $positionY, sizeHeight: $sizeHeight, sizeWidth: $sizeWidth, circleName: $circleName, spaceNo: $spaceNo, imagePath: $imagePath, note: $note, description: $description)';
+    return 'CircleDetail(circleId: $circleId, mapId: $mapId, positionX: $positionX, positionY: $positionY, sizeHeight: $sizeHeight, sizeWidth: $sizeWidth, pointerX: $pointerX, pointerY: $pointerY, circleName: $circleName, spaceNo: $spaceNo, imagePath: $imagePath, note: $note, description: $description)';
   }
 
   @override
@@ -309,6 +341,10 @@ class _$CircleDetailImpl implements _CircleDetail {
                 other.sizeHeight == sizeHeight) &&
             (identical(other.sizeWidth, sizeWidth) ||
                 other.sizeWidth == sizeWidth) &&
+            (identical(other.pointerX, pointerX) ||
+                other.pointerX == pointerX) &&
+            (identical(other.pointerY, pointerY) ||
+                other.pointerY == pointerY) &&
             (identical(other.circleName, circleName) ||
                 other.circleName == circleName) &&
             (identical(other.spaceNo, spaceNo) || other.spaceNo == spaceNo) &&
@@ -329,6 +365,8 @@ class _$CircleDetailImpl implements _CircleDetail {
     positionY,
     sizeHeight,
     sizeWidth,
+    pointerX,
+    pointerY,
     circleName,
     spaceNo,
     imagePath,
@@ -358,6 +396,8 @@ abstract class _CircleDetail implements CircleDetail {
     final int? positionY,
     final int? sizeHeight,
     final int? sizeWidth,
+    final int? pointerX,
+    final int? pointerY,
     final String? circleName,
     final String? spaceNo,
     final String? imagePath,
@@ -380,6 +420,10 @@ abstract class _CircleDetail implements CircleDetail {
   int? get sizeHeight;
   @override
   int? get sizeWidth;
+  @override
+  int? get pointerX;
+  @override
+  int? get pointerY;
   @override
   String? get circleName;
   @override
