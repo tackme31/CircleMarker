@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
+import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -109,14 +110,54 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Circle Name: ${circle.circleName ?? 'No Name'}'),
+                    Text('CircleName: '),
+                    EditableLabel(
+                      initialText: circle.circleName ?? 'No Name',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      onSubmit: (value) {
+                        //
+                      },
+                    ),
                     Gap(8),
-                    Text('Space No: ${circle.spaceNo ?? 'No Space No'}'),
+                    Text('Space No:'),
+                    EditableLabel(
+                      initialText: circle.spaceNo ?? 'No Space No',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      onSubmit: (value) {
+                        //
+                      },
+                    ),
                     Gap(8),
-                    Text('Note: ${circle.note ?? 'No Note'}'),
+                    Text('Note:'),
+                    EditableLabel(
+                      initialText: circle.note ?? 'No Note',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: null,
+                      onSubmit: (value) {
+                        //
+                      },
+                    ),
                     Gap(8),
-                    Text(
-                      'Description: ${circle.description ?? 'No Description'}',
+                    Text('Description:'),
+                    EditableLabel(
+                      initialText: circle.description ?? 'No Description',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: null,
+                      onSubmit: (value) {
+                        //
+                      },
                     ),
                     Gap(8),
                     circle.imagePath != null &&
@@ -174,9 +215,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: switch (state) {
-          AsyncData(:final value) when value.mapDetail.title != null => Text(
-            value.mapDetail.title!,
-          ),
+          AsyncData(:final value) when value.mapDetail.title != null =>
+            EditableLabel(
+              initialText: value.mapDetail.title!,
+              onSubmit: (newTitle) async {
+                //
+              },
+            ),
           AsyncError() => const Text('Error'),
           _ => const Text('Loading...'),
         },
