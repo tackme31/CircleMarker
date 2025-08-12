@@ -17,7 +17,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$MapDetailState {
-  MapDetail? get mapDetail => throw _privateConstructorUsedError;
+  MapDetail get mapDetail => throw _privateConstructorUsedError;
+  File get baseImage => throw _privateConstructorUsedError;
+  Size get baseImageSize => throw _privateConstructorUsedError;
 
   /// Create a copy of MapDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,9 +35,9 @@ abstract class $MapDetailStateCopyWith<$Res> {
     $Res Function(MapDetailState) then,
   ) = _$MapDetailStateCopyWithImpl<$Res, MapDetailState>;
   @useResult
-  $Res call({MapDetail? mapDetail});
+  $Res call({MapDetail mapDetail, File baseImage, Size baseImageSize});
 
-  $MapDetailCopyWith<$Res>? get mapDetail;
+  $MapDetailCopyWith<$Res> get mapDetail;
 }
 
 /// @nodoc
@@ -52,13 +54,25 @@ class _$MapDetailStateCopyWithImpl<$Res, $Val extends MapDetailState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? mapDetail = freezed}) {
+  $Res call({
+    Object? mapDetail = null,
+    Object? baseImage = null,
+    Object? baseImageSize = null,
+  }) {
     return _then(
       _value.copyWith(
-            mapDetail: freezed == mapDetail
+            mapDetail: null == mapDetail
                 ? _value.mapDetail
                 : mapDetail // ignore: cast_nullable_to_non_nullable
-                      as MapDetail?,
+                      as MapDetail,
+            baseImage: null == baseImage
+                ? _value.baseImage
+                : baseImage // ignore: cast_nullable_to_non_nullable
+                      as File,
+            baseImageSize: null == baseImageSize
+                ? _value.baseImageSize
+                : baseImageSize // ignore: cast_nullable_to_non_nullable
+                      as Size,
           )
           as $Val,
     );
@@ -68,12 +82,8 @@ class _$MapDetailStateCopyWithImpl<$Res, $Val extends MapDetailState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $MapDetailCopyWith<$Res>? get mapDetail {
-    if (_value.mapDetail == null) {
-      return null;
-    }
-
-    return $MapDetailCopyWith<$Res>(_value.mapDetail!, (value) {
+  $MapDetailCopyWith<$Res> get mapDetail {
+    return $MapDetailCopyWith<$Res>(_value.mapDetail, (value) {
       return _then(_value.copyWith(mapDetail: value) as $Val);
     });
   }
@@ -88,10 +98,10 @@ abstract class _$$MapDetailStateImplCopyWith<$Res>
   ) = __$$MapDetailStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({MapDetail? mapDetail});
+  $Res call({MapDetail mapDetail, File baseImage, Size baseImageSize});
 
   @override
-  $MapDetailCopyWith<$Res>? get mapDetail;
+  $MapDetailCopyWith<$Res> get mapDetail;
 }
 
 /// @nodoc
@@ -107,13 +117,25 @@ class __$$MapDetailStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? mapDetail = freezed}) {
+  $Res call({
+    Object? mapDetail = null,
+    Object? baseImage = null,
+    Object? baseImageSize = null,
+  }) {
     return _then(
       _$MapDetailStateImpl(
-        mapDetail: freezed == mapDetail
+        mapDetail: null == mapDetail
             ? _value.mapDetail
             : mapDetail // ignore: cast_nullable_to_non_nullable
-                  as MapDetail?,
+                  as MapDetail,
+        baseImage: null == baseImage
+            ? _value.baseImage
+            : baseImage // ignore: cast_nullable_to_non_nullable
+                  as File,
+        baseImageSize: null == baseImageSize
+            ? _value.baseImageSize
+            : baseImageSize // ignore: cast_nullable_to_non_nullable
+                  as Size,
       ),
     );
   }
@@ -122,14 +144,22 @@ class __$$MapDetailStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$MapDetailStateImpl implements _MapDetailState {
-  const _$MapDetailStateImpl({this.mapDetail});
+  const _$MapDetailStateImpl({
+    required this.mapDetail,
+    required this.baseImage,
+    required this.baseImageSize,
+  });
 
   @override
-  final MapDetail? mapDetail;
+  final MapDetail mapDetail;
+  @override
+  final File baseImage;
+  @override
+  final Size baseImageSize;
 
   @override
   String toString() {
-    return 'MapDetailState(mapDetail: $mapDetail)';
+    return 'MapDetailState(mapDetail: $mapDetail, baseImage: $baseImage, baseImageSize: $baseImageSize)';
   }
 
   @override
@@ -138,11 +168,16 @@ class _$MapDetailStateImpl implements _MapDetailState {
         (other.runtimeType == runtimeType &&
             other is _$MapDetailStateImpl &&
             (identical(other.mapDetail, mapDetail) ||
-                other.mapDetail == mapDetail));
+                other.mapDetail == mapDetail) &&
+            (identical(other.baseImage, baseImage) ||
+                other.baseImage == baseImage) &&
+            (identical(other.baseImageSize, baseImageSize) ||
+                other.baseImageSize == baseImageSize));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, mapDetail);
+  int get hashCode =>
+      Object.hash(runtimeType, mapDetail, baseImage, baseImageSize);
 
   /// Create a copy of MapDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -157,11 +192,18 @@ class _$MapDetailStateImpl implements _MapDetailState {
 }
 
 abstract class _MapDetailState implements MapDetailState {
-  const factory _MapDetailState({final MapDetail? mapDetail}) =
-      _$MapDetailStateImpl;
+  const factory _MapDetailState({
+    required final MapDetail mapDetail,
+    required final File baseImage,
+    required final Size baseImageSize,
+  }) = _$MapDetailStateImpl;
 
   @override
-  MapDetail? get mapDetail;
+  MapDetail get mapDetail;
+  @override
+  File get baseImage;
+  @override
+  Size get baseImageSize;
 
   /// Create a copy of MapDetailState
   /// with the given fields replaced by the non-null parameter values.

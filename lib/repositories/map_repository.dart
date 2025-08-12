@@ -24,8 +24,8 @@ class MapRepository {
     // Return a dummy MapDetail for the given mapId
     return MapDetail(
       mapId: mapId,
-      title: 'Map $mapId',
-      baseImagePath: '/path/to/image_$mapId.png',
+      title: 'C106 東123',
+      baseImagePath: '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
       circleIds: [1, 2, 3],
     );
   }
