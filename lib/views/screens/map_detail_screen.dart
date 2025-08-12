@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
+import 'package:circle_marker/views/widgets/circle_box.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -137,25 +140,21 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          PixelPositioned(
-                            pixelX: 100,
-                            pixelY: 100,
-                            imageDisplaySize: imageDisplaySize,
-                            imageOriginalSize: value.baseImageSize,
-                            child: Container(
-                              width: 100,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.orange,
-                                  width: 1,
-                                ),
+                          ...value.circles.map((circle) {
+                            return PixelPositioned(
+                              pixelX: circle.positionX!,
+                              pixelY: circle.positionY!,
+                              imageDisplaySize: imageDisplaySize,
+                              imageOriginalSize: value.baseImageSize,
+                              child: CircleBox(
+                                pixelWidth: circle.sizeWidth!,
+                                pixleHeight: circle.sizeHeight!,
+                                imageDisplaySize: imageDisplaySize,
+                                imageOriginalSize: value.baseImageSize,
+                                imagePath: circle.imagePath,
                               ),
-                              child: Column(
-                                children: [Text('foo'), Text('bar')],
-                              ),
-                            ),
-                          ),
+                            );
+                          }),
                           // ここに図形を追加
                         ],
                       ),

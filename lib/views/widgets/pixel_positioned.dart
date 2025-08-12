@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PixelPositioned extends StatelessWidget {
-  final double pixelX;
-  final double pixelY;
+  final int pixelX;
+  final int pixelY;
   final Size imageOriginalSize;
   final Size imageDisplaySize;
   final Widget child;
