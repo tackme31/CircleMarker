@@ -14,7 +14,19 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'circlemarker.db');
     // データベースを開く（なければ作成）
-    _database = await openDatabase(path, version: 1, onCreate: _onCreate);
+    _database = await openDatabase(
+      path,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: (db, oldVersion, newVersion) => {
+        if (oldVersion < 2)
+          {
+            db.execute('''
+          ALTER TABLE circle_detail ADD COLUMN menuImagePath TEXT
+        '''),
+          },
+      },
+    );
     return _database!;
   }
 
@@ -41,6 +53,7 @@ class DatabaseHelper {
     circleName TEXT NOT NULL,
     spaceNo TEXT NOT NULL,
     imagePath TEXT,
+    menuImagePath TEXT,
     note TEXT,
     description TEXT,
     FOREIGN KEY (mapId) REFERENCES map_detail(mapId)

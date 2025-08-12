@@ -17,6 +17,7 @@ class CircleDetail with _$CircleDetail {
     String? circleName,
     String? spaceNo,
     String? imagePath,
+    String? menuImagePath,
     String? note,
     String? description,
   }) = _CircleDetail;

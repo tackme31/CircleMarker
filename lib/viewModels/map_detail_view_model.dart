@@ -193,4 +193,17 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     );
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
+
+  Future<void> updateCircleMenuImage(
+    int circleId,
+    String menuImagePath,
+  ) async {
+    await _circleRepository.updateMenuImagePath(circleId, menuImagePath);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
 }

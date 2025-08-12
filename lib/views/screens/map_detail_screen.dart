@@ -194,15 +194,15 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                     Gap(8),
                     EditableImage(
                       image:
-                          circle.imagePath != null &&
-                              File(circle.imagePath!).existsSync()
-                          ? FileImage(File(circle.imagePath!))
+                          circle.menuImagePath != null &&
+                              File(circle.menuImagePath!).existsSync()
+                          ? FileImage(File(circle.menuImagePath!))
                           : AssetImage('assets/no_image.png'),
                       onChange: (value) async {
                         if (value.isEmpty) {
                           return;
                         }
-                        await viewModel.updateCircleImage(
+                        await viewModel.updateCircleMenuImage(
                           circle.circleId!,
                           value,
                         );

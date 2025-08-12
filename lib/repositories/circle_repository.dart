@@ -139,4 +139,14 @@ class CircleRepository {
       whereArgs: [circleId],
     );
   }
+
+  Future<void> updateMenuImagePath(int circleId, String menuImagePath) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'menuImagePath': menuImagePath},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
 }

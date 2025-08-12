@@ -32,6 +32,7 @@ mixin _$CircleDetail {
   String? get circleName => throw _privateConstructorUsedError;
   String? get spaceNo => throw _privateConstructorUsedError;
   String? get imagePath => throw _privateConstructorUsedError;
+  String? get menuImagePath => throw _privateConstructorUsedError;
   String? get note => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
 
@@ -64,6 +65,7 @@ abstract class $CircleDetailCopyWith<$Res> {
     String? circleName,
     String? spaceNo,
     String? imagePath,
+    String? menuImagePath,
     String? note,
     String? description,
   });
@@ -95,6 +97,7 @@ class _$CircleDetailCopyWithImpl<$Res, $Val extends CircleDetail>
     Object? circleName = freezed,
     Object? spaceNo = freezed,
     Object? imagePath = freezed,
+    Object? menuImagePath = freezed,
     Object? note = freezed,
     Object? description = freezed,
   }) {
@@ -144,6 +147,10 @@ class _$CircleDetailCopyWithImpl<$Res, $Val extends CircleDetail>
                 ? _value.imagePath
                 : imagePath // ignore: cast_nullable_to_non_nullable
                       as String?,
+            menuImagePath: freezed == menuImagePath
+                ? _value.menuImagePath
+                : menuImagePath // ignore: cast_nullable_to_non_nullable
+                      as String?,
             note: freezed == note
                 ? _value.note
                 : note // ignore: cast_nullable_to_non_nullable
@@ -179,6 +186,7 @@ abstract class _$$CircleDetailImplCopyWith<$Res>
     String? circleName,
     String? spaceNo,
     String? imagePath,
+    String? menuImagePath,
     String? note,
     String? description,
   });
@@ -209,6 +217,7 @@ class __$$CircleDetailImplCopyWithImpl<$Res>
     Object? circleName = freezed,
     Object? spaceNo = freezed,
     Object? imagePath = freezed,
+    Object? menuImagePath = freezed,
     Object? note = freezed,
     Object? description = freezed,
   }) {
@@ -258,6 +267,10 @@ class __$$CircleDetailImplCopyWithImpl<$Res>
             ? _value.imagePath
             : imagePath // ignore: cast_nullable_to_non_nullable
                   as String?,
+        menuImagePath: freezed == menuImagePath
+            ? _value.menuImagePath
+            : menuImagePath // ignore: cast_nullable_to_non_nullable
+                  as String?,
         note: freezed == note
             ? _value.note
             : note // ignore: cast_nullable_to_non_nullable
@@ -286,6 +299,7 @@ class _$CircleDetailImpl implements _CircleDetail {
     this.circleName,
     this.spaceNo,
     this.imagePath,
+    this.menuImagePath,
     this.note,
     this.description,
   });
@@ -316,13 +330,15 @@ class _$CircleDetailImpl implements _CircleDetail {
   @override
   final String? imagePath;
   @override
+  final String? menuImagePath;
+  @override
   final String? note;
   @override
   final String? description;
 
   @override
   String toString() {
-    return 'CircleDetail(circleId: $circleId, mapId: $mapId, positionX: $positionX, positionY: $positionY, sizeHeight: $sizeHeight, sizeWidth: $sizeWidth, pointerX: $pointerX, pointerY: $pointerY, circleName: $circleName, spaceNo: $spaceNo, imagePath: $imagePath, note: $note, description: $description)';
+    return 'CircleDetail(circleId: $circleId, mapId: $mapId, positionX: $positionX, positionY: $positionY, sizeHeight: $sizeHeight, sizeWidth: $sizeWidth, pointerX: $pointerX, pointerY: $pointerY, circleName: $circleName, spaceNo: $spaceNo, imagePath: $imagePath, menuImagePath: $menuImagePath, note: $note, description: $description)';
   }
 
   @override
@@ -350,6 +366,8 @@ class _$CircleDetailImpl implements _CircleDetail {
             (identical(other.spaceNo, spaceNo) || other.spaceNo == spaceNo) &&
             (identical(other.imagePath, imagePath) ||
                 other.imagePath == imagePath) &&
+            (identical(other.menuImagePath, menuImagePath) ||
+                other.menuImagePath == menuImagePath) &&
             (identical(other.note, note) || other.note == note) &&
             (identical(other.description, description) ||
                 other.description == description));
@@ -370,6 +388,7 @@ class _$CircleDetailImpl implements _CircleDetail {
     circleName,
     spaceNo,
     imagePath,
+    menuImagePath,
     note,
     description,
   );
@@ -401,6 +420,7 @@ abstract class _CircleDetail implements CircleDetail {
     final String? circleName,
     final String? spaceNo,
     final String? imagePath,
+    final String? menuImagePath,
     final String? note,
     final String? description,
   }) = _$CircleDetailImpl;
@@ -430,6 +450,8 @@ abstract class _CircleDetail implements CircleDetail {
   String? get spaceNo;
   @override
   String? get imagePath;
+  @override
+  String? get menuImagePath;
   @override
   String? get note;
   @override
