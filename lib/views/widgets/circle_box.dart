@@ -38,12 +38,9 @@ class CircleBox extends StatelessWidget {
     final displayHeight =
         pixleHeight * (fittedHeight / imageOriginalSize.height);
 
-    return Container(
+    return SizedBox(
       width: displayWidth,
       height: displayHeight,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.orange, width: 1),
-      ),
       child: imagePath != null && File(imagePath!).existsSync()
           ? Image.file(File(imagePath!), fit: BoxFit.contain)
           : Image.asset('assets/no_image.png', fit: BoxFit.contain),

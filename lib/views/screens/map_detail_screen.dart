@@ -195,6 +195,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                               overflow: TextOverflow.visible,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
                                                 fontSize:
                                                     24 *
                                                     (imageDisplaySize.width /
@@ -216,6 +218,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                               overflow: TextOverflow.visible,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
                                                 fontSize:
                                                     24 *
                                                     (imageDisplaySize.width /
@@ -237,6 +241,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                               overflow: TextOverflow.visible,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
                                                 fontSize:
                                                     24 *
                                                     (imageDisplaySize.width /
