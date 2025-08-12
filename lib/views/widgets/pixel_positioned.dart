@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-class PixelPositioned extends StatelessWidget {
+class PixelPositioned extends StatefulWidget {
   final int pixelX;
   final int pixelY;
   final Size imageOriginalSize;
   final Size imageDisplaySize;
   final Widget child;
+
+  final void Function(int newPixelX, int newPixelY)? onDragEnd;
 
   const PixelPositioned({
     super.key,
@@ -14,32 +16,83 @@ class PixelPositioned extends StatelessWidget {
     required this.imageOriginalSize,
     required this.imageDisplaySize,
     required this.child,
+    this.onDragEnd,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // 画像ピクセル座標→Stack内座標に変換
-    final imageAspect = imageOriginalSize.width / imageOriginalSize.height;
-    final stackAspect = imageDisplaySize.width / imageDisplaySize.height;
+  State<PixelPositioned> createState() => _PixelPositionedState();
+}
+
+class _PixelPositionedState extends State<PixelPositioned> {
+  late double _currentDisplayX;
+  late double _currentDisplayY;
+
+  Offset _calcDisplayOffset(int pixelX, int pixelY) {
+    final imageAspect =
+        widget.imageOriginalSize.width / widget.imageOriginalSize.height;
+    final stackAspect =
+        widget.imageDisplaySize.width / widget.imageDisplaySize.height;
 
     double displayWidth, displayHeight;
     double offsetX = 0, offsetY = 0;
 
     if (imageAspect > stackAspect) {
-      displayWidth = imageDisplaySize.width;
+      displayWidth = widget.imageDisplaySize.width;
       displayHeight = displayWidth / imageAspect;
-      offsetY = (imageDisplaySize.height - displayHeight) / 2;
+      offsetY = (widget.imageDisplaySize.height - displayHeight) / 2;
     } else {
-      displayHeight = imageDisplaySize.height;
+      displayHeight = widget.imageDisplaySize.height;
       displayWidth = displayHeight * imageAspect;
-      offsetX = (imageDisplaySize.width - displayWidth) / 2;
+      offsetX = (widget.imageDisplaySize.width - displayWidth) / 2;
     }
 
     final displayX =
-        pixelX * (displayWidth / imageOriginalSize.width) + offsetX;
+        pixelX * (displayWidth / widget.imageOriginalSize.width) + offsetX;
     final displayY =
-        pixelY * (displayHeight / imageOriginalSize.height) + offsetY;
+        pixelY * (displayHeight / widget.imageOriginalSize.height) + offsetY;
 
-    return Positioned(left: displayX, top: displayY, child: child);
+    return Offset(displayX, displayY);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final pos = _calcDisplayOffset(widget.pixelX, widget.pixelY);
+    _currentDisplayX = pos.dx;
+    _currentDisplayY = pos.dy;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: _currentDisplayX,
+      top: _currentDisplayY,
+      child: GestureDetector(
+        onPanUpdate: (details) {
+          setState(() {
+            _currentDisplayX += details.delta.dx;
+            _currentDisplayY += details.delta.dy;
+          });
+        },
+        onPanEnd: (details) {
+          if (widget.onDragEnd != null) {
+            // 表示座標をピクセル座標に逆変換
+            final newPixelX =
+                ((_currentDisplayX - _calcDisplayOffset(0, 0).dx) *
+                        (widget.imageOriginalSize.width /
+                            widget.imageDisplaySize.width))
+                    .round();
+            final newPixelY =
+                ((_currentDisplayY - _calcDisplayOffset(0, 0).dy) *
+                        (widget.imageOriginalSize.height /
+                            widget.imageDisplaySize.height))
+                    .round();
+
+            widget.onDragEnd!(newPixelX, newPixelY);
+          }
+        },
+        child: widget.child,
+      ),
+    );
   }
 }

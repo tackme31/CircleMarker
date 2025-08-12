@@ -63,7 +63,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     });
   }
 
-  Offset imagePixelToDisplayOffset({
+  Offset _imagePixelToDisplayOffset({
     required double pixelX,
     required double pixelY,
     required Size imageDisplaySize,
@@ -91,6 +91,10 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
         pixelY * (displayHeight / imageOriginalSize.height) + offsetY;
 
     return Offset(displayX, displayY);
+  }
+
+  void _onDragEnd(int newPixelX, int newPixelY, int circleId) {
+    // foobar
   }
 
   @override
@@ -146,6 +150,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               pixelY: circle.positionY!,
                               imageDisplaySize: imageDisplaySize,
                               imageOriginalSize: value.baseImageSize,
+                              onDragEnd: (x, y) =>
+                                  _onDragEnd(x, y, circle.circleId!),
                               child: CircleBox(
                                 pixelWidth: circle.sizeWidth!,
                                 pixleHeight: circle.sizeHeight!,
