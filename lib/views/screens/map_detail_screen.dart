@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class MapDetailScreen extends ConsumerStatefulWidget {
@@ -15,6 +19,7 @@ class MapDetailScreen extends ConsumerStatefulWidget {
 
 class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   final TransformationController _controller = TransformationController();
+  PersistentBottomSheetController? _sheetController;
   late final MapDetailViewModel viewModel;
   int? selectedCircleId;
 
@@ -74,14 +79,69 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     );
   }
 
-  void _onCircleTap(int circleId) {
-    if (selectedCircleId == circleId) {
+  void _onCircleTap(BuildContext context, CircleDetail circle) {
+    if (selectedCircleId == circle.circleId) {
       setState(() {
         selectedCircleId = null; // 選択解除
+        _sheetController?.close();
       });
     } else {
       setState(() {
-        selectedCircleId = circleId; // 新しいサークルを選択
+        selectedCircleId = circle.circleId; // 新しいサークルを選択
+      });
+
+      _sheetController = showBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        builder: (BuildContext context) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final screenHeight = MediaQuery.of(context).size.height;
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: screenWidth * 0.8,
+              height: screenHeight * 0.3,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Circle Name: ${circle.circleName ?? 'No Name'}'),
+                    Gap(8),
+                    Text('Space No: ${circle.spaceNo ?? 'No Space No'}'),
+                    Gap(8),
+                    Text('Note: ${circle.note ?? 'No Note'}'),
+                    Gap(8),
+                    Text(
+                      'Description: ${circle.description ?? 'No Description'}',
+                    ),
+                    Gap(8),
+                    circle.imagePath != null &&
+                            File(circle.imagePath!).existsSync()
+                        ? Image.file(
+                            File(circle.imagePath!),
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            'assets/no_image.png',
+                            fit: BoxFit.contain,
+                          ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+      _sheetController!.closed.then((_) {
+        if (mounted) {
+          setState(() {
+            selectedCircleId = null; // サークル選択解除
+          });
+        }
       });
     }
   }
@@ -166,7 +226,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                     pixelY: circle.positionY!,
                                     imageDisplaySize: imageDisplaySize,
                                     imageOriginalSize: value.baseImageSize,
-                                    onTap: () => _onCircleTap(circle.circleId!),
+                                    onTap: () => _onCircleTap(context, circle),
                                     onDragEnd: (x, y) => _onCircleDragEnd(
                                       x,
                                       y,
