@@ -220,7 +220,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
             EditableLabel(
               initialText: value.mapDetail.title!,
               onSubmit: (newTitle) async {
-                //
+                await viewModel.updateMapTile(newTitle);
               },
             ),
           AsyncError() => const Text('Error'),

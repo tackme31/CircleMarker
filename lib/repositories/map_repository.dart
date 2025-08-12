@@ -43,4 +43,15 @@ class MapRepository {
 
     return mapDetail.copyWith(mapId: id);
   }
+
+  Future<MapDetail> updateMapDetail(MapDetail mapDetail) async {
+    final db = await DatabaseHelper.instance.database;
+    final id = await db.update(
+      _tableName,
+      mapDetail.toJson(),
+      where: 'mapId = ?',
+      whereArgs: [mapDetail.mapId],
+    );
+    return mapDetail.copyWith(mapId: id);
+  }
 }

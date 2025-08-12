@@ -115,4 +115,20 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     final circles = await _circleRepository.getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
+
+  Future<void> updateMapTile(String title) async {
+    final updatedMap = state.value!.mapDetail.copyWith(title: title);
+    final result = await _mapRepository.updateMapDetail(updatedMap);
+
+    // 更新後に状態を更新
+    state = AsyncData(state.value!.copyWith(mapDetail: result));
+  }
+
+  Future<void> updateCircleDetail(CircleDetail circleDetail) async {
+    final updatedCircle = await _circleRepository.updateCircleDetail(circleDetail);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(updatedCircle.mapId!);
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
 }

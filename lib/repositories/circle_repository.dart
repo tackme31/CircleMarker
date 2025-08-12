@@ -78,4 +78,16 @@ class CircleRepository {
       whereArgs: [circleId],
     );
   }
+
+  Future<CircleDetail> updateCircleDetail(CircleDetail circleDetail) async {
+    final db = await DatabaseHelper.instance.database;
+    final id = await db.update(
+      _tableName,
+      circleDetail.toJson(),
+      where: 'circleId = ?',
+      whereArgs: [circleDetail.circleId],
+    );
+
+    return circleDetail.copyWith(circleId: id);
+  }
 }
