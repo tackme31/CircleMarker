@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
+import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
@@ -160,16 +161,16 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                       },
                     ),
                     Gap(8),
-                    circle.imagePath != null &&
-                            File(circle.imagePath!).existsSync()
-                        ? Image.file(
-                            File(circle.imagePath!),
-                            fit: BoxFit.contain,
-                          )
-                        : Image.asset(
-                            'assets/no_image.png',
-                            fit: BoxFit.contain,
-                          ),
+                    EditableImage(
+                      image:
+                          circle.imagePath != null &&
+                              File(circle.imagePath!).existsSync()
+                          ? FileImage(File(circle.imagePath!))
+                          : AssetImage('assets/no_image.png'),
+                      onChange: (imagePath) {
+                        
+                      },
+                    ),
                     Gap(8),
                     ElevatedButton.icon(
                       onPressed: () async {
