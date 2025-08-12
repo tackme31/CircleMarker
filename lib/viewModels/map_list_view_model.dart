@@ -27,4 +27,9 @@ class MapListViewModel extends _$MapListViewModel {
 
     return insertedMap;
   }
+
+  Future<void> refreshMaps() async {
+    final maps = await _mapRepository.getMapDetails();
+    state = AsyncData(MapListState(maps: maps));
+  }
 }

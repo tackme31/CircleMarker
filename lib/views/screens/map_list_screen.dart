@@ -31,8 +31,9 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
               final map = value.maps[index];
               return ListTile(
                 title: Text(map.title ?? 'No title'),
-                onTap: () {
-                  context.push('/mapList/${map.mapId}');
+                onTap: () async {
+                  await context.push('/mapList/${map.mapId}');
+                  viewModel.refreshMaps();
                 },
               );
             },
@@ -53,7 +54,8 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
             final map = await viewModel.addMapDetail(imagePath);
 
             if (!mounted) return;
-            context.push('/mapList/${map.mapId}', extra: map);
+            await context.push('/mapList/${map.mapId}', extra: map);
+            viewModel.refreshMaps();
           }
         },
         child: const Icon(Icons.add),
