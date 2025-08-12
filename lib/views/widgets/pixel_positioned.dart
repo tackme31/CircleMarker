@@ -77,15 +77,16 @@ class _PixelPositionedState extends State<PixelPositioned> {
         onPanEnd: (details) {
           if (widget.onDragEnd != null) {
             // 表示座標をピクセル座標に逆変換
+            final displaySize = _getDisplayImageSize();
+
             final newPixelX =
                 ((_currentDisplayX - _calcDisplayOffset(0, 0).dx) *
-                        (widget.imageOriginalSize.width /
-                            widget.imageDisplaySize.width))
+                        (widget.imageOriginalSize.width / displaySize.width))
                     .round();
+
             final newPixelY =
                 ((_currentDisplayY - _calcDisplayOffset(0, 0).dy) *
-                        (widget.imageOriginalSize.height /
-                            widget.imageDisplaySize.height))
+                        (widget.imageOriginalSize.height / displaySize.height))
                     .round();
 
             widget.onDragEnd!(newPixelX, newPixelY);
@@ -94,5 +95,24 @@ class _PixelPositionedState extends State<PixelPositioned> {
         child: widget.child,
       ),
     );
+  }
+
+  Size _getDisplayImageSize() {
+    final imageAspect =
+        widget.imageOriginalSize.width / widget.imageOriginalSize.height;
+    final stackAspect =
+        widget.imageDisplaySize.width / widget.imageDisplaySize.height;
+
+    double displayWidth, displayHeight;
+
+    if (imageAspect > stackAspect) {
+      displayWidth = widget.imageDisplaySize.width;
+      displayHeight = displayWidth / imageAspect;
+    } else {
+      displayHeight = widget.imageDisplaySize.height;
+      displayWidth = displayHeight * imageAspect;
+    }
+
+    return Size(displayWidth, displayHeight);
   }
 }

@@ -95,8 +95,12 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     return Offset(displayX, displayY);
   } */
 
-  void _onDragEnd(int newPixelX, int newPixelY, int circleId) {
-    // foobar
+  Future _onDragEnd(int newPixelX, int newPixelY, int circleId) async {
+    await viewModel.updateCirclePosition(
+      circleId,
+      newPixelX.toDouble(),
+      newPixelY.toDouble(),
+    );
   }
 
     @override

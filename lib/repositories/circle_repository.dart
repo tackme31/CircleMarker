@@ -55,4 +55,18 @@ class CircleRepository {
     );
     return circleDetail.copyWith(circleId: id);
   }
+
+  Future<void> updateCirclePosition(
+    int circleId,
+    double positionX,
+    double positionY,
+  ) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'positionX': positionX, 'positionY': positionY},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
 }

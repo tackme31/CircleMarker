@@ -95,4 +95,16 @@ class MapDetailViewModel extends _$MapDetailViewModel {
 
     return insertedCircle;
   }
+
+  Future<void> updateCirclePosition(
+    int circleId,
+    double positionX,
+    double positionY,
+  ) async {
+    await _circleRepository.updateCirclePosition(
+      circleId,
+      positionX,
+      positionY,
+    );
+  }
 }
