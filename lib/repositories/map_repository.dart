@@ -1,6 +1,8 @@
+import 'package:circle_marker/database_helper.dart';
 import 'package:circle_marker/models/map_detail.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sqflite/sqflite.dart';
 
 part 'map_repository.g.dart';
 
@@ -10,36 +12,33 @@ MapRepository mapRepository(Ref _) {
 }
 
 class MapRepository {
+  final String _tableName = 'map_detail';
+
   Future<List<MapDetail>> getMapDetails() async {
-    return [
-      MapDetail(
-        mapId: 0,
-        title: 'C106 東123',
-        baseImagePath:
-            '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
-      ),
-      MapDetail(
-        mapId: 1,
-        title: 'C106 東456',
-        baseImagePath:
-            '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
-      ),
-      MapDetail(
-        mapId: 2,
-        title: 'C106 西12',
-        baseImagePath:
-            '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
-      ),
-    ];
+    final db = await DatabaseHelper.instance.database;
+    final maps = await db.query(_tableName);
+    return maps.map(MapDetail.fromJson).toList();
   }
 
   Future<MapDetail> getMapDetail(int mapId) async {
-    // Return a dummy MapDetail for the given mapId
-    return MapDetail(
-      mapId: mapId,
-      title: 'C106 東123',
-      baseImagePath:
-          '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
+    final db = await DatabaseHelper.instance.database;
+    final maps = await db.query(
+      _tableName,
+      where: 'mapId = ?',
+      whereArgs: [mapId],
+      limit: 1,
+    );
+    
+    final map = MapDetail.fromJson(maps.first);
+    return map;
+  }
+
+  Future<int> insertMapDetail(MapDetail mapDetail) async {
+    final db = await DatabaseHelper.instance.database;
+    return db.insert(
+      'map_detail',
+      mapDetail.toJson()..remove('mapId'),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 }

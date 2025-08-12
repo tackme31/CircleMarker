@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
 import 'package:circle_marker/views/widgets/line_between_pixels.dart';
@@ -112,7 +110,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                 : value.mapDetail.title!,
           ),
           AsyncError() => const Text('Error'),
-          _ => const Text('No title'),
+          _ => const Text('Loading...'),
         },
       ),
       body: switch (state) {

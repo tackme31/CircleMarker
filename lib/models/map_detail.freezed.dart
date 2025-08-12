@@ -24,7 +24,6 @@ mixin _$MapDetail {
   int? get mapId => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get baseImagePath => throw _privateConstructorUsedError;
-  List<int> get circleIds => throw _privateConstructorUsedError;
 
   /// Serializes this MapDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,12 +40,7 @@ abstract class $MapDetailCopyWith<$Res> {
   factory $MapDetailCopyWith(MapDetail value, $Res Function(MapDetail) then) =
       _$MapDetailCopyWithImpl<$Res, MapDetail>;
   @useResult
-  $Res call({
-    int? mapId,
-    String? title,
-    String? baseImagePath,
-    List<int> circleIds,
-  });
+  $Res call({int? mapId, String? title, String? baseImagePath});
 }
 
 /// @nodoc
@@ -67,7 +61,6 @@ class _$MapDetailCopyWithImpl<$Res, $Val extends MapDetail>
     Object? mapId = freezed,
     Object? title = freezed,
     Object? baseImagePath = freezed,
-    Object? circleIds = null,
   }) {
     return _then(
       _value.copyWith(
@@ -83,10 +76,6 @@ class _$MapDetailCopyWithImpl<$Res, $Val extends MapDetail>
                 ? _value.baseImagePath
                 : baseImagePath // ignore: cast_nullable_to_non_nullable
                       as String?,
-            circleIds: null == circleIds
-                ? _value.circleIds
-                : circleIds // ignore: cast_nullable_to_non_nullable
-                      as List<int>,
           )
           as $Val,
     );
@@ -102,12 +91,7 @@ abstract class _$$MapDetailImplCopyWith<$Res>
   ) = __$$MapDetailImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    int? mapId,
-    String? title,
-    String? baseImagePath,
-    List<int> circleIds,
-  });
+  $Res call({int? mapId, String? title, String? baseImagePath});
 }
 
 /// @nodoc
@@ -127,7 +111,6 @@ class __$$MapDetailImplCopyWithImpl<$Res>
     Object? mapId = freezed,
     Object? title = freezed,
     Object? baseImagePath = freezed,
-    Object? circleIds = null,
   }) {
     return _then(
       _$MapDetailImpl(
@@ -143,10 +126,6 @@ class __$$MapDetailImplCopyWithImpl<$Res>
             ? _value.baseImagePath
             : baseImagePath // ignore: cast_nullable_to_non_nullable
                   as String?,
-        circleIds: null == circleIds
-            ? _value._circleIds
-            : circleIds // ignore: cast_nullable_to_non_nullable
-                  as List<int>,
       ),
     );
   }
@@ -155,12 +134,7 @@ class __$$MapDetailImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$MapDetailImpl implements _MapDetail {
-  const _$MapDetailImpl({
-    this.mapId,
-    this.title,
-    this.baseImagePath,
-    final List<int> circleIds = const [],
-  }) : _circleIds = circleIds;
+  const _$MapDetailImpl({this.mapId, this.title, this.baseImagePath});
 
   factory _$MapDetailImpl.fromJson(Map<String, dynamic> json) =>
       _$$MapDetailImplFromJson(json);
@@ -171,18 +145,10 @@ class _$MapDetailImpl implements _MapDetail {
   final String? title;
   @override
   final String? baseImagePath;
-  final List<int> _circleIds;
-  @override
-  @JsonKey()
-  List<int> get circleIds {
-    if (_circleIds is EqualUnmodifiableListView) return _circleIds;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_circleIds);
-  }
 
   @override
   String toString() {
-    return 'MapDetail(mapId: $mapId, title: $title, baseImagePath: $baseImagePath, circleIds: $circleIds)';
+    return 'MapDetail(mapId: $mapId, title: $title, baseImagePath: $baseImagePath)';
   }
 
   @override
@@ -193,22 +159,12 @@ class _$MapDetailImpl implements _MapDetail {
             (identical(other.mapId, mapId) || other.mapId == mapId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.baseImagePath, baseImagePath) ||
-                other.baseImagePath == baseImagePath) &&
-            const DeepCollectionEquality().equals(
-              other._circleIds,
-              _circleIds,
-            ));
+                other.baseImagePath == baseImagePath));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    mapId,
-    title,
-    baseImagePath,
-    const DeepCollectionEquality().hash(_circleIds),
-  );
+  int get hashCode => Object.hash(runtimeType, mapId, title, baseImagePath);
 
   /// Create a copy of MapDetail
   /// with the given fields replaced by the non-null parameter values.
@@ -229,7 +185,6 @@ abstract class _MapDetail implements MapDetail {
     final int? mapId,
     final String? title,
     final String? baseImagePath,
-    final List<int> circleIds,
   }) = _$MapDetailImpl;
 
   factory _MapDetail.fromJson(Map<String, dynamic> json) =
@@ -241,8 +196,6 @@ abstract class _MapDetail implements MapDetail {
   String? get title;
   @override
   String? get baseImagePath;
-  @override
-  List<int> get circleIds;
 
   /// Create a copy of MapDetail
   /// with the given fields replaced by the non-null parameter values.

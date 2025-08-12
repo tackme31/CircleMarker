@@ -3,13 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
-class MapListScreen extends ConsumerWidget {
+class MapListScreen extends ConsumerStatefulWidget {
   const MapListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MapListScreen> createState() => _MapListScreenState();
+}
+
+class _MapListScreenState extends ConsumerState<MapListScreen> {
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(mapListViewModelProvider);
+    final viewModel = ref.watch(mapListViewModelProvider.notifier);
+    final ImagePicker picker = ImagePicker();
 
     return Scaffold(
       appBar: AppBar(title: const Text('配置図')),
@@ -35,6 +43,21 @@ class MapListScreen extends ConsumerWidget {
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final XFile? pickedFile = await picker.pickImage(
+            source: ImageSource.gallery,
+          );
+          if (pickedFile != null) {
+            final imagePath = pickedFile.path;
+            final id = await viewModel.addMapDetail(imagePath);
+
+            if (!mounted) return;
+            context.push('/mapList/$id');
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

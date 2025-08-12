@@ -11,11 +11,6 @@ _$MapDetailImpl _$$MapDetailImplFromJson(Map<String, dynamic> json) =>
       mapId: (json['mapId'] as num?)?.toInt(),
       title: json['title'] as String?,
       baseImagePath: json['baseImagePath'] as String?,
-      circleIds:
-          (json['circleIds'] as List<dynamic>?)
-              ?.map((e) => (e as num).toInt())
-              .toList() ??
-          const [],
     );
 
 Map<String, dynamic> _$$MapDetailImplToJson(_$MapDetailImpl instance) =>
@@ -23,5 +18,4 @@ Map<String, dynamic> _$$MapDetailImplToJson(_$MapDetailImpl instance) =>
       'mapId': instance.mapId,
       'title': instance.title,
       'baseImagePath': instance.baseImagePath,
-      'circleIds': instance.circleIds,
     };

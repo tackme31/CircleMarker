@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$MapListState {
-  List<MapSummary> get maps => throw _privateConstructorUsedError;
+  List<MapDetail> get maps => throw _privateConstructorUsedError;
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +33,7 @@ abstract class $MapListStateCopyWith<$Res> {
     $Res Function(MapListState) then,
   ) = _$MapListStateCopyWithImpl<$Res, MapListState>;
   @useResult
-  $Res call({List<MapSummary> maps});
+  $Res call({List<MapDetail> maps});
 }
 
 /// @nodoc
@@ -56,7 +56,7 @@ class _$MapListStateCopyWithImpl<$Res, $Val extends MapListState>
             maps: null == maps
                 ? _value.maps
                 : maps // ignore: cast_nullable_to_non_nullable
-                      as List<MapSummary>,
+                      as List<MapDetail>,
           )
           as $Val,
     );
@@ -72,7 +72,7 @@ abstract class _$$MapListStateImplCopyWith<$Res>
   ) = __$$MapListStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<MapSummary> maps});
+  $Res call({List<MapDetail> maps});
 }
 
 /// @nodoc
@@ -94,7 +94,7 @@ class __$$MapListStateImplCopyWithImpl<$Res>
         maps: null == maps
             ? _value._maps
             : maps // ignore: cast_nullable_to_non_nullable
-                  as List<MapSummary>,
+                  as List<MapDetail>,
       ),
     );
   }
@@ -103,13 +103,13 @@ class __$$MapListStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$MapListStateImpl implements _MapListState {
-  const _$MapListStateImpl({final List<MapSummary> maps = const []})
+  const _$MapListStateImpl({final List<MapDetail> maps = const []})
     : _maps = maps;
 
-  final List<MapSummary> _maps;
+  final List<MapDetail> _maps;
   @override
   @JsonKey()
-  List<MapSummary> get maps {
+  List<MapDetail> get maps {
     if (_maps is EqualUnmodifiableListView) return _maps;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_maps);
@@ -142,11 +142,11 @@ class _$MapListStateImpl implements _MapListState {
 }
 
 abstract class _MapListState implements MapListState {
-  const factory _MapListState({final List<MapSummary> maps}) =
+  const factory _MapListState({final List<MapDetail> maps}) =
       _$MapListStateImpl;
 
   @override
-  List<MapSummary> get maps;
+  List<MapDetail> get maps;
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.
