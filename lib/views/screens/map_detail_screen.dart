@@ -8,6 +8,7 @@ import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -27,6 +28,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   late final MapDetailViewModel viewModel;
   int? selectedCircleId;
   double _currentScale = 1.0;
+  bool _orientationLocked = false;
 
   Future _onDoubleTap(
     BuildContext context,
@@ -248,7 +250,31 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   @override
   void dispose() {
     _transformController.removeListener(_onTransformChanged);
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_orientationLocked) {
+      final orientation = MediaQuery.of(context).orientation;
+
+      if (orientation == Orientation.portrait) {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+      } else {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ]);
+      }
+
+      _orientationLocked = true;
+    }
   }
 
   @override
@@ -346,7 +372,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                       );
                                     },
                                     child: Container(
-                                      color: Colors.white.withValues(alpha: 0.7),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -363,7 +391,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                               width:
                                                   circle.sizeWidth! *
                                                   (imageDisplaySize.width /
-                                                      value.baseImageSize.width),
+                                                      value
+                                                          .baseImageSize
+                                                          .width),
                                               child: Text(
                                                 circle.circleName!,
                                                 softWrap: true,
@@ -386,7 +416,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                               width:
                                                   circle.sizeWidth! *
                                                   (imageDisplaySize.width /
-                                                      value.baseImageSize.width),
+                                                      value
+                                                          .baseImageSize
+                                                          .width),
                                               child: Text(
                                                 circle.spaceNo!,
                                                 softWrap: true,
@@ -409,7 +441,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                               width:
                                                   circle.sizeWidth! *
                                                   (imageDisplaySize.width /
-                                                      value.baseImageSize.width),
+                                                      value
+                                                          .baseImageSize
+                                                          .width),
                                               child: Text(
                                                 circle.note!,
                                                 softWrap: true,
