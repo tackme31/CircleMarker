@@ -314,6 +314,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                           ),
                           ...value.circles.map((circle) {
                             return Opacity(
+                              key: Key(circle.circleId.toString()),
                               opacity:
                                   selectedCircleId == null ||
                                       selectedCircleId == circle.circleId
