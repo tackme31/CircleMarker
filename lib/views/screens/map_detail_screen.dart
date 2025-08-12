@@ -16,6 +16,7 @@ class MapDetailScreen extends ConsumerStatefulWidget {
 class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   final TransformationController _controller = TransformationController();
   late final MapDetailViewModel viewModel;
+  int? selectedCircleId;
 
   Future _onDoubleTap(
     BuildContext context,
@@ -73,6 +74,18 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     );
   }
 
+  void _onCircleTap(int circleId) {
+    if (selectedCircleId == circleId) {
+      setState(() {
+        selectedCircleId = null; // 選択解除
+      });
+    } else {
+      setState(() {
+        selectedCircleId = circleId; // 新しいサークルを選択
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -124,40 +137,50 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                             ),
                           ),
                           ...value.circles.map((circle) {
-                            return Stack(
-                              children: [
-                                /* IgnorePointer(
-                                  child: LineBetweenPixels(
-                                    startPixelX:
-                                        circle.positionX! +
-                                        circle.sizeWidth! ~/ 2,
-                                    startPixelY:
-                                        circle.positionY! +
-                                        circle.sizeHeight! ~/ 2,
-                                    endPixelX: 1000,
-                                    endPixelY: 1000,
-                                    imageOriginalSize: value.baseImageSize,
-                                    imageDisplaySize: imageDisplaySize,
-                                    color: Colors.blue,
-                                    strokeWidth: 3,
-                                  ),
-                                ), */
-                                PixelPositioned(
-                                  pixelX: circle.positionX!,
-                                  pixelY: circle.positionY!,
-                                  imageDisplaySize: imageDisplaySize,
-                                  imageOriginalSize: value.baseImageSize,
-                                  onDragEnd: (x, y) =>
-                                      _onCircleDragEnd(x, y, circle.circleId!),
-                                  child: CircleBox(
-                                    pixelWidth: circle.sizeWidth!,
-                                    pixleHeight: circle.sizeHeight!,
+                            return Opacity(
+                              opacity: selectedCircleId == null ||
+                                      selectedCircleId == circle.circleId
+                                  ? 1.0
+                                  : 0.5,
+                              child: Stack(
+                                children: [
+                                  /* IgnorePointer(
+                                    child: LineBetweenPixels(
+                                      startPixelX:
+                                          circle.positionX! +
+                                          circle.sizeWidth! ~/ 2,
+                                      startPixelY:
+                                          circle.positionY! +
+                                          circle.sizeHeight! ~/ 2,
+                                      endPixelX: 1000,
+                                      endPixelY: 1000,
+                                      imageOriginalSize: value.baseImageSize,
+                                      imageDisplaySize: imageDisplaySize,
+                                      color: Colors.blue,
+                                      strokeWidth: 3,
+                                    ),
+                                  ), */
+                                  PixelPositioned(
+                                    pixelX: circle.positionX!,
+                                    pixelY: circle.positionY!,
                                     imageDisplaySize: imageDisplaySize,
                                     imageOriginalSize: value.baseImageSize,
-                                    imagePath: circle.imagePath,
+                                    onTap: () => _onCircleTap(circle.circleId!),
+                                    onDragEnd: (x, y) => _onCircleDragEnd(
+                                      x,
+                                      y,
+                                      circle.circleId!,
+                                    ),
+                                    child: CircleBox(
+                                      pixelWidth: circle.sizeWidth!,
+                                      pixleHeight: circle.sizeHeight!,
+                                      imageDisplaySize: imageDisplaySize,
+                                      imageOriginalSize: value.baseImageSize,
+                                      imagePath: circle.imagePath,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             );
                           }),
                           // ここに図形を追加
