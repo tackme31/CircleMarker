@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
+import 'package:circle_marker/views/widgets/draggable_line.dart';
 import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
@@ -20,10 +21,12 @@ class MapDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
-  final TransformationController _controller = TransformationController();
+  final TransformationController _transformController =
+      TransformationController();
   PersistentBottomSheetController? _sheetController;
   late final MapDetailViewModel viewModel;
   int? selectedCircleId;
+  double _currentScale = 1.0;
 
   Future _onDoubleTap(
     BuildContext context,
@@ -49,7 +52,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
 
     // InteractiveViewerの変換行列
-    final matrix = _controller.value;
+    final matrix = _transformController.value;
     final scale = matrix.getMaxScaleOnAxis();
     final pan = Offset(matrix.row0[3], matrix.row1[3]);
 
@@ -71,6 +74,15 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
       200,
       250,
     );
+  }
+
+  void _onTransformChanged() {
+    final newScale = _transformController.value.getMaxScaleOnAxis();
+    if (newScale != _currentScale) {
+      setState(() {
+        _currentScale = newScale;
+      });
+    }
   }
 
   Future _onCircleDragEnd(int newPixelX, int newPixelY, int circleId) async {
@@ -232,6 +244,14 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   void initState() {
     super.initState();
     viewModel = ref.read(mapDetailViewModelProvider(widget.mapId).notifier);
+    _transformController.addListener(_onTransformChanged);
+    _currentScale = _transformController.value.getMaxScaleOnAxis();
+  }
+
+  @override
+  void dispose() {
+    _transformController.removeListener(_onTransformChanged);
+    super.dispose();
   }
 
   @override
@@ -271,7 +291,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                       value.baseImageSize,
                     ),
                     child: InteractiveViewer(
-                      transformationController: _controller,
+                      transformationController: _transformController,
                       minScale: 0.5,
                       maxScale: 10.0,
                       child: Stack(
@@ -281,6 +301,16 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               value.baseImage,
                               fit: BoxFit.contain,
                             ),
+                          ),
+                          DraggableLine(
+                            startPixelX: 10,
+                            startPixelY: 40,
+                            endPixelX: 2500,
+                            endPixelY: 2000,
+                            imageOriginalSize: value.baseImageSize,
+                            imageDisplaySize: imageDisplaySize,
+                            dragIconScale: _transformController.value
+                                .getMaxScaleOnAxis(),
                           ),
                           ...value.circles.map((circle) {
                             return Opacity(
