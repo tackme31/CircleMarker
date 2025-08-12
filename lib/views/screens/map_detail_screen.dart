@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
+import 'package:circle_marker/views/widgets/line_between_pixels.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -145,20 +146,36 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                             ),
                           ),
                           ...value.circles.map((circle) {
-                            return PixelPositioned(
-                              pixelX: circle.positionX!,
-                              pixelY: circle.positionY!,
-                              imageDisplaySize: imageDisplaySize,
-                              imageOriginalSize: value.baseImageSize,
-                              onDragEnd: (x, y) =>
-                                  _onDragEnd(x, y, circle.circleId!),
-                              child: CircleBox(
-                                pixelWidth: circle.sizeWidth!,
-                                pixleHeight: circle.sizeHeight!,
-                                imageDisplaySize: imageDisplaySize,
-                                imageOriginalSize: value.baseImageSize,
-                                imagePath: circle.imagePath,
-                              ),
+                            return Stack(
+                              children: [
+                                IgnorePointer(
+                                  child: LineBetweenPixels(
+                                    startPixelX: circle.positionX! + circle.sizeWidth! ~/ 2,
+                                    startPixelY: circle.positionY! + circle.sizeHeight! ~/ 2,
+                                    endPixelX: 1000,
+                                    endPixelY: 1000,
+                                    imageOriginalSize: value.baseImageSize,
+                                    imageDisplaySize: imageDisplaySize,
+                                    color: Colors.blue,
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                                PixelPositioned(
+                                  pixelX: circle.positionX!,
+                                  pixelY: circle.positionY!,
+                                  imageDisplaySize: imageDisplaySize,
+                                  imageOriginalSize: value.baseImageSize,
+                                  onDragEnd: (x, y) =>
+                                      _onDragEnd(x, y, circle.circleId!),
+                                  child: CircleBox(
+                                    pixelWidth: circle.sizeWidth!,
+                                    pixleHeight: circle.sizeHeight!,
+                                    imageDisplaySize: imageDisplaySize,
+                                    imageOriginalSize: value.baseImageSize,
+                                    imagePath: circle.imagePath,
+                                  ),
+                                ),
+                              ],
                             );
                           }),
                           // ここに図形を追加

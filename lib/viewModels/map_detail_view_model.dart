@@ -47,7 +47,7 @@ class MapDetailViewModel extends _$MapDetailViewModel {
         CircleDetail(
           circleId: 1,
           positionX: 400,
-          positionY: 400,
+          positionY: 600,
           sizeWidth: 200,
           sizeHeight: 250,
           mapId: mapId,
