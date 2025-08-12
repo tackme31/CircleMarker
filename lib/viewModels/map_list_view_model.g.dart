@@ -6,7 +6,7 @@ part of 'map_list_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$mapListViewModelHash() => r'1839491c65c3f3e59cf3bf2c552be674c50bc8f3';
+String _$mapListViewModelHash() => r'351b7722b75483c00c6fd4fc0757c4b9a8ee7d9e';
 
 /// See also [MapListViewModel].
 @ProviderFor(MapListViewModel)
@@ -17,10 +17,15 @@ final mapListViewModelProvider =
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
           : _$mapListViewModelHash,
-      dependencies: <ProviderOrFamily>[mapRepositoryProvider],
+      dependencies: <ProviderOrFamily>[
+        mapRepositoryProvider,
+        circleRepositoryProvider,
+      ],
       allTransitiveDependencies: <ProviderOrFamily>{
         mapRepositoryProvider,
         ...?mapRepositoryProvider.allTransitiveDependencies,
+        circleRepositoryProvider,
+        ...?circleRepositoryProvider.allTransitiveDependencies,
       },
     );
 

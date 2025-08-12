@@ -27,13 +27,35 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           child: ListView.separated(
             separatorBuilder: (context, index) => const Gap(12),
             itemCount: value.maps.length,
-            itemBuilder: (_, index) {
+            itemBuilder: (context, index) {
               final map = value.maps[index];
               return ListTile(
                 title: Text(map.title ?? 'No title'),
                 onTap: () async {
                   await context.push('/mapList/${map.mapId}');
                   viewModel.refreshMaps();
+                },
+                onLongPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('削除しますか？'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => context.pop(),
+                          child: const Text('キャンセル'),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            context.pop();
+                            await viewModel.removeMap(map.mapId!);
+                            await viewModel.refreshMaps();
+                          },
+                          child: const Text('削除'),
+                        ),
+                      ],
+                    ),
+                  );
                 },
               );
             },

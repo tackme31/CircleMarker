@@ -54,4 +54,9 @@ class MapRepository {
     );
     return mapDetail.copyWith(mapId: id);
   }
+
+  Future<void> deleteMapDetail(int mapId) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.delete(_tableName, where: 'mapId = ?', whereArgs: [mapId]);
+  }
 }
