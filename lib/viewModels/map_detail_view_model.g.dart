@@ -7,7 +7,7 @@ part of 'map_detail_view_model.dart';
 // **************************************************************************
 
 String _$mapDetailViewModelHash() =>
-    r'e90482e5d70a4cc3953143722429fd04747aefe6';
+    r'95831ff9a0c3a970ba81c9bd02755e402d6d2931';
 
 /// Copied from Dart SDK
 class _SystemHash {

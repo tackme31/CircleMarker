@@ -28,17 +28,19 @@ class MapRepository {
       whereArgs: [mapId],
       limit: 1,
     );
-    
+
     final map = MapDetail.fromJson(maps.first);
     return map;
   }
 
-  Future<int> insertMapDetail(MapDetail mapDetail) async {
+  Future<MapDetail> insertMapDetail(MapDetail mapDetail) async {
     final db = await DatabaseHelper.instance.database;
-    return db.insert(
+    final id = await db.insert(
       'map_detail',
       mapDetail.toJson()..remove('mapId'),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    return mapDetail.copyWith(mapId: id);
   }
 }

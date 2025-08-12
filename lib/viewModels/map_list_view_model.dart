@@ -17,14 +17,14 @@ class MapListViewModel extends _$MapListViewModel {
     return MapListState(maps: maps);
   }
 
-  Future<int> addMapDetail(String imagePath) async {
+  Future<MapDetail> addMapDetail(String imagePath) async {
     final mapDetail = MapDetail(title: 'New Map', baseImagePath: imagePath);
-    final id = await _mapRepository.insertMapDetail(mapDetail);
+    final insertedMap = await _mapRepository.insertMapDetail(mapDetail);
 
     // 追加後に最新のリストを取得して状態更新
     final maps = await _mapRepository.getMapDetails();
     state = AsyncData(MapListState(maps: maps));
 
-    return id;
+    return insertedMap;
   }
 }

@@ -50,10 +50,10 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           );
           if (pickedFile != null) {
             final imagePath = pickedFile.path;
-            final id = await viewModel.addMapDetail(imagePath);
+            final map = await viewModel.addMapDetail(imagePath);
 
             if (!mounted) return;
-            context.push('/mapList/$id');
+            context.push('/mapList/${map.mapId}', extra: map);
           }
         },
         child: const Icon(Icons.add),

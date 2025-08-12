@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:circle_marker/database_helper.dart';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/repositories/circle_repository.dart';
 import 'package:circle_marker/repositories/map_repository.dart';
@@ -13,12 +12,15 @@ part 'map_detail_view_model.g.dart';
 @Riverpod(dependencies: [mapRepository, circleRepository])
 class MapDetailViewModel extends _$MapDetailViewModel {
   late final MapRepository _mapRepository;
+  late final CircleRepository _circleRepository;
 
   @override
   Future<MapDetailState> build(int mapId) async {
     _mapRepository = ref.watch(mapRepositoryProvider);
+    _circleRepository = ref.watch(circleRepositoryProvider);
 
     final map = await _mapRepository.getMapDetail(mapId);
+    final circles = await _circleRepository.getCircles(mapId);
 
     final file = File(map.baseImagePath!);
     final decoded = await decodeImageFromList(await file.readAsBytes());
@@ -31,7 +33,10 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       mapDetail: map,
       baseImage: file,
       baseImageSize: baseImageSize,
-      circles: [
+      circles: circles,
+    );
+
+    /* [
         CircleDetail(
           circleId: 0,
           positionX: 100,
@@ -58,7 +63,36 @@ class MapDetailViewModel extends _$MapDetailViewModel {
           note: null,
           description: 'Description A',
         ),
-      ],
+      ] */
+  }
+
+  Future<CircleDetail> addCircleDetail(
+    int mapId,
+    int positionX,
+    int positionY,
+    int sizeHeight,
+    int sizeWidth,
+  ) async {
+    final circleDetail = CircleDetail(
+      mapId: mapId,
+      positionX: positionX,
+      positionY: positionY,
+      sizeHeight: sizeHeight,
+      sizeWidth: sizeWidth,
+      circleName: 'New Circle',
+      spaceNo: 'X-99a',
+      imagePath: null,
+      note: null,
+      description: null,
     );
+    final insertedCircle = await _circleRepository.insertCircleDetail(
+      circleDetail,
+    );
+
+    // 追加後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(circleDetail.mapId!);
+    state = AsyncData(state.value!.copyWith(circles: circles));
+
+    return insertedCircle;
   }
 }

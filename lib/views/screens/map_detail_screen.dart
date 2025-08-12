@@ -1,6 +1,5 @@
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
-import 'package:circle_marker/views/widgets/line_between_pixels.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,14 +15,14 @@ class MapDetailScreen extends ConsumerStatefulWidget {
 
 class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   final TransformationController _controller = TransformationController();
-  Offset? _lastImagePixel;
+  late final MapDetailViewModel viewModel;
 
-  void _onDoubleTap(
+  Future _onDoubleTap(
     BuildContext context,
     TapDownDetails details,
     Size stackSize,
     Size imageOriginalSize,
-  ) {
+  ) async {
     // Stack内でfit: BoxFit.containで画像が表示されるサイズを計算
     final imageAspect = imageOriginalSize.width / imageOriginalSize.height;
     final stackAspect = stackSize.width / stackSize.height;
@@ -57,12 +56,16 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     final imgX = imageLocal.dx * (imageOriginalSize.width / displayWidth);
     final imgY = imageLocal.dy * (imageOriginalSize.height / displayHeight);
 
-    setState(() {
-      _lastImagePixel = Offset(imgX, imgY);
-    });
+    await viewModel.addCircleDetail(
+      widget.mapId,
+      imgX.toInt(),
+      imgY.toInt(),
+      200,
+      250,
+    );
   }
 
-  Offset _imagePixelToDisplayOffset({
+  /* Offset _imagePixelToDisplayOffset({
     required double pixelX,
     required double pixelY,
     required Size imageDisplaySize,
@@ -90,10 +93,16 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
         pixelY * (displayHeight / imageOriginalSize.height) + offsetY;
 
     return Offset(displayX, displayY);
-  }
+  } */
 
   void _onDragEnd(int newPixelX, int newPixelY, int circleId) {
     // foobar
+  }
+
+    @override
+  void initState() {
+    super.initState();
+    viewModel = ref.read(mapDetailViewModelProvider(widget.mapId).notifier);
   }
 
   @override
@@ -104,10 +113,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
       appBar: AppBar(
         title: switch (state) {
           AsyncData(:final value) when value.mapDetail.title != null => Text(
-            //value.mapDetail!.title!,
-            _lastImagePixel != null
-                ? '${value.mapDetail.title!} (${_lastImagePixel!.dx.toStringAsFixed(1)}, ${_lastImagePixel!.dy.toStringAsFixed(1)})'
-                : value.mapDetail.title!,
+            value.mapDetail.title!,
           ),
           AsyncError() => const Text('Error'),
           _ => const Text('Loading...'),
@@ -146,10 +152,14 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                           ...value.circles.map((circle) {
                             return Stack(
                               children: [
-                                IgnorePointer(
+                                /* IgnorePointer(
                                   child: LineBetweenPixels(
-                                    startPixelX: circle.positionX! + circle.sizeWidth! ~/ 2,
-                                    startPixelY: circle.positionY! + circle.sizeHeight! ~/ 2,
+                                    startPixelX:
+                                        circle.positionX! +
+                                        circle.sizeWidth! ~/ 2,
+                                    startPixelY:
+                                        circle.positionY! +
+                                        circle.sizeHeight! ~/ 2,
                                     endPixelX: 1000,
                                     endPixelY: 1000,
                                     imageOriginalSize: value.baseImageSize,
@@ -157,7 +167,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                     color: Colors.blue,
                                     strokeWidth: 3,
                                   ),
-                                ),
+                                ), */
                                 PixelPositioned(
                                   pixelX: circle.positionX!,
                                   pixelY: circle.positionY!,
