@@ -8,6 +8,7 @@ class CircleBox extends StatelessWidget {
   final Size imageOriginalSize;
   final Size imageDisplaySize;
   final String? imagePath;
+  final void Function()? onLongPress;
 
   const CircleBox({
     super.key,
@@ -16,6 +17,7 @@ class CircleBox extends StatelessWidget {
     required this.imageOriginalSize,
     required this.imageDisplaySize,
     this.imagePath,
+    this.onLongPress,
   });
 
   @override
@@ -38,12 +40,15 @@ class CircleBox extends StatelessWidget {
     final displayHeight =
         pixleHeight * (fittedHeight / imageOriginalSize.height);
 
-    return SizedBox(
-      width: displayWidth,
-      height: displayHeight,
-      child: imagePath != null && File(imagePath!).existsSync()
-          ? Image.file(File(imagePath!), fit: BoxFit.contain)
-          : Image.asset('assets/no_image.png', fit: BoxFit.contain),
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: SizedBox(
+        width: displayWidth,
+        height: displayHeight,
+        child: imagePath != null && File(imagePath!).existsSync()
+            ? Image.file(File(imagePath!), fit: BoxFit.contain)
+            : Image.asset('assets/no_image.png', fit: BoxFit.contain),
+      ),
     );
   }
 }

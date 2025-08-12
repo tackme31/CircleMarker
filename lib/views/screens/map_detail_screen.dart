@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MapDetailScreen extends ConsumerStatefulWidget {
   const MapDetailScreen({super.key, required this.mapId});
@@ -239,6 +240,17 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
   }
 
+  Future<void> _pickCircleImage(int circleId) async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      final newImage = FileImage(File(pickedFile.path));
+      await viewModel.updateCircleImage(circleId, newImage.file.path);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -385,6 +397,11 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                             imageOriginalSize:
                                                 value.baseImageSize,
                                             imagePath: circle.imagePath,
+                                            onLongPress: () {
+                                              _pickCircleImage(
+                                                circle.circleId!,
+                                              );
+                                            },
                                           ),
                                           if (circle.circleName != null)
                                             SizedBox(
