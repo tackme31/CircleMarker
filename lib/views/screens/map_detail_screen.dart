@@ -345,87 +345,90 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                         y,
                                       );
                                     },
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        CircleBox(
-                                          pixelWidth: circle.sizeWidth!,
-                                          pixleHeight: circle.sizeHeight!,
-                                          imageDisplaySize: imageDisplaySize,
-                                          imageOriginalSize:
-                                              value.baseImageSize,
-                                          imagePath: circle.imagePath,
-                                        ),
-                                        if (circle.circleName != null)
-                                          SizedBox(
-                                            width:
-                                                circle.sizeWidth! *
-                                                (imageDisplaySize.width /
-                                                    value.baseImageSize.width),
-                                            child: Text(
-                                              circle.circleName!,
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    24 *
-                                                    (imageDisplaySize.width /
-                                                        value
-                                                            .baseImageSize
-                                                            .width),
+                                    child: Container(
+                                      color: Colors.white.withValues(alpha: 0.7),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          CircleBox(
+                                            pixelWidth: circle.sizeWidth!,
+                                            pixleHeight: circle.sizeHeight!,
+                                            imageDisplaySize: imageDisplaySize,
+                                            imageOriginalSize:
+                                                value.baseImageSize,
+                                            imagePath: circle.imagePath,
+                                          ),
+                                          if (circle.circleName != null)
+                                            SizedBox(
+                                              width:
+                                                  circle.sizeWidth! *
+                                                  (imageDisplaySize.width /
+                                                      value.baseImageSize.width),
+                                              child: Text(
+                                                circle.circleName!,
+                                                softWrap: true,
+                                                overflow: TextOverflow.visible,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                      24 *
+                                                      (imageDisplaySize.width /
+                                                          value
+                                                              .baseImageSize
+                                                              .width),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        if (circle.spaceNo != null)
-                                          SizedBox(
-                                            width:
-                                                circle.sizeWidth! *
-                                                (imageDisplaySize.width /
-                                                    value.baseImageSize.width),
-                                            child: Text(
-                                              circle.spaceNo!,
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    24 *
-                                                    (imageDisplaySize.width /
-                                                        value
-                                                            .baseImageSize
-                                                            .width),
+                                          if (circle.spaceNo != null)
+                                            SizedBox(
+                                              width:
+                                                  circle.sizeWidth! *
+                                                  (imageDisplaySize.width /
+                                                      value.baseImageSize.width),
+                                              child: Text(
+                                                circle.spaceNo!,
+                                                softWrap: true,
+                                                overflow: TextOverflow.visible,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                      24 *
+                                                      (imageDisplaySize.width /
+                                                          value
+                                                              .baseImageSize
+                                                              .width),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        if (mounted && circle.note != null)
-                                          SizedBox(
-                                            width:
-                                                circle.sizeWidth! *
-                                                (imageDisplaySize.width /
-                                                    value.baseImageSize.width),
-                                            child: Text(
-                                              circle.note!,
-                                              softWrap: true,
-                                              overflow: TextOverflow.visible,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize:
-                                                    24 *
-                                                    (imageDisplaySize.width /
-                                                        value
-                                                            .baseImageSize
-                                                            .width),
+                                          if (mounted && circle.note != null)
+                                            SizedBox(
+                                              width:
+                                                  circle.sizeWidth! *
+                                                  (imageDisplaySize.width /
+                                                      value.baseImageSize.width),
+                                              child: Text(
+                                                circle.note!,
+                                                softWrap: true,
+                                                overflow: TextOverflow.visible,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                      24 *
+                                                      (imageDisplaySize.width /
+                                                          value
+                                                              .baseImageSize
+                                                              .width),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
