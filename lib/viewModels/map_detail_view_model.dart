@@ -107,4 +107,12 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       positionY,
     );
   }
+
+  Future<void> removeCircle(int circleId) async {
+    await _circleRepository.deleteCircle(circleId);
+
+    // 削除後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(state.value!.mapDetail.mapId!);
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
 }

@@ -129,6 +129,21 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                             'assets/no_image.png',
                             fit: BoxFit.contain,
                           ),
+                    Gap(8),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        await viewModel.removeCircle(circle.circleId!);
+                      },
+                      icon: const Icon(Icons.delete, color: Colors.white),
+                      label: const Text(
+                        '削除',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                    ),
                   ],
                 ),
               ),

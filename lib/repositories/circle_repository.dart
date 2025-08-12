@@ -69,4 +69,13 @@ class CircleRepository {
       whereArgs: [circleId],
     );
   }
+
+  Future<void> deleteCircle(int circleId) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.delete(
+      _tableName,
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
 }
