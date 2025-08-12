@@ -65,37 +65,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     );
   }
 
-  /* Offset _imagePixelToDisplayOffset({
-    required double pixelX,
-    required double pixelY,
-    required Size imageDisplaySize,
-    required Size imageOriginalSize,
-  }) {
-    final imageAspect = imageOriginalSize.width / imageOriginalSize.height;
-    final stackAspect = imageDisplaySize.width / imageDisplaySize.height;
-
-    double displayWidth, displayHeight;
-    double offsetX = 0, offsetY = 0;
-
-    if (imageAspect > stackAspect) {
-      displayWidth = imageDisplaySize.width;
-      displayHeight = displayWidth / imageAspect;
-      offsetY = (imageDisplaySize.height - displayHeight) / 2;
-    } else {
-      displayHeight = imageDisplaySize.height;
-      displayWidth = displayHeight * imageAspect;
-      offsetX = (imageDisplaySize.width - displayWidth) / 2;
-    }
-
-    final displayX =
-        pixelX * (displayWidth / imageOriginalSize.width) + offsetX;
-    final displayY =
-        pixelY * (displayHeight / imageOriginalSize.height) + offsetY;
-
-    return Offset(displayX, displayY);
-  } */
-
-  Future _onDragEnd(int newPixelX, int newPixelY, int circleId) async {
+  Future _onCircleDragEnd(int newPixelX, int newPixelY, int circleId) async {
     await viewModel.updateCirclePosition(
       circleId,
       newPixelX.toDouble(),
@@ -103,7 +73,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     );
   }
 
-    @override
+  @override
   void initState() {
     super.initState();
     viewModel = ref.read(mapDetailViewModelProvider(widget.mapId).notifier);
@@ -178,7 +148,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                   imageDisplaySize: imageDisplaySize,
                                   imageOriginalSize: value.baseImageSize,
                                   onDragEnd: (x, y) =>
-                                      _onDragEnd(x, y, circle.circleId!),
+                                      _onCircleDragEnd(x, y, circle.circleId!),
                                   child: CircleBox(
                                     pixelWidth: circle.sizeWidth!,
                                     pixleHeight: circle.sizeHeight!,

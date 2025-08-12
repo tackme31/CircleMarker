@@ -8,6 +8,7 @@ class PixelPositioned extends StatefulWidget {
   final Widget child;
 
   final void Function(int newPixelX, int newPixelY)? onDragEnd;
+  final void Function()? onTap;
 
   const PixelPositioned({
     super.key,
@@ -17,6 +18,7 @@ class PixelPositioned extends StatefulWidget {
     required this.imageDisplaySize,
     required this.child,
     this.onDragEnd,
+    this.onTap
   });
 
   @override
@@ -68,6 +70,7 @@ class _PixelPositionedState extends State<PixelPositioned> {
       left: _currentDisplayX,
       top: _currentDisplayY,
       child: GestureDetector(
+        onTap: () => widget.onTap?.call(),
         onPanUpdate: (details) {
           setState(() {
             _currentDisplayX += details.delta.dx;
