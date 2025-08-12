@@ -85,16 +85,6 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
   }
 
-  Future _onCircleDragEnd(
-    int newPixelX,
-    int newPixelY,
-    CircleDetail circle,
-  ) async {
-    await viewModel.updateCircleDetail(
-      circle.copyWith(positionX: newPixelX, positionY: newPixelY),
-    );
-  }
-
   void _onCircleTap(BuildContext context, CircleDetail circle) {
     if (selectedCircleId == circle.circleId) {
       setState(() {
@@ -132,12 +122,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
-                      onSubmit: (value) {
+                      onSubmit: (value) async {
                         if (value.isEmpty) {
                           return;
                         }
-                        viewModel.updateCircleDetail(
-                          circle.copyWith(circleName: value),
+                        await viewModel.updateCircleName(
+                          circle.circleId!,
+                          value,
                         );
                       },
                     ),
@@ -149,12 +140,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
-                      onSubmit: (value) {
+                      onSubmit: (value) async {
                         if (value.isEmpty) {
                           return;
                         }
-                        viewModel.updateCircleDetail(
-                          circle.copyWith(spaceNo: value),
+                        await viewModel.updateCircleSpaceNo(
+                          circle.circleId!,
+                          value,
                         );
                       },
                     ),
@@ -167,12 +159,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: null,
-                      onSubmit: (value) {
+                      onSubmit: (value) async {
                         if (value.isEmpty) {
                           return;
                         }
-                        viewModel.updateCircleDetail(
-                          circle.copyWith(note: value),
+                        await viewModel.updateCircleNote(
+                          circle.circleId!,
+                          value,
                         );
                       },
                     ),
@@ -185,12 +178,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: null,
-                      onSubmit: (value) {
+                      onSubmit: (value) async {
                         if (value.isEmpty) {
                           return;
                         }
-                        viewModel.updateCircleDetail(
-                          circle.copyWith(description: value),
+                        await viewModel.updateCircleDescription(
+                          circle.circleId!,
+                          value,
                         );
                       },
                     ),
@@ -201,12 +195,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               File(circle.imagePath!).existsSync()
                           ? FileImage(File(circle.imagePath!))
                           : AssetImage('assets/no_image.png'),
-                      onChange: (value) {
+                      onChange: (value) async {
                         if (value.isEmpty) {
                           return;
                         }
-                        viewModel.updateCircleDetail(
-                          circle.copyWith(imagePath: value),
+                        await viewModel.updateCircleImage(
+                          circle.circleId!,
+                          value,
                         );
                       },
                     ),
@@ -327,13 +322,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                     imageDisplaySize: imageDisplaySize,
                                     dragIconScale: _transformController.value
                                         .getMaxScaleOnAxis(),
-                                    showIcon: selectedCircleId == circle.circleId,
+                                    showIcon:
+                                        selectedCircleId == circle.circleId,
                                     onEndPointDragEnd: (newEndX, newEndY) {
-                                      viewModel.updateCircleDetail(
-                                        circle.copyWith(
-                                          pointerX: newEndX,
-                                          pointerY: newEndY,
-                                        ),
+                                      viewModel.updateCirclePointer(
+                                        circle.circleId!,
+                                        newEndX,
+                                        newEndY,
                                       );
                                     },
                                   ),
@@ -343,8 +338,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                     imageDisplaySize: imageDisplaySize,
                                     imageOriginalSize: value.baseImageSize,
                                     onTap: () => _onCircleTap(context, circle),
-                                    onDragEnd: (x, y) =>
-                                        _onCircleDragEnd(x, y, circle!),
+                                    onDragEnd: (x, y) async {
+                                      await viewModel.updateCirclePosition(
+                                        circle.circleId!,
+                                        x,
+                                        y,
+                                      );
+                                    },
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [

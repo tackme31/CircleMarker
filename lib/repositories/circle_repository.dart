@@ -56,10 +56,10 @@ class CircleRepository {
     return circleDetail.copyWith(circleId: id);
   }
 
-  Future<void> updateCirclePosition(
+  Future<void> updatePosition(
     int circleId,
-    double positionX,
-    double positionY,
+    int positionX,
+    int positionY,
   ) async {
     final db = await DatabaseHelper.instance.database;
     await db.update(
@@ -70,24 +70,68 @@ class CircleRepository {
     );
   }
 
-  Future<void> deleteCircle(int circleId) async {
+  Future<void> updatePointer(int circleId, int positionX, int positionY) async {
     final db = await DatabaseHelper.instance.database;
-    await db.delete(
+    await db.update(
       _tableName,
+      {'pointerX': positionX, 'pointerY': positionY},
       where: 'circleId = ?',
       whereArgs: [circleId],
     );
   }
 
-  Future<CircleDetail> updateCircleDetail(CircleDetail circleDetail) async {
+  Future<void> deleteCircle(int circleId) async {
     final db = await DatabaseHelper.instance.database;
-    final id = await db.update(
-      _tableName,
-      circleDetail.toJson(),
-      where: 'circleId = ?',
-      whereArgs: [circleDetail.circleId],
-    );
+    await db.delete(_tableName, where: 'circleId = ?', whereArgs: [circleId]);
+  }
 
-    return circleDetail.copyWith(circleId: id);
+  Future<void> updateCircleName(int circleId, String circleName) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'circleName': circleName},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
+
+  Future<void> updateSpaceNo(int circleId, String spaceNo) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'spaceNo': spaceNo},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
+
+  Future<void> updateNote(int circleId, String note) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'note': note},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
+
+  Future<void> updateDescription(int circleId, String description) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'description': description},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
+
+  Future<void> updateImagePath(int circleId, String imagePath) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'imagePath': imagePath},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
   }
 }

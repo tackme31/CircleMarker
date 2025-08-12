@@ -116,13 +116,81 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     state = AsyncData(state.value!.copyWith(mapDetail: result));
   }
 
-  Future<void> updateCircleDetail(CircleDetail circleDetail) async {
-    final updatedCircle = await _circleRepository.updateCircleDetail(
-      circleDetail,
-    );
+  Future<void> updateCirclePosition(
+    int circleId,
+    int positionX,
+    int positionY,
+  ) async {
+    await _circleRepository.updatePosition(circleId, positionX, positionY);
 
     // 更新後に最新のリストを取得して状態更新
-    final circles = await _circleRepository.getCircles(updatedCircle.mapId!);
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateCirclePointer(
+    int circleId,
+    int pointerX,
+    int pointerY,
+  ) async {
+    await _circleRepository.updatePointer(circleId, pointerX, pointerY);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateCircleName(int circleId, String circleName) async {
+    await _circleRepository.updateCircleName(circleId, circleName);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateCircleSpaceNo(int circleId, String spaceNo) async {
+    await _circleRepository.updateSpaceNo(circleId, spaceNo);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateCircleNote(int circleId, String note) async {
+    await _circleRepository.updateNote(circleId, note);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateCircleDescription(int circleId, String description) async {
+    await _circleRepository.updateSpaceNo(circleId, description);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateCircleImage(int circleId, String imagePath) async {
+    await _circleRepository.updateImagePath(circleId, imagePath);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
 }
