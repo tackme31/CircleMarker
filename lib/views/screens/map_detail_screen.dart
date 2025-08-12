@@ -119,7 +119,12 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                       onSubmit: (value) {
-                        //
+                        if (value.isEmpty) {
+                          return;
+                        }
+                        viewModel.updateCircleDetail(
+                          circle.copyWith(circleName: value),
+                        );
                       },
                     ),
                     Gap(8),
@@ -131,7 +136,12 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                       onSubmit: (value) {
-                        //
+                        if (value.isEmpty) {
+                          return;
+                        }
+                        viewModel.updateCircleDetail(
+                          circle.copyWith(spaceNo: value),
+                        );
                       },
                     ),
                     Gap(8),
@@ -144,7 +154,12 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                       ),
                       maxLines: null,
                       onSubmit: (value) {
-                        //
+                        if (value.isEmpty) {
+                          return;
+                        }
+                        viewModel.updateCircleDetail(
+                          circle.copyWith(note: value),
+                        );
                       },
                     ),
                     Gap(8),
@@ -157,7 +172,12 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                       ),
                       maxLines: null,
                       onSubmit: (value) {
-                        //
+                        if (value.isEmpty) {
+                          return;
+                        }
+                        viewModel.updateCircleDetail(
+                          circle.copyWith(description: value),
+                        );
                       },
                     ),
                     Gap(8),
@@ -167,8 +187,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               File(circle.imagePath!).existsSync()
                           ? FileImage(File(circle.imagePath!))
                           : AssetImage('assets/no_image.png'),
-                      onChange: (imagePath) {
-                        
+                      onChange: (value) {
+                        if (value.isEmpty) {
+                          return;
+                        }
+                        viewModel.updateCircleDetail(
+                          circle.copyWith(imagePath: value),
+                        );
                       },
                     ),
                     Gap(8),
