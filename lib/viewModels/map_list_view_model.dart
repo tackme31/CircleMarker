@@ -12,7 +12,7 @@ class MapListViewModel extends _$MapListViewModel {
   Future<MapListState> build() async {
     _mapRepository = ref.watch(mapRepositoryProvider);
 
-    final maps = await _mapRepository.getMapSummaries();
+    final maps = await _mapRepository.getMapDetails();
     return MapListState(maps: maps);
   }
 }

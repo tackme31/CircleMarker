@@ -1,5 +1,4 @@
 import 'package:circle_marker/models/map_detail.dart';
-import 'package:circle_marker/models/map_summary.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,12 +10,26 @@ MapRepository mapRepository(Ref _) {
 }
 
 class MapRepository {
-  Future<List<MapSummary>> getMapSummaries() async {
+  Future<List<MapDetail>> getMapDetails() async {
     return [
-      MapSummary(mapId: 0, title: 'C106 東123'),
-      MapSummary(mapId: 1, title: 'C106 東456'),
-      MapSummary(mapId: 2, title: 'C106 東7'),
-      MapSummary(mapId: 3, title: 'C106 西12')
+      MapDetail(
+        mapId: 0,
+        title: 'C106 東123',
+        baseImagePath:
+            '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
+      ),
+      MapDetail(
+        mapId: 1,
+        title: 'C106 東456',
+        baseImagePath:
+            '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
+      ),
+      MapDetail(
+        mapId: 2,
+        title: 'C106 西12',
+        baseImagePath:
+            '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
+      ),
     ];
   }
 
@@ -25,8 +38,8 @@ class MapRepository {
     return MapDetail(
       mapId: mapId,
       title: 'C106 東123',
-      baseImagePath: '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
-      circleIds: [1, 2, 3],
+      baseImagePath:
+          '/data/user/0/com.example.circle_marker/cache/72fed813-b226-4bd5-b093-97b0ccc78bed/1000000033.png',
     );
   }
 }

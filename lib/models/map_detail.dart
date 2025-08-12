@@ -9,7 +9,6 @@ class MapDetail with _$MapDetail {
     int? mapId,
     String? title,
     String? baseImagePath,
-    @Default([]) List<int> circleIds,
   }) = _MapDetail;
 
   factory MapDetail.fromJson(Map<String, dynamic> json) => _$MapDetailFromJson(json);
