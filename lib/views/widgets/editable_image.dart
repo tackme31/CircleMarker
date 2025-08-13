@@ -6,11 +6,13 @@ import 'package:image_picker/image_picker.dart';
 class EditableImage extends StatefulWidget {
   final ImageProvider image;
   final ValueChanged<String> onChange;
+  final Function()? onTap;
 
   const EditableImage({
     super.key,
     required this.image,
     required this.onChange,
+    this.onTap,
   });
 
   @override
@@ -28,7 +30,9 @@ class _EditableImageState extends State<EditableImage> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       final newImage = FileImage(File(pickedFile.path));
       setState(() {
@@ -42,9 +46,9 @@ class _EditableImageState extends State<EditableImage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Image(
-          image: _currentImage,
-          fit: BoxFit.cover,
+        GestureDetector(
+          onTap: widget.onTap,
+          child: Image(image: _currentImage, fit: BoxFit.cover),
         ),
         Positioned(
           top: 8,

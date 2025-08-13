@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:photo_view/photo_view.dart';
 
 class MapDetailScreen extends ConsumerStatefulWidget {
   const MapDetailScreen({super.key, required this.mapId});
@@ -132,6 +133,11 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
         builder: (BuildContext context) {
           final screenWidth = MediaQuery.of(context).size.width;
           final screenHeight = MediaQuery.of(context).size.height;
+          final ImageProvider menuImage =
+              circle.menuImagePath != null &&
+                  File(circle.menuImagePath!).existsSync()
+              ? FileImage(File(circle.menuImagePath!))
+              : AssetImage('assets/no_image.png');
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -217,11 +223,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                     ),
                     Gap(8),
                     EditableImage(
-                      image:
-                          circle.menuImagePath != null &&
-                              File(circle.menuImagePath!).existsSync()
-                          ? FileImage(File(circle.menuImagePath!))
-                          : AssetImage('assets/no_image.png'),
+                      image: menuImage,
                       onChange: (value) async {
                         if (value.isEmpty) {
                           return;
@@ -229,6 +231,14 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                         await viewModel.updateCircleMenuImage(
                           circle.circleId!,
                           value,
+                        );
+                      },
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PhotoView(imageProvider: menuImage),
+                          ),
                         );
                       },
                     ),
