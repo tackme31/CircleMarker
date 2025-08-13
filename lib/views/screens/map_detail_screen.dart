@@ -274,6 +274,41 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
   }
 
+  void _handleDoubleTap(Offset tapPos) {
+    final currentScale = _transformController.value.getMaxScaleOnAxis();
+    double targetScale;
+
+    final scale1 = 1.0;
+    final scale2 = 3.0;
+    final scale3 = 5.0;
+
+    if (currentScale < scale2) {
+      targetScale = scale2;
+    } else if (currentScale < scale3) {
+      targetScale = scale3;
+    } else {
+      targetScale = scale1; // 100%
+    }
+
+    final matrix = _transformController.value.clone();
+
+    // 現在のパン量
+    final currentTranslation = Offset(matrix.row0[3], matrix.row1[3]);
+
+    // タップ位置をズーム中心に変換
+    final focalBefore = (tapPos - currentTranslation) / currentScale;
+
+    // 新しい倍率でのパン量を計算
+    final newTranslation = tapPos - focalBefore * targetScale;
+
+    // Matrix4 を更新
+    setState(() {
+      _transformController.value = Matrix4.identity()
+        ..translate(newTranslation.dx, newTranslation.dy)
+        ..scale(targetScale);
+    });
+  }
+
   Future<void> _pickCircleImage(int circleId) async {
     final picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(
@@ -359,6 +394,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                       imageDisplaySize,
                       value.baseImageSize,
                     ),
+                    onDoubleTapDown: (details) =>
+                        _handleDoubleTap(details.localPosition),
                     child: InteractiveViewer(
                       transformationController: _transformController,
                       minScale: 0.5,
