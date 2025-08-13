@@ -31,12 +31,36 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   double _currentScale = 1.0;
   bool _orientationLocked = false;
 
-  Future _onDoubleTap(
+  Future _onLongPressStart(
     BuildContext context,
-    TapDownDetails details,
+    LongPressStartDetails details,
     Size stackSize,
     Size imageOriginalSize,
   ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('サークル追加'),
+          content: const Text('サークルを追加しますか？'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm != true) {
+      return; // ユーザーがキャンセルした場合は何もしない
+    }
+
     // Stack内でfit: BoxFit.containで画像が表示されるサイズを計算
     final imageAspect = imageOriginalSize.width / imageOriginalSize.height;
     final stackAspect = stackSize.width / stackSize.height;
@@ -319,7 +343,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                     constraints.maxHeight,
                   );
                   return GestureDetector(
-                    onDoubleTapDown: (details) => _onDoubleTap(
+                    onLongPressStart: (details) => _onLongPressStart(
                       context,
                       details,
                       imageDisplaySize,
