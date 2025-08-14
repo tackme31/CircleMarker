@@ -42,156 +42,162 @@ class CircleBottomSheet extends ConsumerWidget {
                     File(circle.menuImagePath!).existsSync()
                 ? FileImage(File(circle.menuImagePath!))
                 : AssetImage('assets/no_image.png');
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Stack(
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.8,
-                    height: screenHeight * 0.3,
-                    child: SingleChildScrollView(
-                      child: Stack(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('CircleName: '),
-                              EditableLabel(
-                                initialText: circle.circleName ?? 'No Name',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent, // タップを透過して検知
+              onTap: () {
+                FocusScope.of(context).unfocus(); // フォーカスを外す
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.8,
+                      height: screenHeight * 0.3,
+                      child: SingleChildScrollView(
+                        child: Stack(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('CircleName: '),
+                                EditableLabel(
+                                  initialText: circle.circleName ?? 'No Name',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  onSubmit: (value) async {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    await viewModel.updateCircleName(
+                                      circle.circleId!,
+                                      value,
+                                    );
+                                  },
                                 ),
-                                onSubmit: (value) async {
-                                  if (value.isEmpty) {
-                                    return;
-                                  }
-                                  await viewModel.updateCircleName(
-                                    circle.circleId!,
-                                    value,
-                                  );
-                                },
-                              ),
-                              Gap(8),
-                              Text('Space No:'),
-                              EditableLabel(
-                                initialText: circle.spaceNo ?? 'No Space No',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                Gap(8),
+                                Text('Space No:'),
+                                EditableLabel(
+                                  initialText: circle.spaceNo ?? 'No Space No',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  onSubmit: (value) async {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    await viewModel.updateCircleSpaceNo(
+                                      circle.circleId!,
+                                      value,
+                                    );
+                                  },
                                 ),
-                                onSubmit: (value) async {
-                                  if (value.isEmpty) {
-                                    return;
-                                  }
-                                  await viewModel.updateCircleSpaceNo(
-                                    circle.circleId!,
-                                    value,
-                                  );
-                                },
-                              ),
-                              Gap(8),
-                              Text('Note:'),
-                              EditableLabel(
-                                initialText: circle.note ?? 'No Note',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                Gap(8),
+                                Text('Note:'),
+                                EditableLabel(
+                                  initialText: circle.note ?? 'No Note',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: null,
+                                  onSubmit: (value) async {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    await viewModel.updateCircleNote(
+                                      circle.circleId!,
+                                      value,
+                                    );
+                                  },
                                 ),
-                                maxLines: null,
-                                onSubmit: (value) async {
-                                  if (value.isEmpty) {
-                                    return;
-                                  }
-                                  await viewModel.updateCircleNote(
-                                    circle.circleId!,
-                                    value,
-                                  );
-                                },
-                              ),
-                              Gap(8),
-                              Text('Description:'),
-                              EditableLabel(
-                                initialText:
-                                    circle.description ?? 'No Description',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                Gap(8),
+                                Text('Description:'),
+                                EditableLabel(
+                                  initialText:
+                                      circle.description ?? 'No Description',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: null,
+                                  onSubmit: (value) async {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    await viewModel.updateCircleDescription(
+                                      circle.circleId!,
+                                      value,
+                                    );
+                                  },
                                 ),
-                                maxLines: null,
-                                onSubmit: (value) async {
-                                  if (value.isEmpty) {
-                                    return;
-                                  }
-                                  await viewModel.updateCircleDescription(
-                                    circle.circleId!,
-                                    value,
-                                  );
-                                },
-                              ),
-                              Gap(8),
-                              EditableImage(
-                                image: menuImage,
-                                onChange: (value) async {
-                                  if (value.isEmpty) {
-                                    return;
-                                  }
-                                  await viewModel.updateCircleMenuImage(
-                                    circle.circleId!,
-                                    value,
-                                  );
-                                },
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          PhotoView(imageProvider: menuImage),
-                                    ),
-                                  );
-                                },
-                              ),
-                              Gap(8),
-                              ElevatedButton.icon(
-                                onPressed: () async {
-                                  await viewModel.removeCircle(
-                                    selectedCircleId!,
-                                  );
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
+                                Gap(8),
+                                EditableImage(
+                                  image: menuImage,
+                                  onChange: (value) async {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    await viewModel.updateCircleMenuImage(
+                                      circle.circleId!,
+                                      value,
+                                    );
+                                  },
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            PhotoView(imageProvider: menuImage),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                label: const Text(
-                                  '削除',
-                                  style: TextStyle(color: Colors.white),
+                                Gap(8),
+                                ElevatedButton.icon(
+                                  onPressed: () async {
+                                    await viewModel.removeCircle(
+                                      selectedCircleId!,
+                                    );
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
+                                  label: const Text(
+                                    '削除',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Checkbox(
+                                  value: circle.isDone == 1,
+                                  onChanged: (value) async {
+                                    await viewModel.updateIsDone(
+                                      circle.circleId!,
+                                      value ?? false,
+                                    );
+                                  },
                                 ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Checkbox(
-                                value: circle.isDone == 1,
-                                onChanged: (value) async {
-                                  await viewModel.updateIsDone(
-                                    circle.circleId!,
-                                    value ?? false,
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

@@ -22,12 +22,22 @@ class _EditableLabelState extends State<EditableLabel> {
   late String _text;
   bool _editing = false;
   late TextEditingController _controller;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _text = widget.initialText;
     _controller = TextEditingController(text: _text);
+    _focusNode = FocusNode();
+
+    // フォーカスが外れたときにsubmit
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus && _editing) {
+        _submit();
+        _editing = false;
+      }
+    });
   }
 
   @override
@@ -55,12 +65,12 @@ class _EditableLabelState extends State<EditableLabel> {
           Expanded(
             child: TextField(
               controller: _controller,
+              focusNode: _focusNode,
               maxLines: widget.maxLines,
               autofocus: true,
               onSubmitted: (_) => _submit(), // Enter押下でも確定可
             ),
           ),
-          IconButton(icon: const Icon(Icons.check), onPressed: _submit),
         ],
       );
     } else {
@@ -69,9 +79,12 @@ class _EditableLabelState extends State<EditableLabel> {
           setState(() {
             _editing = true;
             _controller.text = _text;
+            _focusNode.requestFocus();
           });
         },
-        child: Text(_text, style: widget.style),
+        child: _text.isEmpty
+            ? Text('No Text', style: widget.style)
+            : Text(_text, style: widget.style),
       );
     }
   }
