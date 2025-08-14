@@ -35,6 +35,8 @@ mixin _$CircleDetail {
   String? get menuImagePath => throw _privateConstructorUsedError;
   String? get note => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get color => throw _privateConstructorUsedError;
+  int? get isDone => throw _privateConstructorUsedError;
 
   /// Serializes this CircleDetail to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -68,6 +70,8 @@ abstract class $CircleDetailCopyWith<$Res> {
     String? menuImagePath,
     String? note,
     String? description,
+    String? color,
+    int? isDone,
   });
 }
 
@@ -100,6 +104,8 @@ class _$CircleDetailCopyWithImpl<$Res, $Val extends CircleDetail>
     Object? menuImagePath = freezed,
     Object? note = freezed,
     Object? description = freezed,
+    Object? color = freezed,
+    Object? isDone = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -159,6 +165,14 @@ class _$CircleDetailCopyWithImpl<$Res, $Val extends CircleDetail>
                 ? _value.description
                 : description // ignore: cast_nullable_to_non_nullable
                       as String?,
+            color: freezed == color
+                ? _value.color
+                : color // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isDone: freezed == isDone
+                ? _value.isDone
+                : isDone // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -189,6 +203,8 @@ abstract class _$$CircleDetailImplCopyWith<$Res>
     String? menuImagePath,
     String? note,
     String? description,
+    String? color,
+    int? isDone,
   });
 }
 
@@ -220,6 +236,8 @@ class __$$CircleDetailImplCopyWithImpl<$Res>
     Object? menuImagePath = freezed,
     Object? note = freezed,
     Object? description = freezed,
+    Object? color = freezed,
+    Object? isDone = freezed,
   }) {
     return _then(
       _$CircleDetailImpl(
@@ -279,6 +297,14 @@ class __$$CircleDetailImplCopyWithImpl<$Res>
             ? _value.description
             : description // ignore: cast_nullable_to_non_nullable
                   as String?,
+        color: freezed == color
+            ? _value.color
+            : color // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isDone: freezed == isDone
+            ? _value.isDone
+            : isDone // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -302,6 +328,8 @@ class _$CircleDetailImpl implements _CircleDetail {
     this.menuImagePath,
     this.note,
     this.description,
+    this.color,
+    this.isDone,
   });
 
   factory _$CircleDetailImpl.fromJson(Map<String, dynamic> json) =>
@@ -335,10 +363,14 @@ class _$CircleDetailImpl implements _CircleDetail {
   final String? note;
   @override
   final String? description;
+  @override
+  final String? color;
+  @override
+  final int? isDone;
 
   @override
   String toString() {
-    return 'CircleDetail(circleId: $circleId, mapId: $mapId, positionX: $positionX, positionY: $positionY, sizeHeight: $sizeHeight, sizeWidth: $sizeWidth, pointerX: $pointerX, pointerY: $pointerY, circleName: $circleName, spaceNo: $spaceNo, imagePath: $imagePath, menuImagePath: $menuImagePath, note: $note, description: $description)';
+    return 'CircleDetail(circleId: $circleId, mapId: $mapId, positionX: $positionX, positionY: $positionY, sizeHeight: $sizeHeight, sizeWidth: $sizeWidth, pointerX: $pointerX, pointerY: $pointerY, circleName: $circleName, spaceNo: $spaceNo, imagePath: $imagePath, menuImagePath: $menuImagePath, note: $note, description: $description, color: $color, isDone: $isDone)';
   }
 
   @override
@@ -370,7 +402,9 @@ class _$CircleDetailImpl implements _CircleDetail {
                 other.menuImagePath == menuImagePath) &&
             (identical(other.note, note) || other.note == note) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            (identical(other.color, color) || other.color == color) &&
+            (identical(other.isDone, isDone) || other.isDone == isDone));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -391,6 +425,8 @@ class _$CircleDetailImpl implements _CircleDetail {
     menuImagePath,
     note,
     description,
+    color,
+    isDone,
   );
 
   /// Create a copy of CircleDetail
@@ -423,6 +459,8 @@ abstract class _CircleDetail implements CircleDetail {
     final String? menuImagePath,
     final String? note,
     final String? description,
+    final String? color,
+    final int? isDone,
   }) = _$CircleDetailImpl;
 
   factory _CircleDetail.fromJson(Map<String, dynamic> json) =
@@ -456,6 +494,10 @@ abstract class _CircleDetail implements CircleDetail {
   String? get note;
   @override
   String? get description;
+  @override
+  String? get color;
+  @override
+  int? get isDone;
 
   /// Create a copy of CircleDetail
   /// with the given fields replaced by the non-null parameter values.

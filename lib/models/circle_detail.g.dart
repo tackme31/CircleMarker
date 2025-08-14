@@ -22,6 +22,8 @@ _$CircleDetailImpl _$$CircleDetailImplFromJson(Map<String, dynamic> json) =>
       menuImagePath: json['menuImagePath'] as String?,
       note: json['note'] as String?,
       description: json['description'] as String?,
+      color: json['color'] as String?,
+      isDone: (json['isDone'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$CircleDetailImplToJson(_$CircleDetailImpl instance) =>
@@ -40,4 +42,6 @@ Map<String, dynamic> _$$CircleDetailImplToJson(_$CircleDetailImpl instance) =>
       'menuImagePath': instance.menuImagePath,
       'note': instance.note,
       'description': instance.description,
+      'color': instance.color,
+      'isDone': instance.isDone,
     };
