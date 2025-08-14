@@ -138,7 +138,7 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   }
 
   Future<void> updateCircleDescription(int circleId, String description) async {
-    await _circleRepository.updateSpaceNo(circleId, description);
+    await _circleRepository.updateDescription(circleId, description);
 
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
