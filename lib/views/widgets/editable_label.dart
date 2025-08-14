@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditableLabel extends StatefulWidget {
   final String initialText;
@@ -56,6 +58,17 @@ class _EditableLabelState extends State<EditableLabel> {
     }
   }
 
+  Future<void> _onOpen(LinkableElement link) async {
+    final uri = Uri.parse(link.url);
+
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw 'Could not launch $uri';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_editing) {
@@ -83,7 +96,15 @@ class _EditableLabelState extends State<EditableLabel> {
         },
         child: _text.isEmpty
             ? Text('No Text', style: widget.style)
-            : Text(_text, style: widget.style),
+            : Linkify(
+                onOpen: _onOpen,
+                text: _text,
+                style: widget.style,
+                linkStyle: widget.style?.copyWith(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
       );
     }
   }
