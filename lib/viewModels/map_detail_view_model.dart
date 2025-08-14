@@ -52,8 +52,8 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       sizeWidth: sizeWidth,
       pointerX: positionX + sizeWidth + 50,
       pointerY: positionY + sizeHeight ~/ 2,
-      circleName: 'New Circle',
-      spaceNo: 'X-99a',
+      circleName: '',
+      spaceNo: '',
       imagePath: null,
       note: null,
       description: null,
@@ -62,7 +62,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       circleDetail,
     );
 
-    // 追加後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(circleDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
 
@@ -72,7 +71,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> removeCircle(int circleId) async {
     await _circleRepository.deleteCircle(circleId);
 
-    // 削除後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -83,7 +81,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     final updatedMap = state.value!.mapDetail.copyWith(title: title);
     final result = await _mapRepository.updateMapDetail(updatedMap);
 
-    // 更新後に状態を更新
     state = AsyncData(state.value!.copyWith(mapDetail: result));
   }
 
@@ -94,7 +91,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   ) async {
     await _circleRepository.updatePosition(circleId, positionX, positionY);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -108,7 +104,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   ) async {
     await _circleRepository.updatePointer(circleId, pointerX, pointerY);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -118,7 +113,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleName(int circleId, String circleName) async {
     await _circleRepository.updateCircleName(circleId, circleName);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -128,7 +122,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleSpaceNo(int circleId, String spaceNo) async {
     await _circleRepository.updateSpaceNo(circleId, spaceNo);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -138,7 +131,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleNote(int circleId, String note) async {
     await _circleRepository.updateNote(circleId, note);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -148,7 +140,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleDescription(int circleId, String description) async {
     await _circleRepository.updateSpaceNo(circleId, description);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -158,7 +149,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleImage(int circleId, String imagePath) async {
     await _circleRepository.updateImagePath(circleId, imagePath);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -171,7 +161,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   ) async {
     await _circleRepository.updateMenuImagePath(circleId, menuImagePath);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );
@@ -181,7 +170,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateIsDone(int circleId, bool isDone) async {
     await _circleRepository.updateIsDone(circleId, isDone);
 
-    // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(
       state.value!.mapDetail.mapId!,
     );

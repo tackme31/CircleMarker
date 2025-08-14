@@ -23,27 +23,6 @@ class CircleRepository {
     );
 
     return maps.map(CircleDetail.fromJson).toList();
-
-    /* return [
-      CircleDetail(
-        circleId: 0,
-        mapId: mapId,
-        circleName: 'Circle A',
-        spaceNo: 'A-12b',
-        imagePath: '/path/to/imageA.png',
-        note: 'Note A',
-        description: 'Description A',
-      ),
-      CircleDetail(
-        circleId: 1,
-        mapId: mapId,
-        circleName: 'Circle B',
-        spaceNo: 'カ-04ab',
-        imagePath: '/path/to/imageA.png',
-        note: 'Note A',
-        description: 'Description A',
-      ),
-    ]; */
   }
 
   Future<CircleDetail> insertCircleDetail(CircleDetail circleDetail) async {

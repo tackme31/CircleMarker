@@ -24,7 +24,6 @@ class MapListViewModel extends _$MapListViewModel {
     final mapDetail = MapDetail(title: 'New Map', baseImagePath: imagePath);
     final insertedMap = await _mapRepository.insertMapDetail(mapDetail);
 
-    // 追加後に最新のリストを取得して状態更新
     final maps = await _mapRepository.getMapDetails();
     state = AsyncData(MapListState(maps: maps));
 
@@ -40,7 +39,6 @@ class MapListViewModel extends _$MapListViewModel {
     await _mapRepository.deleteMapDetail(mapId);
     await _circleRepository.deleteCircles(mapId);
 
-    // 削除後に最新のリストを取得して状態更新
     final maps = await _mapRepository.getMapDetails();
     state = AsyncData(MapListState(maps: maps));
   }
