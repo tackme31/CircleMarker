@@ -68,7 +68,6 @@ class _EditableLabelState extends State<EditableLabel> {
               focusNode: _focusNode,
               maxLines: widget.maxLines,
               autofocus: true,
-              onSubmitted: (_) => _submit(), // Enter押下でも確定可
             ),
           ),
         ],
