@@ -87,7 +87,7 @@ class _EditableLabelState extends State<EditableLabel> {
       );
     } else {
       return GestureDetector(
-        onTap: () {
+        onLongPress: () {
           setState(() {
             _editing = true;
             _controller.text = _text;
