@@ -1,18 +1,15 @@
 import 'dart:io';
 
-import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
+import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
 import 'package:circle_marker/views/widgets/draggable_line.dart';
-import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:photo_view/photo_view.dart';
 
 class MapDetailScreen extends ConsumerStatefulWidget {
   const MapDetailScreen({super.key, required this.mapId});
@@ -113,15 +110,15 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
   }
 
-  void _onCircleTap(BuildContext context, CircleDetail circle) {
-    if (selectedCircleId == circle.circleId) {
+  void _onCircleTap(BuildContext context, int circleId) {
+    if (selectedCircleId == circleId) {
       setState(() {
         selectedCircleId = null; // 選択解除
         _sheetController?.close();
       });
     } else {
       setState(() {
-        selectedCircleId = circle.circleId; // 新しいサークルを選択
+        selectedCircleId = circleId; // 新しいサークルを選択
       });
 
       _sheetController = showBottomSheet(
@@ -131,136 +128,10 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         builder: (BuildContext context) {
-          final screenWidth = MediaQuery.of(context).size.width;
-          final screenHeight = MediaQuery.of(context).size.height;
-          final ImageProvider menuImage =
-              circle.menuImagePath != null &&
-                  File(circle.menuImagePath!).existsSync()
-              ? FileImage(File(circle.menuImagePath!))
-              : AssetImage('assets/no_image.png');
-
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: screenWidth * 0.8,
-              height: screenHeight * 0.3,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('CircleName: '),
-                    EditableLabel(
-                      initialText: circle.circleName ?? 'No Name',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      onSubmit: (value) async {
-                        if (value.isEmpty) {
-                          return;
-                        }
-                        await viewModel.updateCircleName(
-                          circle.circleId!,
-                          value,
-                        );
-                      },
-                    ),
-                    Gap(8),
-                    Text('Space No:'),
-                    EditableLabel(
-                      initialText: circle.spaceNo ?? 'No Space No',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      onSubmit: (value) async {
-                        if (value.isEmpty) {
-                          return;
-                        }
-                        await viewModel.updateCircleSpaceNo(
-                          circle.circleId!,
-                          value,
-                        );
-                      },
-                    ),
-                    Gap(8),
-                    Text('Note:'),
-                    EditableLabel(
-                      initialText: circle.note ?? 'No Note',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: null,
-                      onSubmit: (value) async {
-                        if (value.isEmpty) {
-                          return;
-                        }
-                        await viewModel.updateCircleNote(
-                          circle.circleId!,
-                          value,
-                        );
-                      },
-                    ),
-                    Gap(8),
-                    Text('Description:'),
-                    EditableLabel(
-                      initialText: circle.description ?? 'No Description',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: null,
-                      onSubmit: (value) async {
-                        if (value.isEmpty) {
-                          return;
-                        }
-                        await viewModel.updateCircleDescription(
-                          circle.circleId!,
-                          value,
-                        );
-                      },
-                    ),
-                    Gap(8),
-                    EditableImage(
-                      image: menuImage,
-                      onChange: (value) async {
-                        if (value.isEmpty) {
-                          return;
-                        }
-                        await viewModel.updateCircleMenuImage(
-                          circle.circleId!,
-                          value,
-                        );
-                      },
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PhotoView(imageProvider: menuImage),
-                          ),
-                        );
-                      },
-                    ),
-                    Gap(8),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        await viewModel.removeCircle(selectedCircleId!);
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.delete, color: Colors.white),
-                      label: const Text(
-                        '削除',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          return CircleBottomSheet(
+            widget.mapId,
+            selectedCircleId,
+            circleId: circleId,
           );
         },
       );
@@ -446,7 +317,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                     pixelY: circle.positionY!,
                                     imageDisplaySize: imageDisplaySize,
                                     imageOriginalSize: value.baseImageSize,
-                                    onTap: () => _onCircleTap(context, circle),
+                                    onTap: () =>
+                                        _onCircleTap(context, circle.circleId!),
                                     onDragEnd: (x, y) async {
                                       await viewModel.updateCirclePosition(
                                         circle.circleId!,
@@ -468,6 +340,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                             imageOriginalSize:
                                                 value.baseImageSize,
                                             imagePath: circle.imagePath,
+                                            isDone: circle.isDone == 1,
                                             onLongPress: () {
                                               _pickCircleImage(
                                                 circle.circleId!,

@@ -9,6 +9,7 @@ class CircleBox extends StatelessWidget {
   final Size imageDisplaySize;
   final String? imagePath;
   final void Function()? onLongPress;
+  final bool isDone;
 
   const CircleBox({
     super.key,
@@ -18,6 +19,7 @@ class CircleBox extends StatelessWidget {
     required this.imageDisplaySize,
     this.imagePath,
     this.onLongPress,
+    required this.isDone,
   });
 
   @override
@@ -42,12 +44,23 @@ class CircleBox extends StatelessWidget {
 
     return GestureDetector(
       onLongPress: onLongPress,
-      child: SizedBox(
-        width: displayWidth,
-        height: displayHeight,
-        child: imagePath != null && File(imagePath!).existsSync()
-            ? Image.file(File(imagePath!), fit: BoxFit.contain)
-            : Image.asset('assets/no_image.png', fit: BoxFit.contain),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SizedBox(
+            width: displayWidth,
+            height: displayHeight,
+            child: imagePath != null && File(imagePath!).existsSync()
+                ? Image.file(File(imagePath!), fit: BoxFit.contain)
+                : Image.asset('assets/no_image.png', fit: BoxFit.contain),
+          ),
+          if (isDone)
+            Positioned(
+              top: -2,
+              right: -2,
+              child: Icon(Icons.check, color: Colors.green, size: 9),
+            ),
+        ],
       ),
     );
   }

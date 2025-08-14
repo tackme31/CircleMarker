@@ -35,35 +35,6 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       baseImageSize: baseImageSize,
       circles: circles,
     );
-
-    /* [
-        CircleDetail(
-          circleId: 0,
-          positionX: 100,
-          positionY: 100,
-          sizeWidth: 200,
-          sizeHeight: 250,
-          mapId: mapId,
-          circleName: 'Circle A',
-          spaceNo: 'A-12b',
-          imagePath: null,
-          note: 'Note A',
-          description: 'Description A',
-        ),
-        CircleDetail(
-          circleId: 1,
-          positionX: 400,
-          positionY: 600,
-          sizeWidth: 200,
-          sizeHeight: 250,
-          mapId: mapId,
-          circleName: 'Circle B',
-          spaceNo: 'カ-04ab',
-          imagePath: '/path/to/imageA.png',
-          note: null,
-          description: 'Description A',
-        ),
-      ] */
   }
 
   Future<CircleDetail> addCircleDetail(
@@ -199,6 +170,16 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     String menuImagePath,
   ) async {
     await _circleRepository.updateMenuImagePath(circleId, menuImagePath);
+
+    // 更新後に最新のリストを取得して状態更新
+    final circles = await _circleRepository.getCircles(
+      state.value!.mapDetail.mapId!,
+    );
+    state = AsyncData(state.value!.copyWith(circles: circles));
+  }
+
+  Future<void> updateIsDone(int circleId, bool isDone) async {
+    await _circleRepository.updateIsDone(circleId, isDone);
 
     // 更新後に最新のリストを取得して状態更新
     final circles = await _circleRepository.getCircles(

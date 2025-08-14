@@ -149,4 +149,14 @@ class CircleRepository {
       whereArgs: [circleId],
     );
   }
+
+  Future<void> updateIsDone(int circleId, bool isDone) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.update(
+      _tableName,
+      {'isDone': isDone ? 1 : 0},
+      where: 'circleId = ?',
+      whereArgs: [circleId],
+    );
+  }
 }
