@@ -166,8 +166,8 @@ class _LinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 0.8
+      ..color = Colors.red.withAlpha(200)
+      ..strokeWidth = 0.6
       ..strokeCap = StrokeCap.round;
 
     canvas.drawLine(start, end, paint);
