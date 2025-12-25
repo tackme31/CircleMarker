@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__list_dir",
+      "mcp__serena__get_symbols_overview"
+    ]
+  }
+}
