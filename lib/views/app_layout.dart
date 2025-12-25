@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AppLayout extends ConsumerWidget {
-  final StatefulNavigationShell navigationShell;
-
   const AppLayout({super.key, required this.navigationShell});
+  
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class AppLayout extends ConsumerWidget {
         selectedIndex: navigationShell.currentIndex,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         height: 60,
-        destinations: [
+        destinations: const [
           NavigationDestination(icon: Icon(Icons.map), label: '配置図'),
           NavigationDestination(icon: Icon(Icons.person), label: 'サークル'),
         ],

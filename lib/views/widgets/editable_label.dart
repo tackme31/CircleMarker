@@ -3,11 +3,6 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EditableLabel extends StatefulWidget {
-  final String initialText;
-  final void Function(String)? onSubmit;
-  final TextStyle? style;
-  final int? maxLines;
-
   const EditableLabel({
     super.key,
     required this.initialText,
@@ -15,6 +10,11 @@ class EditableLabel extends StatefulWidget {
     this.maxLines = 1,
     this.onSubmit,
   });
+
+  final String initialText;
+  final void Function(String)? onSubmit;
+  final TextStyle? style;
+  final int? maxLines;
 
   @override
   State<EditableLabel> createState() => _EditableLabelState();

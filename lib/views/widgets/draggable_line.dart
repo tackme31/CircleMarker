@@ -1,16 +1,6 @@
 import 'package:flutter/material.dart';
 
 class DraggableLine extends StatefulWidget {
-  final int startPixelX;
-  final int startPixelY;
-  final int endPixelX;
-  final int endPixelY;
-  final Size imageOriginalSize;
-  final Size imageDisplaySize;
-  final void Function(int newEndX, int newEndY)? onEndPointDragEnd;
-  final double dragIconScale;
-  final bool showIcon;
-
   const DraggableLine({
     super.key,
     required this.startPixelX,
@@ -23,6 +13,16 @@ class DraggableLine extends StatefulWidget {
     this.dragIconScale = 1.0,
     required this.showIcon,
   });
+
+  final int startPixelX;
+  final int startPixelY;
+  final int endPixelX;
+  final int endPixelY;
+  final Size imageOriginalSize;
+  final Size imageDisplaySize;
+  final void Function(int newEndX, int newEndY)? onEndPointDragEnd;
+  final double dragIconScale;
+  final bool showIcon;
 
   @override
   State<DraggableLine> createState() => _DraggableLineState();
@@ -109,9 +109,9 @@ class _DraggableLineState extends State<DraggableLine> {
   Widget build(BuildContext context) {
     final start = _calcDisplayOffset(widget.startPixelX, widget.startPixelY);
 
-    final iconSize = 24.0;
+    const iconSize = 24.0;
     final scale = 1 / widget.dragIconScale;
-    final fixedDistance = 50.0;
+    const fixedDistance = 50.0;
 
     return Stack(
       children: [
@@ -141,9 +141,9 @@ class _DraggableLineState extends State<DraggableLine> {
                     newPixel.dy.round(),
                   );
                 },
-                child: Opacity(
+                child: const Opacity(
                   opacity: 0.65,
-                  child: const Icon(
+                  child: Icon(
                     Icons.open_with,
                     size: 24,
                     color: Colors.red,
@@ -158,10 +158,10 @@ class _DraggableLineState extends State<DraggableLine> {
 }
 
 class _LinePainter extends CustomPainter {
+  _LinePainter({required this.start, required this.end});
+
   final Offset start;
   final Offset end;
-
-  _LinePainter({required this.start, required this.end});
 
   @override
   void paint(Canvas canvas, Size size) {

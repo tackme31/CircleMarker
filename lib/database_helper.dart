@@ -4,10 +4,10 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:path/path.dart';
 
 class DatabaseHelper {
+DatabaseHelper._internal();
+
   static final DatabaseHelper instance = DatabaseHelper._internal();
-
-  DatabaseHelper._internal();
-
+  
   sqflite.Database? _database;
   static const int _version = 4;
 

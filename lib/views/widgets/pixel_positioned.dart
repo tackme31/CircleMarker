@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 
 class PixelPositioned extends StatefulWidget {
-  final int pixelX;
-  final int pixelY;
-  final Size imageOriginalSize;
-  final Size imageDisplaySize;
-  final Widget child;
-
-  final void Function(int newPixelX, int newPixelY)? onDragEnd;
-  final void Function()? onTap;
-
   const PixelPositioned({
     super.key,
     required this.pixelX,
@@ -20,6 +11,15 @@ class PixelPositioned extends StatefulWidget {
     this.onDragEnd,
     this.onTap
   });
+
+  final int pixelX;
+  final int pixelY;
+  final Size imageOriginalSize;
+  final Size imageDisplaySize;
+  final Widget child;
+
+  final void Function(int newPixelX, int newPixelY)? onDragEnd;
+  final void Function()? onTap;
 
   @override
   State<PixelPositioned> createState() => _PixelPositionedState();

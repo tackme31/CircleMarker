@@ -4,11 +4,6 @@ import 'package:circle_marker/models/circle_detail.dart';
 import 'package:flutter/material.dart';
 
 class CircleBox extends StatelessWidget {
-  final CircleDetail circle;
-  final Size imageOriginalSize;
-  final Size imageDisplaySize;
-  final void Function()? onLongPress;
-
   const CircleBox({
     super.key,
     required this.circle,
@@ -16,6 +11,11 @@ class CircleBox extends StatelessWidget {
     required this.imageDisplaySize,
     this.onLongPress,
   });
+
+  final CircleDetail circle;
+  final Size imageOriginalSize;
+  final Size imageDisplaySize;
+  final void Function()? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class CircleBox extends StatelessWidget {
                     : Image.asset('assets/no_image.png', fit: BoxFit.contain),
               ),
               if (circle.isDone == 1)
-                Positioned(
+                const Positioned(
                   top: -2,
                   right: -2,
                   child: Icon(Icons.check, color: Colors.green, size: 9),

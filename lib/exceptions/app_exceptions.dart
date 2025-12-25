@@ -1,9 +1,9 @@
 /// アプリケーション共通の例外クラス
 class AppException implements Exception {
+  AppException(this.message, [this.cause]);
+  
   final String message;
   final Object? cause;
-
-  AppException(this.message, [this.cause]);
 
   @override
   String toString() =>

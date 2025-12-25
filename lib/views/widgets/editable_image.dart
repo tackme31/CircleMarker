@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditableImage extends StatefulWidget {
-  final ImageProvider image;
-  final ValueChanged<String> onChange;
-  final Function()? onTap;
-
   const EditableImage({
     super.key,
     required this.image,
     required this.onChange,
     this.onTap,
   });
+
+  final ImageProvider image;
+  final ValueChanged<String> onChange;
+  final Function()? onTap;
 
   @override
   State<EditableImage> createState() => _EditableImageState();
@@ -54,7 +54,7 @@ class _EditableImageState extends State<EditableImage> {
           top: 8,
           right: 8,
           child: IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: _pickImage,
             tooltip: 'Edit Image',
           ),

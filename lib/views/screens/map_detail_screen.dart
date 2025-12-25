@@ -149,9 +149,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     final currentScale = _transformController.value.getMaxScaleOnAxis();
     double targetScale;
 
-    final scale1 = 1.0;
-    final scale2 = 3.0;
-    final scale3 = 5.0;
+    const scale1 = 1.0;
+    const scale2 = 3.0;
+    const scale3 = 5.0;
 
     if (currentScale < scale2) {
       targetScale = scale2;

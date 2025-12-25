@@ -13,10 +13,10 @@ MapRepository mapRepository(Ref ref) {
 }
 
 class MapRepository {
+  MapRepository(this._ref);
+  
   final Ref _ref;
   final String _tableName = 'map_detail';
-
-  MapRepository(this._ref);
 
   Future<List<MapDetail>> getMapDetails() async {
     try {

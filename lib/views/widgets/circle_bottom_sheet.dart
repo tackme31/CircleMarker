@@ -4,22 +4,21 @@ import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 
 class CircleBottomSheet extends ConsumerWidget {
-  final int mapId;
-  final int circleId;
-  final int? selectedCircleId;
-
   const CircleBottomSheet(
     this.mapId,
     this.selectedCircleId, {
     required this.circleId,
     super.key,
   });
+
+  final int mapId;
+  final int circleId;
+  final int? selectedCircleId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,7 +64,7 @@ class CircleBottomSheet extends ConsumerWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('CircleName: '),
+                                const Text('CircleName: '),
                                 EditableLabel(
                                   initialText: circle.circleName ?? 'No Name',
                                   style: const TextStyle(
@@ -82,8 +81,8 @@ class CircleBottomSheet extends ConsumerWidget {
                                     );
                                   },
                                 ),
-                                Gap(8),
-                                Text('Space No:'),
+                                const Gap(8),
+                                const Text('Space No:'),
                                 EditableLabel(
                                   initialText: circle.spaceNo ?? 'No Space No',
                                   style: const TextStyle(
@@ -100,8 +99,8 @@ class CircleBottomSheet extends ConsumerWidget {
                                     );
                                   },
                                 ),
-                                Gap(8),
-                                Text('Note:'),
+                                const Gap(8),
+                                const Text('Note:'),
                                 EditableLabel(
                                   initialText: circle.note ?? 'No Note',
                                   style: const TextStyle(
@@ -119,8 +118,8 @@ class CircleBottomSheet extends ConsumerWidget {
                                     );
                                   },
                                 ),
-                                Gap(8),
-                                Text('Description:'),
+                                const Gap(8),
+                                const Text('Description:'),
                                 EditableLabel(
                                   initialText:
                                       circle.description ?? 'No Description',
@@ -139,9 +138,9 @@ class CircleBottomSheet extends ConsumerWidget {
                                     );
                                   },
                                 ),
-                                Gap(8),
-                                Text('Circle Thumbnail (Map):'),
-                                Gap(4),
+                                const Gap(8),
+                                const Text('Circle Thumbnail (Map):'),
+                                const Gap(4),
                                 EditableImage(
                                   image: circleImage,
                                   onChange: (value) async {
@@ -163,9 +162,9 @@ class CircleBottomSheet extends ConsumerWidget {
                                     );
                                   },
                                 ),
-                                Gap(8),
-                                Text('Menu/Product Image:'),
-                                Gap(4),
+                                const Gap(8),
+                                const Text('Menu/Product Image:'),
+                                const Gap(4),
                                 EditableImage(
                                   image: menuImage,
                                   onChange: (value) async {
@@ -187,12 +186,17 @@ class CircleBottomSheet extends ConsumerWidget {
                                     );
                                   },
                                 ),
-                                Gap(8),
+                                const Gap(8),
                                 ElevatedButton.icon(
                                   onPressed: () async {
                                     await viewModel.removeCircle(
                                       selectedCircleId!,
                                     );
+
+                                    if (!context.mounted) {
+                                      return;
+                                    }
+                                    
                                     Navigator.pop(context);
                                   },
                                   icon: const Icon(
