@@ -6,7 +6,9 @@
       "mcp__serena__get_symbols_overview",
       "Bash(flutter pub get:*)",
       "Bash(dart run build_runner:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "mcp__serena__find_symbol",
+      "mcp__serena__find_file"
     ]
   }
 }
