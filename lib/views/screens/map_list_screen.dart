@@ -103,9 +103,9 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
       await viewModel.refreshMaps();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('マップを削除しました')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('マップを削除しました')));
     } catch (error, stackTrace) {
       ErrorHandler.handleError(error, stackTrace);
 
@@ -157,9 +157,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     if (imagePath == null) {
       return Container(
         color: Colors.grey[300],
-        child: const Center(
-          child: Icon(Icons.image_not_supported, size: 48),
-        ),
+        child: const Center(child: Icon(Icons.image_not_supported, size: 48)),
       );
     }
 
@@ -177,18 +175,14 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
             errorBuilder: (context, error, stackTrace) {
               return Container(
                 color: Colors.grey[300],
-                child: const Center(
-                  child: Icon(Icons.broken_image, size: 48),
-                ),
+                child: const Center(child: Icon(Icons.broken_image, size: 48)),
               );
             },
           );
         }
         return Container(
           color: Colors.grey[300],
-          child: const Center(
-            child: Icon(Icons.broken_image, size: 48),
-          ),
+          child: const Center(child: Icon(Icons.broken_image, size: 48)),
         );
       },
     );

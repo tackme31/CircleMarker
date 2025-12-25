@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AppLayout extends ConsumerWidget {
   const AppLayout({super.key, required this.navigationShell});
-  
+
   final StatefulNavigationShell navigationShell;
 
   @override

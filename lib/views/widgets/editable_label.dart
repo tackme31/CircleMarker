@@ -61,10 +61,7 @@ class _EditableLabelState extends State<EditableLabel> {
   Future<void> _onOpen(LinkableElement link) async {
     final uri = Uri.parse(link.url);
 
-    if (!await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    )) {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch $uri';
     }
   }

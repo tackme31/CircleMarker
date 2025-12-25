@@ -61,14 +61,14 @@ class ImageRepository extends _$ImageRepository {
         throw ImageOperationException('Failed to compress thumbnail');
       }
 
-      return MapImagePaths(
-        original: originalPath,
-        thumbnail: thumbnailPath,
-      );
+      return MapImagePaths(original: originalPath, thumbnail: thumbnailPath);
     } on FileSystemException catch (e) {
       throw ImageOperationException('Failed to save image', e);
     } catch (e) {
-      throw ImageOperationException('Unexpected error during image processing', e);
+      throw ImageOperationException(
+        'Unexpected error during image processing',
+        e,
+      );
     }
   }
 
@@ -82,7 +82,8 @@ class ImageRepository extends _$ImageRepository {
     final circleDir = Directory('${dir.path}/circles');
     await circleDir.create(recursive: true);
 
-    final outputPath = '${circleDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final outputPath =
+        '${circleDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
 
     try {
       final result = await FlutterImageCompress.compressAndGetFile(
@@ -101,7 +102,10 @@ class ImageRepository extends _$ImageRepository {
     } on FileSystemException catch (e) {
       throw ImageOperationException('Failed to save circle image', e);
     } catch (e) {
-      throw ImageOperationException('Unexpected error during circle image processing', e);
+      throw ImageOperationException(
+        'Unexpected error during circle image processing',
+        e,
+      );
     }
   }
 }

@@ -20,9 +20,10 @@ class CircleDetail with _$CircleDetail {
     String? menuImagePath,
     String? note,
     String? description,
-    String ? color,
+    String? color,
     int? isDone,
   }) = _CircleDetail;
 
-  factory CircleDetail.fromJson(Map<String, dynamic> json) => _$CircleDetailFromJson(json);
+  factory CircleDetail.fromJson(Map<String, dynamic> json) =>
+      _$CircleDetailFromJson(json);
 }

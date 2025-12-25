@@ -20,7 +20,8 @@ class MapListViewModel extends _$MapListViewModel {
   Future<MapDetail> addMapDetail(String imagePath) async {
     try {
       // ImageRepository で画像を保存し、サムネイルを生成
-      final imagePaths = await ref.read(imageRepositoryProvider.notifier)
+      final imagePaths = await ref
+          .read(imageRepositoryProvider.notifier)
           .saveMapImageWithThumbnail(imagePath);
 
       final mapDetail = MapDetail(
@@ -28,7 +29,8 @@ class MapListViewModel extends _$MapListViewModel {
         baseImagePath: imagePaths.original,
         thumbnailPath: imagePaths.thumbnail,
       );
-      final insertedMap = await ref.read(mapRepositoryProvider)
+      final insertedMap = await ref
+          .read(mapRepositoryProvider)
           .insertMapDetail(mapDetail);
 
       final maps = await ref.read(mapRepositoryProvider).getMapDetails();

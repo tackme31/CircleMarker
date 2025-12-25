@@ -4,10 +4,10 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:path/path.dart';
 
 class DatabaseHelper {
-DatabaseHelper._internal();
+  DatabaseHelper._internal();
 
   static final DatabaseHelper instance = DatabaseHelper._internal();
-  
+
   sqflite.Database? _database;
   static const int _version = 4;
 
@@ -39,7 +39,11 @@ DatabaseHelper._internal();
     }
   }
 
-  Future<void> _onUpgrade(sqflite.Database db, int oldVersion, int newVersion) async {
+  Future<void> _onUpgrade(
+    sqflite.Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
     try {
       if (oldVersion < 2) {
         await db.execute('''

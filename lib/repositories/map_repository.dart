@@ -14,7 +14,7 @@ MapRepository mapRepository(Ref ref) {
 
 class MapRepository {
   MapRepository(this._ref);
-  
+
   final Ref _ref;
   final String _tableName = 'map_detail';
 
@@ -102,7 +102,11 @@ class MapRepository {
       // トランザクションで関連データも削除
       await db.transaction((txn) async {
         // サークルデータ削除
-        await txn.delete('circle_detail', where: 'mapId = ?', whereArgs: [mapId]);
+        await txn.delete(
+          'circle_detail',
+          where: 'mapId = ?',
+          whereArgs: [mapId],
+        );
         // マップデータ削除
         await txn.delete('map_detail', where: 'mapId = ?', whereArgs: [mapId]);
       });

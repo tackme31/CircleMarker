@@ -57,10 +57,12 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       note: null,
       description: null,
     );
-    final insertedCircle = await ref.read(circleRepositoryProvider)
+    final insertedCircle = await ref
+        .read(circleRepositoryProvider)
         .insertCircleDetail(circleDetail);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(circleDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
 
@@ -70,14 +72,16 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> removeCircle(int circleId) async {
     await ref.read(circleRepositoryProvider).deleteCircle(circleId);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
 
   Future<void> updateMapTile(String title) async {
     final updatedMap = state.value!.mapDetail.copyWith(title: title);
-    final result = await ref.read(mapRepositoryProvider)
+    final result = await ref
+        .read(mapRepositoryProvider)
         .updateMapDetail(updatedMap);
 
     state = AsyncData(state.value!.copyWith(mapDetail: result));
@@ -88,10 +92,12 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     int positionX,
     int positionY,
   ) async {
-    await ref.read(circleRepositoryProvider)
+    await ref
+        .read(circleRepositoryProvider)
         .updatePosition(circleId, positionX, positionY);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
@@ -101,28 +107,32 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     int pointerX,
     int pointerY,
   ) async {
-    await ref.read(circleRepositoryProvider)
+    await ref
+        .read(circleRepositoryProvider)
         .updatePointer(circleId, pointerX, pointerY);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
 
   Future<void> updateCircleName(int circleId, String circleName) async {
-    await ref.read(circleRepositoryProvider)
+    await ref
+        .read(circleRepositoryProvider)
         .updateCircleName(circleId, circleName);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
 
   Future<void> updateCircleSpaceNo(int circleId, String spaceNo) async {
-    await ref.read(circleRepositoryProvider)
-        .updateSpaceNo(circleId, spaceNo);
+    await ref.read(circleRepositoryProvider).updateSpaceNo(circleId, spaceNo);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
@@ -130,16 +140,19 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleNote(int circleId, String note) async {
     await ref.read(circleRepositoryProvider).updateNote(circleId, note);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
 
   Future<void> updateCircleDescription(int circleId, String description) async {
-    await ref.read(circleRepositoryProvider)
+    await ref
+        .read(circleRepositoryProvider)
         .updateDescription(circleId, description);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }
@@ -147,13 +160,16 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateCircleImage(int circleId, String imagePath) async {
     try {
       // ImageRepository で画像を圧縮保存
-      final compressedPath = await ref.read(imageRepositoryProvider.notifier)
+      final compressedPath = await ref
+          .read(imageRepositoryProvider.notifier)
           .saveCircleImage(imagePath);
 
-      await ref.read(circleRepositoryProvider)
+      await ref
+          .read(circleRepositoryProvider)
           .updateImagePath(circleId, compressedPath);
 
-      final circles = await ref.read(circleRepositoryProvider)
+      final circles = await ref
+          .read(circleRepositoryProvider)
           .getCircles(state.value!.mapDetail.mapId!);
       state = AsyncData(state.value!.copyWith(circles: circles));
     } on ImageOperationException catch (e) {
@@ -162,19 +178,19 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     }
   }
 
-  Future<void> updateCircleMenuImage(
-    int circleId,
-    String menuImagePath,
-  ) async {
+  Future<void> updateCircleMenuImage(int circleId, String menuImagePath) async {
     try {
       // ImageRepository で画像を圧縮保存
-      final compressedPath = await ref.read(imageRepositoryProvider.notifier)
+      final compressedPath = await ref
+          .read(imageRepositoryProvider.notifier)
           .saveCircleImage(menuImagePath);
 
-      await ref.read(circleRepositoryProvider)
+      await ref
+          .read(circleRepositoryProvider)
           .updateMenuImagePath(circleId, compressedPath);
 
-      final circles = await ref.read(circleRepositoryProvider)
+      final circles = await ref
+          .read(circleRepositoryProvider)
           .getCircles(state.value!.mapDetail.mapId!);
       state = AsyncData(state.value!.copyWith(circles: circles));
     } on ImageOperationException catch (e) {
@@ -186,7 +202,8 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   Future<void> updateIsDone(int circleId, bool isDone) async {
     await ref.read(circleRepositoryProvider).updateIsDone(circleId, isDone);
 
-    final circles = await ref.read(circleRepositoryProvider)
+    final circles = await ref
+        .read(circleRepositoryProvider)
         .getCircles(state.value!.mapDetail.mapId!);
     state = AsyncData(state.value!.copyWith(circles: circles));
   }

@@ -12,5 +12,6 @@ class MapDetail with _$MapDetail {
     String? thumbnailPath,
   }) = _MapDetail;
 
-  factory MapDetail.fromJson(Map<String, dynamic> json) => _$MapDetailFromJson(json);
+  factory MapDetail.fromJson(Map<String, dynamic> json) =>
+      _$MapDetailFromJson(json);
 }

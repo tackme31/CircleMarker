@@ -143,11 +143,7 @@ class _DraggableLineState extends State<DraggableLine> {
                 },
                 child: const Opacity(
                   opacity: 0.65,
-                  child: Icon(
-                    Icons.open_with,
-                    size: 24,
-                    color: Colors.red,
-                  ),
+                  child: Icon(Icons.open_with, size: 24, color: Colors.red),
                 ),
               ),
             ),

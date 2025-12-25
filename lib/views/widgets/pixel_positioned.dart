@@ -9,7 +9,7 @@ class PixelPositioned extends StatefulWidget {
     required this.imageDisplaySize,
     required this.child,
     this.onDragEnd,
-    this.onTap
+    this.onTap,
   });
 
   final int pixelX;

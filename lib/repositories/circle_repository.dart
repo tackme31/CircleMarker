@@ -14,7 +14,7 @@ CircleRepository circleRepository(Ref ref) {
 
 class CircleRepository {
   CircleRepository(this._ref);
-  
+
   final Ref _ref;
   final String _tableName = 'circle_detail';
 

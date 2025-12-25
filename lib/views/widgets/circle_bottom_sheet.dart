@@ -38,8 +38,8 @@ class CircleBottomSheet extends ConsumerWidget {
 
             final ImageProvider circleImage =
                 circle.imagePath != null && File(circle.imagePath!).existsSync()
-                    ? FileImage(File(circle.imagePath!))
-                    : const AssetImage('assets/no_image.png');
+                ? FileImage(File(circle.imagePath!))
+                : const AssetImage('assets/no_image.png');
 
             final ImageProvider menuImage =
                 circle.menuImagePath != null &&
@@ -156,8 +156,9 @@ class CircleBottomSheet extends ConsumerWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            PhotoView(imageProvider: circleImage),
+                                        builder: (_) => PhotoView(
+                                          imageProvider: circleImage,
+                                        ),
                                       ),
                                     );
                                   },
@@ -196,7 +197,7 @@ class CircleBottomSheet extends ConsumerWidget {
                                     if (!context.mounted) {
                                       return;
                                     }
-                                    
+
                                     Navigator.pop(context);
                                   },
                                   icon: const Icon(
