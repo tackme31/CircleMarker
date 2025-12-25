@@ -16,7 +16,7 @@ class DatabaseHelper {
     // データベースを開く（なければ作成）
     _database = await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: (db, oldVersion, newVersion) => {
         if (oldVersion < 2)
@@ -34,6 +34,12 @@ class DatabaseHelper {
           ALTER TABLE circle_detail ADD COLUMN isDone INTEGER NOT NULL DEFAULT 0
         '''),
           },
+        if (oldVersion < 4)
+          {
+            db.execute('''
+          ALTER TABLE map_detail ADD COLUMN thumbnailPath TEXT
+        '''),
+          },
       },
     );
     return _database!;
@@ -45,7 +51,8 @@ class DatabaseHelper {
   CREATE TABLE map_detail(
     mapId INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    baseImagePath TEXT NOT NULL
+    baseImagePath TEXT NOT NULL,
+    thumbnailPath TEXT
   )
 ''');
 

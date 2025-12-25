@@ -37,11 +37,16 @@ class CircleBottomSheet extends ConsumerWidget {
               (c) => c.circleId == circleId,
             );
 
+            final ImageProvider circleImage =
+                circle.imagePath != null && File(circle.imagePath!).existsSync()
+                    ? FileImage(File(circle.imagePath!))
+                    : const AssetImage('assets/no_image.png');
+
             final ImageProvider menuImage =
                 circle.menuImagePath != null &&
                     File(circle.menuImagePath!).existsSync()
                 ? FileImage(File(circle.menuImagePath!))
-                : AssetImage('assets/no_image.png');
+                : const AssetImage('assets/no_image.png');
             return GestureDetector(
               behavior: HitTestBehavior.translucent, // タップを透過して検知
               onTap: () {
@@ -135,6 +140,32 @@ class CircleBottomSheet extends ConsumerWidget {
                                   },
                                 ),
                                 Gap(8),
+                                Text('Circle Thumbnail (Map):'),
+                                Gap(4),
+                                EditableImage(
+                                  image: circleImage,
+                                  onChange: (value) async {
+                                    if (value.isEmpty) {
+                                      return;
+                                    }
+                                    await viewModel.updateCircleImage(
+                                      circle.circleId!,
+                                      value,
+                                    );
+                                  },
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            PhotoView(imageProvider: circleImage),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Gap(8),
+                                Text('Menu/Product Image:'),
+                                Gap(4),
                                 EditableImage(
                                   image: menuImage,
                                   onChange: (value) async {

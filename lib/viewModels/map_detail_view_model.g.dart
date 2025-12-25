@@ -7,7 +7,7 @@ part of 'map_detail_view_model.dart';
 // **************************************************************************
 
 String _$mapDetailViewModelHash() =>
-    r'1ec5666bb09bd3b1f7de3e021d7db06e6f49229c';
+    r'47dd616ded4bfb2c295b341872d3ab6b73d724ed';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -58,21 +58,12 @@ class MapDetailViewModelFamily extends Family<AsyncValue<MapDetailState>> {
     return call(provider.mapId);
   }
 
-  static final Iterable<ProviderOrFamily> _dependencies = <ProviderOrFamily>[
-    mapRepositoryProvider,
-    circleRepositoryProvider,
-  ];
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get dependencies => _dependencies;
 
-  static final Iterable<ProviderOrFamily> _allTransitiveDependencies =
-      <ProviderOrFamily>{
-        mapRepositoryProvider,
-        ...?mapRepositoryProvider.allTransitiveDependencies,
-        circleRepositoryProvider,
-        ...?circleRepositoryProvider.allTransitiveDependencies,
-      };
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
 
   @override
   Iterable<ProviderOrFamily>? get allTransitiveDependencies =>

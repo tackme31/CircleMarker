@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -29,34 +30,53 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
             itemCount: value.maps.length,
             itemBuilder: (context, index) {
               final map = value.maps[index];
-              return ListTile(
-                title: Text(map.title ?? 'No title'),
-                onTap: () async {
-                  await context.push('/mapList/${map.mapId}');
-                  viewModel.refreshMaps();
-                },
-                onLongPress: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text('削除しますか？'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => context.pop(),
-                          child: const Text('キャンセル'),
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () async {
+                    await context.push('/mapList/${map.mapId}');
+                    viewModel.refreshMaps();
+                  },
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text('削除しますか？'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => context.pop(),
+                            child: const Text('キャンセル'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              context.pop();
+                              await viewModel.removeMap(map.mapId!);
+                              await viewModel.refreshMaps();
+                            },
+                            child: const Text('削除'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // サムネイル画像表示
+                      AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: _buildMapThumbnail(map),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          map.title ?? 'No title',
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            context.pop();
-                            await viewModel.removeMap(map.mapId!);
-                            await viewModel.refreshMaps();
-                          },
-                          child: const Text('削除'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
@@ -82,6 +102,51 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  /// マップのサムネイル画像を表示するウィジェット
+  Widget _buildMapThumbnail(map) {
+    // サムネイルパスが存在する場合はサムネイルを表示
+    final imagePath = map.thumbnailPath ?? map.baseImagePath;
+
+    if (imagePath == null) {
+      return Container(
+        color: Colors.grey[300],
+        child: const Center(
+          child: Icon(Icons.image_not_supported, size: 48),
+        ),
+      );
+    }
+
+    return Image.file(
+      File(imagePath),
+      fit: BoxFit.cover,
+      cacheWidth: 512, // メモリキャッシュサイズ制限
+      errorBuilder: (context, error, stackTrace) {
+        // サムネイル読み込み失敗時は元画像を縮小して表示
+        if (map.baseImagePath != null && imagePath != map.baseImagePath) {
+          return Image.file(
+            File(map.baseImagePath!),
+            fit: BoxFit.cover,
+            cacheWidth: 512,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: Colors.grey[300],
+                child: const Center(
+                  child: Icon(Icons.broken_image, size: 48),
+                ),
+              );
+            },
+          );
+        }
+        return Container(
+          color: Colors.grey[300],
+          child: const Center(
+            child: Icon(Icons.broken_image, size: 48),
+          ),
+        );
+      },
     );
   }
 }

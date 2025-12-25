@@ -9,6 +9,7 @@ class MapDetail with _$MapDetail {
     int? mapId,
     String? title,
     String? baseImagePath,
+    String? thumbnailPath,
   }) = _MapDetail;
 
   factory MapDetail.fromJson(Map<String, dynamic> json) => _$MapDetailFromJson(json);
