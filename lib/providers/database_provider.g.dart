@@ -1,27 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'map_repository.dart';
+part of 'database_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$mapRepositoryHash() => r'e7c4d3f66e7e70db0987f2251dcac96d604d0484';
+String _$databaseHash() => r'211c82af514a10586823658f6a85544173299119';
 
-/// See also [mapRepository].
-@ProviderFor(mapRepository)
-final mapRepositoryProvider = AutoDisposeProvider<MapRepository>.internal(
-  mapRepository,
-  name: r'mapRepositoryProvider',
+/// データベースインスタンスを提供するプロバイダー
+///
+/// Copied from [database].
+@ProviderFor(database)
+final databaseProvider = AutoDisposeFutureProvider<sqflite.Database>.internal(
+  database,
+  name: r'databaseProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$mapRepositoryHash,
+      : _$databaseHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef MapRepositoryRef = AutoDisposeProviderRef<MapRepository>;
+typedef DatabaseRef = AutoDisposeFutureProviderRef<sqflite.Database>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

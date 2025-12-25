@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:circle_marker/utils/error_handler.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -38,26 +39,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                     viewModel.refreshMaps();
                   },
                   onLongPress: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text('削除しますか？'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => context.pop(),
-                            child: const Text('キャンセル'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              context.pop();
-                              await viewModel.removeMap(map.mapId!);
-                              await viewModel.refreshMaps();
-                            },
-                            child: const Text('削除'),
-                          ),
-                        ],
-                      ),
-                    );
+                    _deleteMap(map);
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,22 +69,84 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         _ => const Center(child: CircularProgressIndicator()),
       },
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final XFile? pickedFile = await picker.pickImage(
-            source: ImageSource.gallery,
-          );
-          if (pickedFile != null) {
-            final imagePath = pickedFile.path;
-            final map = await viewModel.addMapDetail(imagePath);
-
-            if (!mounted) return;
-            await context.push('/mapList/${map.mapId}', extra: map);
-            viewModel.refreshMaps();
-          }
-        },
+        onPressed: () => _addMap(picker),
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  /// マップを削除する
+  Future<void> _deleteMap(map) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('確認'),
+        content: Text('「${map.title}」を削除しますか？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      final viewModel = ref.read(mapListViewModelProvider.notifier);
+      await viewModel.removeMap(map.mapId!);
+      await viewModel.refreshMaps();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('マップを削除しました')),
+      );
+    } catch (error, stackTrace) {
+      ErrorHandler.handleError(error, stackTrace);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ErrorHandler.getUserFriendlyMessage(error)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  /// マップを追加する
+  Future<void> _addMap(ImagePicker picker) async {
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedFile == null) return;
+
+      final viewModel = ref.read(mapListViewModelProvider.notifier);
+      final imagePath = pickedFile.path;
+      final map = await viewModel.addMapDetail(imagePath);
+
+      if (!mounted) return;
+      await context.push('/mapList/${map.mapId}', extra: map);
+      viewModel.refreshMaps();
+    } catch (error, stackTrace) {
+      ErrorHandler.handleError(error, stackTrace);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ErrorHandler.getUserFriendlyMessage(error)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 
   /// マップのサムネイル画像を表示するウィジェット
