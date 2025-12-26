@@ -1,16 +1,35 @@
 # Circle Marker
 
-https://x.com/tackme31/status/1955931157658526019
+サークル配置図上にサークル情報をマッピングすることができるFlutterアプリです。
 
-## Getting Started
+デモ: https://x.com/tackme31/status/1955931157658526019
 
-This project is a starting point for a Flutter application.
+> ⚠️ **注意**
+>
+> 本プロジェクトは個人用として作成されたものです。利用は自己責任でお願いします。
 
-A few resources to get you started if this is your first Flutter project:
+## 主な機能
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- 配置図のアップロードと管理
+- 配置図上へのサークル情報の配置・移動
+- サークル情報の記録（画像、サークル名、スペース番号、説明、メモなど）
+- サークル一覧の表示・フィルタリング・ソート
+- マップデータのインポート・エクスポート（ZIP形式）
+- マークダウン形式での出力
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## セットアップ
+
+```bash
+# 依存関係のインストール
+flutter pub get
+
+# コード生成（Riverpod、Freezed、JSON serialization）
+dart run build_runner build --delete-conflicting-outputs
+
+# アプリの実行
+flutter run
+```
+
+## 作者
+
+Takumi Yamada ([@tackme31](https://x.com/tackme31))
