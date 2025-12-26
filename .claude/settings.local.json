@@ -9,7 +9,8 @@
       "Bash(flutter analyze:*)",
       "mcp__serena__find_symbol",
       "mcp__serena__find_file",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "mcp__serena__search_for_pattern"
     ]
   }
 }
