@@ -5,7 +5,8 @@
       "Bash(flutter pub get:*)",
       "Bash(dart run build_runner:*)",
       "Bash(flutter analyze:*)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }
