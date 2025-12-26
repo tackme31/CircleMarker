@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:circle_marker/utils/coordinate_converter.dart';
 
 class DraggableLine extends StatefulWidget {
   const DraggableLine({
@@ -30,84 +31,39 @@ class DraggableLine extends StatefulWidget {
 
 class _DraggableLineState extends State<DraggableLine> {
   late Offset _endPosition;
-
-  Offset _calcDisplayOffset(int pixelX, int pixelY) {
-    final imageAspect =
-        widget.imageOriginalSize.width / widget.imageOriginalSize.height;
-    final stackAspect =
-        widget.imageDisplaySize.width / widget.imageDisplaySize.height;
-
-    double displayWidth, displayHeight;
-    double offsetX = 0, offsetY = 0;
-
-    if (imageAspect > stackAspect) {
-      displayWidth = widget.imageDisplaySize.width;
-      displayHeight = displayWidth / imageAspect;
-      offsetY = (widget.imageDisplaySize.height - displayHeight) / 2;
-    } else {
-      displayHeight = widget.imageDisplaySize.height;
-      displayWidth = displayHeight * imageAspect;
-      offsetX = (widget.imageDisplaySize.width - displayWidth) / 2;
-    }
-
-    final displayX =
-        pixelX * (displayWidth / widget.imageOriginalSize.width) + offsetX;
-    final displayY =
-        pixelY * (displayHeight / widget.imageOriginalSize.height) + offsetY;
-
-    return Offset(displayX, displayY);
-  }
-
-  Offset _calcPixelOffset(Offset displayOffset) {
-    final imageAspect =
-        widget.imageOriginalSize.width / widget.imageOriginalSize.height;
-    final stackAspect =
-        widget.imageDisplaySize.width / widget.imageDisplaySize.height;
-
-    double displayWidth, displayHeight;
-    double offsetX = 0, offsetY = 0;
-
-    if (imageAspect > stackAspect) {
-      displayWidth = widget.imageDisplaySize.width;
-      displayHeight = displayWidth / imageAspect;
-      offsetY = (widget.imageDisplaySize.height - displayHeight) / 2;
-    } else {
-      displayHeight = widget.imageDisplaySize.height;
-      displayWidth = displayHeight * imageAspect;
-      offsetX = (widget.imageDisplaySize.width - displayWidth) / 2;
-    }
-
-    final pixelX =
-        ((displayOffset.dx - offsetX) *
-                (widget.imageOriginalSize.width / displayWidth))
-            .round();
-    final pixelY =
-        ((displayOffset.dy - offsetY) *
-                (widget.imageOriginalSize.height / displayHeight))
-            .round();
-
-    return Offset(pixelX.toDouble(), pixelY.toDouble());
-  }
+  late CoordinateConverter _converter;
 
   @override
   void initState() {
     super.initState();
-    _endPosition = _calcDisplayOffset(widget.endPixelX, widget.endPixelY);
+    _converter = CoordinateConverter(
+      imageSize: widget.imageOriginalSize,
+      containerSize: widget.imageDisplaySize,
+    );
+    _endPosition = _converter.pixelToDisplayInt(widget.endPixelX, widget.endPixelY);
   }
 
   @override
   void didUpdateWidget(covariant DraggableLine oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // サイズが変更された場合、converter を再作成
+    if (oldWidget.imageOriginalSize != widget.imageOriginalSize ||
+        oldWidget.imageDisplaySize != widget.imageDisplaySize) {
+      _converter = CoordinateConverter(
+        imageSize: widget.imageOriginalSize,
+        containerSize: widget.imageDisplaySize,
+      );
+    }
     // 外部からendPixelが更新された場合も表示座標を更新
     if (oldWidget.endPixelX != widget.endPixelX ||
         oldWidget.endPixelY != widget.endPixelY) {
-      _endPosition = _calcDisplayOffset(widget.endPixelX, widget.endPixelY);
+      _endPosition = _converter.pixelToDisplayInt(widget.endPixelX, widget.endPixelY);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final start = _calcDisplayOffset(widget.startPixelX, widget.startPixelY);
+    final start = _converter.pixelToDisplayInt(widget.startPixelX, widget.startPixelY);
 
     const iconSize = 24.0;
     final scale = 1 / widget.dragIconScale;
@@ -135,7 +91,7 @@ class _DraggableLineState extends State<DraggableLine> {
                   });
                 },
                 onPanEnd: (details) {
-                  final newPixel = _calcPixelOffset(_endPosition);
+                  final newPixel = _converter.displayToPixelRounded(_endPosition);
                   widget.onEndPointDragEnd?.call(
                     newPixel.dx.round(),
                     newPixel.dy.round(),
