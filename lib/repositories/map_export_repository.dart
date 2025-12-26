@@ -92,7 +92,7 @@ class MapExportRepository {
     }
 
     // 4. ZIP 圧縮
-    final zipData = ZipEncoder().encode(archive)!;
+    final zipData = ZipEncoder().encode(archive);
 
     // 5. Downloads フォルダに保存
     final timestamp = DateTime.now().millisecondsSinceEpoch;
