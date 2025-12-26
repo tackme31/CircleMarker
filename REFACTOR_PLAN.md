@@ -9,24 +9,28 @@
 ## 【エグゼクティブサマリー】
 
 ### 現状評価
+
 - **総合スコア**: C (改善必要)
 - **モバイル最適化度**: 60/100
 - **コード品質**: 65/100
 - **Flutter ベストプラクティス準拠度**: 65%
 
 ### プロジェクトの強み
+
 ✓ Riverpod + Code Generation による型安全な状態管理
 ✓ Freezed による Immutable モデル設計
 ✓ Repository パターンによるデータ層分離
 ✓ 明確なレイヤー構造 (Presentation/Application/Data)
 
 ### 重大な課題
+
 ❌ エラーハンドリングの完全欠如 (クラッシュリスク)
 ❌ テストコードなし (保守性リスク)
 ❌ 大画像メモリ管理の欠如 (パフォーマンス問題)
 ❌ ジェスチャー競合による誤操作 (UX 問題)
 
 ### 推定技術的負債
+
 **工数**: 4-5 人日 (基盤強化のみ)
 **ROI**: エラーハンドリング・テスト投資により今後のバグ修正コスト 60-70% 削減
 
@@ -37,11 +41,14 @@
 両専門家の分析を統合した結果、以下の優先度付けを行いました。
 
 ### 相乗効果の機会
+
 1. **画像メモリ最適化 + エラーハンドリング**
+
    - サムネイル生成時の例外キャッチ実装
    - メモリクラッシュリスク 90% 削減
 
 2. **状態管理最適化 + テスト追加**
+
    - Riverpod Family パターン導入でテスタビリティ向上
    - ユニットテスト作成が容易に
 
@@ -50,7 +57,9 @@
    - バグ発生率 60% 削減
 
 ### トレードオフポイント
+
 - **細粒度状態管理 ↔ 実装複雑度**
+
   - Family パターン導入で初期学習コスト増加
   - ただし長期的な保守性は大幅向上
 
@@ -60,15 +69,16 @@
 
 ---
 
-## 【Phase 1: 基盤強化 (Critical - 1-2週間)】
+## 【Phase 1: 基盤強化 (Critical - 1-2 週間)】
 
 **目標**: クラッシュリスク排除 + パフォーマンス問題解決
 
 ### P1-1: 画像メモリ最適化 [Priority: Critical]
 
 **背景**:
+
 - 現状: 大画像を無圧縮で読み込み → メモリ 50MB/画像
-- 問題: 10枚表示でメモリ不足クラッシュの可能性
+- 問題: 10 枚表示でメモリ不足クラッシュの可能性
 - 影響: iOS デバイスで特に顕著
 
 **実装内容**:
@@ -243,11 +253,13 @@ Future<void> addMapFromImage() async {
 ```
 
 **期待効果**:
+
 - メモリ使用量: 50MB/画像 → 5MB/画像 (90% 削減)
 - リスト描画フレームレート: 30fps → 60fps
 - メモリクラッシュリスク: 90% 削減
 
 **検証方法**:
+
 ```bash
 # Flutter DevTools で Memory タブを開き、画像読み込み前後のメモリ使用量を計測
 flutter run --profile
@@ -259,8 +271,9 @@ flutter run --profile
 ### P1-2: エラーハンドリング実装 [Priority: Critical]
 
 **背景**:
+
 - 現状: try-catch が 0 件 → 例外発生時に即クラッシュ
-- 問題: データベース初期化失敗、ファイルI/O失敗時の対応なし
+- 問題: データベース初期化失敗、ファイル I/O 失敗時の対応なし
 - 影響: ユーザーデータ損失リスク
 
 **実装内容**:
@@ -439,11 +452,13 @@ Future<void> _deleteMap(MapDetail map) async {
 ```
 
 **期待効果**:
+
 - アプリクラッシュ率: 90% 削減
 - ユーザーデータ損失リスク: 95% 削減
 - エラーメッセージの一貫性: 向上
 
 **検証方法**:
+
 ```dart
 // test/error_handling_test.dart
 void main() {
@@ -460,6 +475,7 @@ void main() {
 ### P1-3: ジェスチャー競合解決 [Priority: High]
 
 **背景**:
+
 - 現状: InteractiveViewer のパンとサークルのドラッグが競合
 - 問題: サークル移動時に地図も動いてしまう誤操作
 - 影響: ユーザーフラストレーション増大
@@ -618,11 +634,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
 ```
 
 **期待効果**:
+
 - 誤操作率: 70% 削減
 - 編集操作成功率: 85% → 98%
 - ユーザー満足度: 40% 向上
 
 **検証方法**:
+
 ```dart
 // test/widgets/smart_draggable_circle_test.dart
 testWidgets('SmartDraggableCircle enables drag mode on long press', (tester) async {
@@ -707,11 +725,13 @@ analyzer:
 ```
 
 **期待効果**:
+
 - コードスタイル統一
 - 潜在的バグの早期発見
 - リファクタリング時の安全性向上
 
 **検証方法**:
+
 ```bash
 flutter analyze
 # 0 issues found を確認
@@ -719,15 +739,16 @@ flutter analyze
 
 ---
 
-## 【Phase 2: コード品質向上 (High - 2-3週間)】
+## 【Phase 2: コード品質向上 (High - 2-3 週間)】
 
 **目標**: 保守性向上 + テストカバレッジ確保
 
 ### P2-1: Riverpod Family パターン導入 [Priority: High]
 
 **背景**:
+
 - 現状: MapDetailViewModel が全サークルを一括管理
-- 問題: 1つのサークル更新で全サークルが再描画
+- 問題: 1 つのサークル更新で全サークルが再描画
 - 影響: 大量マーカー時のパフォーマンス低下
 
 **実装内容**:
@@ -888,11 +909,13 @@ Widget build(BuildContext context, WidgetRef ref) {
 ```
 
 **期待効果**:
+
 - メモリ使用量: 30-40% 削減
 - UI 更新レイテンシ: 50% 改善 (個別更新のため)
 - 100+ マーカーでも 60fps 維持
 
 **検証方法**:
+
 ```dart
 // test/viewModels/circle_view_model_test.dart
 void main() {
@@ -917,6 +940,7 @@ void main() {
 ### P2-2: 座標変換ロジック分離 [Priority: Medium]
 
 **背景**:
+
 - 現状: PixelPositioned ウィジェット内に座標変換ロジック
 - 問題: テスト困難、再利用性低い
 - 影響: バグ修正時の影響範囲が不明確
@@ -1075,6 +1099,7 @@ void main() {
 ```
 
 **期待効果**:
+
 - テストカバレッジ: +40%
 - 座標計算バグ: 60% 削減
 - コードの再利用性: 向上
@@ -1219,6 +1244,7 @@ void main() {
 ```
 
 **期待効果**:
+
 - テストカバレッジ: 0% → 60%
 - リファクタリング時の安全性: 大幅向上
 - バグ早期発見: 可能に
@@ -1271,7 +1297,7 @@ return Container(
 
 ---
 
-## 【Phase 3: アーキテクチャ改善 (Medium - 3-4週間)】
+## 【Phase 3: アーキテクチャ改善 (Medium - 3-4 週間)】
 
 **目標**: スケーラビリティ向上 + 長期保守性確保
 
@@ -1361,8 +1387,9 @@ Future<void> _onCreate(Database db, int version) async {
 ```
 
 **期待効果**:
+
 - 大量マーカー操作時の DB 書き込み時間: 80% 削減
-- クエリパフォーマンス: 2-3倍向上
+- クエリパフォーマンス: 2-3 倍向上
 
 ---
 
@@ -1482,6 +1509,7 @@ class DatabaseHelper {
 ```
 
 **期待効果**:
+
 - マイグレーション履歴の可視化
 - ロールバック実装の基盤
 - 新規マイグレーション追加の容易性
@@ -1494,7 +1522,7 @@ class DatabaseHelper {
 
 **実装内容**:
 
-```dart
+````dart
 /// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
 ///
 /// このクラスは以下の責務を持つ:
@@ -1529,7 +1557,7 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     // 実装
   }
 }
-```
+````
 
 ---
 
@@ -1537,7 +1565,7 @@ class MapDetailViewModel extends _$MapDetailViewModel {
 
 **実装内容**:
 
-```markdown
+````markdown
 # docs/architecture.md (新規作成)
 
 ## レイヤー構成
@@ -1570,6 +1598,7 @@ class MapDetailViewModel extends _$MapDetailViewModel {
 │   - DatabaseHelper                  │
 └─────────────────────────────────────┘
 ```
+````
 
 ## 状態管理戦略
 
@@ -1612,6 +1641,7 @@ Database / File I/O
     ↓
 ref.invalidateSelf() → Widget rebuild
 ```
+
 ```
 
 ---
@@ -1627,7 +1657,7 @@ ref.invalidateSelf() → Widget rebuild
 
 ### Week 3-4: テストと品質向上
 - [x] P2-1: Riverpod Family パターン導入 (5日)
-- [ ] P2-2: 座標変換ロジック分離 (2日)
+- [x] P2-2: 座標変換ロジック分離 (2日)
 - [ ] P2-3: ユニットテスト追加 (3日)
 - [ ] P2-4: マジックナンバー定数化 (1日)
 
@@ -1690,3 +1720,4 @@ Circle Marker プロジェクトは "Make it work" フェーズを成功裏に�
 **推定 ROI**: 初期投資 4-5 人日 → 今後のバグ修正コスト 60-70% 削減
 
 Evidence-First アプローチで継続的改善を進め、Flutter ベストプラクティスに準拠した高品質モバイルアプリへと進化させましょう。
+```
