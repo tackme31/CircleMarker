@@ -41,9 +41,6 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                     await context.push('/mapList/${map.mapId}');
                     viewModel.refreshMaps();
                   },
-                  onLongPress: () {
-                    _deleteMap(map);
-                  },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -64,14 +61,24 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                             ),
                             PopupMenuButton<String>(
                               onSelected: (value) {
-                                if (value == 'export') {
-                                  _showExportDialog(map.mapId!);
+                                switch (value) {
+                                  case 'delete':
+                                    _deleteMap(map);
+                                    break;
+                                  case 'export':
+                                    _showExportDialog(map.mapId!);
+                                    break;
+                                  default:
                                 }
                               },
                               itemBuilder: (context) => [
                                 const PopupMenuItem(
                                   value: 'export',
                                   child: Text('エクスポート'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('削除'),
                                 ),
                               ],
                             ),
