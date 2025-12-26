@@ -111,13 +111,14 @@ class CircleListScreen extends ConsumerWidget {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: Wrap(
                   spacing: 8.0,
                   children: [
                     Chip(
-                      label: Text(
-                          'フィルター: ${value.selectedMapIds.length}個の配置図'),
+                      label: Text('フィルター: ${value.selectedMapIds.length}個の配置図'),
                       deleteIcon: const Icon(Icons.close, size: 18),
                       onDeleted: () {
                         ref
@@ -159,8 +160,6 @@ class CircleListScreen extends ConsumerWidget {
                                 isDeletable: false,
                               ),
                             );
-                            // リスト更新
-                            ref.invalidate(circleListViewModelProvider);
                           }
                         : null,
                   );
@@ -176,7 +175,10 @@ class CircleListScreen extends ConsumerWidget {
   }
 
   Future<void> _showMapFilterDialog(
-      BuildContext context, WidgetRef ref, CircleListState state) async {
+    BuildContext context,
+    WidgetRef ref,
+    CircleListState state,
+  ) async {
     final maps = await ref.read(mapRepositoryProvider).getMapDetails();
     if (!context.mounted) return;
 
@@ -201,10 +203,12 @@ class CircleListScreen extends ConsumerWidget {
                           selectedMapIds.clear();
                         } else {
                           selectedMapIds.clear();
-                          selectedMapIds.addAll(maps
-                              .where((m) => m.mapId != null)
-                              .map((m) => m.mapId!)
-                              .toList());
+                          selectedMapIds.addAll(
+                            maps
+                                .where((m) => m.mapId != null)
+                                .map((m) => m.mapId!)
+                                .toList(),
+                          );
                         }
                       });
                     },
