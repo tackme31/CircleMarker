@@ -15,11 +15,15 @@ class CircleBottomSheet extends ConsumerWidget {
     this.mapId,
     this.selectedCircleId, {
     required this.circleId,
+    required this.width,
+    required this.height,
     super.key,
   });
 
   final int mapId;
   final int circleId;
+  final double width;
+  final double height;
   final int? selectedCircleId;
 
   @override
@@ -50,8 +54,8 @@ class CircleBottomSheet extends ConsumerWidget {
             child: Stack(
               children: [
                 SizedBox(
-                  width: screenWidth * 0.8,
-                  height: screenHeight * 0.3,
+                  width: screenWidth * width,
+                  height: screenHeight * height,
                   child: SingleChildScrollView(
                     child: Stack(
                       children: [

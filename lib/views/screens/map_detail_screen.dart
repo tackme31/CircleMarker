@@ -129,6 +129,8 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
             widget.mapId,
             selectedCircleId,
             circleId: circleId,
+            width: 0.8,
+            height: 0.3,
           );
         },
       );
