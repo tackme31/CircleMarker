@@ -42,6 +42,7 @@ class CircleListScreen extends ConsumerWidget {
                           circleId: circle.circleId!,
                           width: 0.8,
                           height: 0.7,
+                          isDeletable: false,
                         ),
                       );
                       // リスト更新

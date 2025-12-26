@@ -17,6 +17,7 @@ class CircleBottomSheet extends ConsumerWidget {
     required this.circleId,
     required this.width,
     required this.height,
+    this.isDeletable = true,
     super.key,
   });
 
@@ -25,6 +26,7 @@ class CircleBottomSheet extends ConsumerWidget {
   final double width;
   final double height;
   final int? selectedCircleId;
+  final bool isDeletable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -146,30 +148,31 @@ class CircleBottomSheet extends ConsumerWidget {
                               },
                             ),
                             const Gap(8),
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                await mapViewModel.removeCircle(
-                                  selectedCircleId!,
-                                );
+                            if (isDeletable)
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  await mapViewModel.removeCircle(
+                                    selectedCircleId!,
+                                  );
 
-                                if (!context.mounted) {
-                                  return;
-                                }
+                                  if (!context.mounted) {
+                                    return;
+                                  }
 
-                                context.pop();
-                              },
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Colors.white,
+                                  context.pop();
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                                label: const Text(
+                                  '削除',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                ),
                               ),
-                              label: const Text(
-                                '削除',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                            ),
                           ],
                         ),
                         Row(
