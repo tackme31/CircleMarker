@@ -24,19 +24,17 @@ class CircleBottomSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final circleAsync = ref.watch(circleViewModelProvider(circleId));
-    final circleViewModel = ref.read(circleViewModelProvider(circleId).notifier);
+    final circleViewModel = ref.read(
+      circleViewModelProvider(circleId).notifier,
+    );
     final mapViewModel = ref.read(mapDetailViewModelProvider(mapId).notifier);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return circleAsync.when(
       data: (circle) {
-        final ImageProvider circleImage =
-            circle.imagePath != null && File(circle.imagePath!).existsSync()
-                ? FileImage(File(circle.imagePath!))
-                : const AssetImage('assets/no_image.png');
-
-        final ImageProvider menuImage = circle.menuImagePath != null &&
+        final ImageProvider menuImage =
+            circle.menuImagePath != null &&
                 File(circle.menuImagePath!).existsSync()
             ? FileImage(File(circle.menuImagePath!))
             : const AssetImage('assets/no_image.png');
@@ -122,28 +120,6 @@ class CircleBottomSheet extends ConsumerWidget {
                               },
                             ),
                             const Gap(8),
-                            const Text('Circle Thumbnail (Map):'),
-                            const Gap(4),
-                            EditableImage(
-                              image: circleImage,
-                              onChange: (value) async {
-                                if (value.isEmpty) {
-                                  return;
-                                }
-                                await circleViewModel.updateImage(value);
-                              },
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => PhotoView(
-                                      imageProvider: circleImage,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Gap(8),
                             const Text('Menu/Product Image:'),
                             const Gap(4),
                             EditableImage(
@@ -212,9 +188,8 @@ class CircleBottomSheet extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text('Something went wrong: $error'),
-      ),
+      error: (error, stack) =>
+          Center(child: Text('Something went wrong: $error')),
     );
   }
 }
