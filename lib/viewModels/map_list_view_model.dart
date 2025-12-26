@@ -43,11 +43,6 @@ class MapListViewModel extends _$MapListViewModel {
     }
   }
 
-  Future<void> refreshMaps() async {
-    final maps = await ref.read(mapRepositoryProvider).getMapDetails();
-    state = AsyncData(MapListState(maps: maps));
-  }
-
   Future<void> removeMap(int mapId) async {
     await ref.read(mapRepositoryProvider).deleteMapDetail(mapId);
     await ref.read(circleRepositoryProvider).deleteCircles(mapId);

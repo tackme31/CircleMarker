@@ -22,7 +22,6 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapListViewModelProvider);
-    final viewModel = ref.watch(mapListViewModelProvider.notifier);
     final ImagePicker picker = ImagePicker();
 
     return Scaffold(
@@ -40,7 +39,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                 child: InkWell(
                   onTap: () async {
                     await context.push('/mapList/${map.mapId}');
-                    viewModel.refreshMaps();
+                    ref.invalidate(mapListViewModelProvider);
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,12 +148,13 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     try {
       final viewModel = ref.read(mapListViewModelProvider.notifier);
       await viewModel.removeMap(map.mapId!);
-      await viewModel.refreshMaps();
 
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('マップを削除しました')));
+
+      ref.invalidate(mapListViewModelProvider);
     } catch (error, stackTrace) {
       ErrorHandler.handleError(error, stackTrace);
 
@@ -183,7 +183,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
 
       if (!mounted) return;
       await context.push('/mapList/${map.mapId}', extra: map);
-      viewModel.refreshMaps();
+      ref.invalidate(mapListViewModelProvider);
     } catch (error, stackTrace) {
       ErrorHandler.handleError(error, stackTrace);
 
@@ -286,13 +286,13 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           ),
         );
       } else {
-        // マップリストを更新
-        await ref.read(mapListViewModelProvider.notifier).refreshMaps();
-
         if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('インポートが完了しました')));
+
+        // マップリストを更新
+        ref.invalidate(mapListViewModelProvider);
       }
     } catch (error, stackTrace) {
       ErrorHandler.handleError(error, stackTrace);
