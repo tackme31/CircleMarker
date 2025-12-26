@@ -37,6 +37,21 @@ class CircleRepository {
     }
   }
 
+  Future<List<CircleDetail>> getAllCircles() async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+      final maps = await db.query(_tableName);
+
+      return maps.map(CircleDetail.fromJson).toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to load all circles', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while loading all circles', e);
+    }
+  }
+
   Future<CircleDetail> getCircle(int circleId) async {
     try {
       final db = await _ref.read(databaseProvider.future);

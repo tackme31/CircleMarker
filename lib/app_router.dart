@@ -1,4 +1,5 @@
 import 'package:circle_marker/views/app_layout.dart';
+import 'package:circle_marker/views/screens/circle_list_screen.dart';
 import 'package:circle_marker/views/screens/map_detail_screen.dart';
 import 'package:circle_marker/views/screens/map_list_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -43,9 +44,9 @@ class AppRouter extends _$AppRouter {
               navigatorKey: _circleListNavigationKey,
               routes: [
                 GoRoute(
-                  path: '/mapList',
+                  path: '/circleList',
                   builder: (context, state) {
-                    return const MapListScreen();
+                    return const CircleListScreen();
                   },
                 ),
               ],

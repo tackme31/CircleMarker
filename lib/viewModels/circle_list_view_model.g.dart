@@ -1,26 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_router.dart';
+part of 'circle_list_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appRouterHash() => r'8602840e42de4e34f982a7508f0c1289b9a6dee0';
+String _$circleListViewModelHash() =>
+    r'45a4bbe208d5e71566936ea577aaf081bf5ccb92';
 
-/// See also [AppRouter].
-@ProviderFor(AppRouter)
-final appRouterProvider =
-    AutoDisposeNotifierProvider<AppRouter, GoRouter>.internal(
-      AppRouter.new,
-      name: r'appRouterProvider',
+/// See also [CircleListViewModel].
+@ProviderFor(CircleListViewModel)
+final circleListViewModelProvider =
+    AutoDisposeAsyncNotifierProvider<
+      CircleListViewModel,
+      CircleListState
+    >.internal(
+      CircleListViewModel.new,
+      name: r'circleListViewModelProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$appRouterHash,
+          : _$circleListViewModelHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$AppRouter = AutoDisposeNotifier<GoRouter>;
+typedef _$CircleListViewModel = AutoDisposeAsyncNotifier<CircleListState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
