@@ -16,8 +16,8 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       routerConfig: router,
       theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(), // ここは設定しても無視されます
-      themeMode: ThemeMode.light, // ← これで常にライトモード固定
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.light,
     );
   }
 }
