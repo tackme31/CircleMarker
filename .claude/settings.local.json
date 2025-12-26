@@ -10,7 +10,9 @@
       "mcp__serena__find_symbol",
       "mcp__serena__find_file",
       "Bash(flutter test:*)",
-      "mcp__serena__search_for_pattern"
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__onboarding",
+      "mcp__serena__write_memory"
     ]
   }
 }
