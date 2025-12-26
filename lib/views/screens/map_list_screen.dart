@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:circle_marker/utils/error_handler.dart';
+import 'package:circle_marker/viewModels/map_export_view_model.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
+import 'package:circle_marker/views/widgets/map_export_dialog.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -51,9 +54,28 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          map.title ?? 'No title',
-                          style: Theme.of(context).textTheme.titleMedium,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                map.title ?? 'No title',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'export') {
+                                  _showExportDialog(map.mapId!);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'export',
+                                  child: Text('エクスポート'),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -68,9 +90,21 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _addMap(picker),
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 'import',
+            onPressed: _importMap,
+            child: const Icon(Icons.upload_file),
+          ),
+          const Gap(16),
+          FloatingActionButton(
+            heroTag: 'add',
+            onPressed: () => _addMap(picker),
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }
@@ -186,5 +220,81 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         );
       },
     );
+  }
+
+  /// エクスポートダイアログを表示する
+  void _showExportDialog(int mapId) {
+    showDialog(
+      context: context,
+      builder: (_) => MapExportDialog(mapId: mapId),
+    );
+  }
+
+  /// マップをインポートする
+  Future<void> _importMap() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['cmzip'],
+      );
+
+      if (result == null || result.files.single.path == null) {
+        return;
+      }
+
+      if (!mounted) return;
+
+      // インポート中のローディング表示
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [CircularProgressIndicator(), Gap(16), Text('インポート中...')],
+          ),
+        ),
+      );
+
+      final viewModel = ref.read(mapExportViewModelProvider.notifier);
+      await viewModel.importMap(result.files.single.path!);
+
+      if (!mounted) return;
+      context.pop(); // ローディングダイアログを閉じる
+
+      final state = ref.read(mapExportViewModelProvider);
+      if (state.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        // マップリストを更新
+        await ref.read(mapListViewModelProvider.notifier).refreshMaps();
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('インポートが完了しました')));
+      }
+    } catch (error, stackTrace) {
+      ErrorHandler.handleError(error, stackTrace);
+
+      if (!mounted) return;
+      // ローディングダイアログが表示されていれば閉じる
+      if (Navigator.of(context).canPop()) {
+        context.pop();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ErrorHandler.getUserFriendlyMessage(error)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 }
