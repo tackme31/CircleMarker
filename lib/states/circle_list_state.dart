@@ -7,5 +7,6 @@ part 'circle_list_state.freezed.dart';
 class CircleListState with _$CircleListState {
   const factory CircleListState({
     @Default([]) List<CircleDetail> circles,
+    @Default({}) Map<int, String> mapNames,  // mapId -> map title lookup
   }) = _CircleListState;
 }

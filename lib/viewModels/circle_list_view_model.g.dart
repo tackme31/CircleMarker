@@ -7,7 +7,7 @@ part of 'circle_list_view_model.dart';
 // **************************************************************************
 
 String _$circleListViewModelHash() =>
-    r'45a4bbe208d5e71566936ea577aaf081bf5ccb92';
+    r'c48a344624cf16954e929c216bc35935395ef850';
 
 /// See also [CircleListViewModel].
 @ProviderFor(CircleListViewModel)

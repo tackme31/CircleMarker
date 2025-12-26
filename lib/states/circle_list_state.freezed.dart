@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$CircleListState {
   List<CircleDetail> get circles => throw _privateConstructorUsedError;
+  Map<int, String> get mapNames => throw _privateConstructorUsedError;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +34,7 @@ abstract class $CircleListStateCopyWith<$Res> {
     $Res Function(CircleListState) then,
   ) = _$CircleListStateCopyWithImpl<$Res, CircleListState>;
   @useResult
-  $Res call({List<CircleDetail> circles});
+  $Res call({List<CircleDetail> circles, Map<int, String> mapNames});
 }
 
 /// @nodoc
@@ -50,13 +51,17 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? circles = null}) {
+  $Res call({Object? circles = null, Object? mapNames = null}) {
     return _then(
       _value.copyWith(
             circles: null == circles
                 ? _value.circles
                 : circles // ignore: cast_nullable_to_non_nullable
                       as List<CircleDetail>,
+            mapNames: null == mapNames
+                ? _value.mapNames
+                : mapNames // ignore: cast_nullable_to_non_nullable
+                      as Map<int, String>,
           )
           as $Val,
     );
@@ -72,7 +77,7 @@ abstract class _$$CircleListStateImplCopyWith<$Res>
   ) = __$$CircleListStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<CircleDetail> circles});
+  $Res call({List<CircleDetail> circles, Map<int, String> mapNames});
 }
 
 /// @nodoc
@@ -88,13 +93,17 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? circles = null}) {
+  $Res call({Object? circles = null, Object? mapNames = null}) {
     return _then(
       _$CircleListStateImpl(
         circles: null == circles
             ? _value._circles
             : circles // ignore: cast_nullable_to_non_nullable
                   as List<CircleDetail>,
+        mapNames: null == mapNames
+            ? _value._mapNames
+            : mapNames // ignore: cast_nullable_to_non_nullable
+                  as Map<int, String>,
       ),
     );
   }
@@ -103,8 +112,11 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CircleListStateImpl implements _CircleListState {
-  const _$CircleListStateImpl({final List<CircleDetail> circles = const []})
-    : _circles = circles;
+  const _$CircleListStateImpl({
+    final List<CircleDetail> circles = const [],
+    final Map<int, String> mapNames = const {},
+  }) : _circles = circles,
+       _mapNames = mapNames;
 
   final List<CircleDetail> _circles;
   @override
@@ -115,9 +127,18 @@ class _$CircleListStateImpl implements _CircleListState {
     return EqualUnmodifiableListView(_circles);
   }
 
+  final Map<int, String> _mapNames;
+  @override
+  @JsonKey()
+  Map<int, String> get mapNames {
+    if (_mapNames is EqualUnmodifiableMapView) return _mapNames;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_mapNames);
+  }
+
   @override
   String toString() {
-    return 'CircleListState(circles: $circles)';
+    return 'CircleListState(circles: $circles, mapNames: $mapNames)';
   }
 
   @override
@@ -125,12 +146,16 @@ class _$CircleListStateImpl implements _CircleListState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CircleListStateImpl &&
-            const DeepCollectionEquality().equals(other._circles, _circles));
+            const DeepCollectionEquality().equals(other._circles, _circles) &&
+            const DeepCollectionEquality().equals(other._mapNames, _mapNames));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_circles));
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_circles),
+    const DeepCollectionEquality().hash(_mapNames),
+  );
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.
@@ -145,11 +170,15 @@ class _$CircleListStateImpl implements _CircleListState {
 }
 
 abstract class _CircleListState implements CircleListState {
-  const factory _CircleListState({final List<CircleDetail> circles}) =
-      _$CircleListStateImpl;
+  const factory _CircleListState({
+    final List<CircleDetail> circles,
+    final Map<int, String> mapNames,
+  }) = _$CircleListStateImpl;
 
   @override
   List<CircleDetail> get circles;
+  @override
+  Map<int, String> get mapNames;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.

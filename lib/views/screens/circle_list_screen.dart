@@ -16,12 +16,15 @@ class CircleListScreen extends ConsumerWidget {
           itemCount: value.circles.length,
           itemBuilder: (context, index) {
             final circle = value.circles[index];
-            return ListTile(
-              title: Text(
+            final mapName = circle.mapId != null
+                ? value.mapNames[circle.mapId] ?? 'マップ不明'
+                : 'マップ不明';
+            final circleName =
                 circle.circleName == null || circle.circleName!.isEmpty
-                    ? '名前なし'
-                    : circle.circleName!,
-              ),
+                ? '名前なし'
+                : circle.circleName!;
+            return ListTile(
+              title: Text("[$mapName] $circleName"),
               subtitle: Text(
                 circle.spaceNo == null || circle.spaceNo!.isEmpty
                     ? 'スペース番号なし'
