@@ -16,10 +16,12 @@ class CircleListViewModel extends _$CircleListViewModel {
     SortDirection sortDirection,
     List<int> selectedMapIds,
   ) async {
-    final sortTypeStr = sortType == SortType.mapName ? 'mapName' : 'spaceNo';
-    final sortDirStr = sortDirection == SortDirection.asc ? 'asc' : 'desc';
+    final sortTypeStr = sortType.displayName;
+    final sortDirStr = sortDirection.displayName;
 
-    final circles = await ref.read(circleRepositoryProvider).getAllCirclesSorted(
+    final circles = await ref
+        .read(circleRepositoryProvider)
+        .getAllCirclesSorted(
           sortType: sortTypeStr,
           sortDirection: sortDirStr,
           mapIds: selectedMapIds.isEmpty ? null : selectedMapIds,
@@ -36,16 +38,19 @@ class CircleListViewModel extends _$CircleListViewModel {
     state = const AsyncValue.loading();
     final currentMapIds = state.value?.selectedMapIds ?? [];
     state = await AsyncValue.guard(
-        () => _loadCircles(sortType, sortDirection, currentMapIds));
+      () => _loadCircles(sortType, sortDirection, currentMapIds),
+    );
   }
 
   Future<void> setMapFilter(List<int> mapIds) async {
     state = const AsyncValue.loading();
     final currentState = state.value;
-    state = await AsyncValue.guard(() => _loadCircles(
-          currentState?.sortType ?? SortType.mapName,
-          currentState?.sortDirection ?? SortDirection.asc,
-          mapIds,
-        ));
+    state = await AsyncValue.guard(
+      () => _loadCircles(
+        currentState?.sortType ?? SortType.mapName,
+        currentState?.sortDirection ?? SortDirection.asc,
+        mapIds,
+      ),
+    );
   }
 }
