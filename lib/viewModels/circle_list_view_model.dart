@@ -8,28 +8,44 @@ part 'circle_list_view_model.g.dart';
 class CircleListViewModel extends _$CircleListViewModel {
   @override
   Future<CircleListState> build() async {
-    return _loadCircles(SortType.mapName, SortDirection.asc);
+    return _loadCircles(SortType.mapName, SortDirection.asc, []);
   }
 
   Future<CircleListState> _loadCircles(
     SortType sortType,
     SortDirection sortDirection,
+    List<int> selectedMapIds,
   ) async {
     final sortTypeStr = sortType == SortType.mapName ? 'mapName' : 'spaceNo';
     final sortDirStr = sortDirection == SortDirection.asc ? 'asc' : 'desc';
 
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getAllCirclesSorted(sortType: sortTypeStr, sortDirection: sortDirStr);
+    final circles = await ref.read(circleRepositoryProvider).getAllCirclesSorted(
+          sortType: sortTypeStr,
+          sortDirection: sortDirStr,
+          mapIds: selectedMapIds.isEmpty ? null : selectedMapIds,
+        );
     return CircleListState(
       circles: circles,
       sortType: sortType,
       sortDirection: sortDirection,
+      selectedMapIds: selectedMapIds,
     );
   }
 
   Future<void> setSort(SortType sortType, SortDirection sortDirection) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _loadCircles(sortType, sortDirection));
+    final currentMapIds = state.value?.selectedMapIds ?? [];
+    state = await AsyncValue.guard(
+        () => _loadCircles(sortType, sortDirection, currentMapIds));
+  }
+
+  Future<void> setMapFilter(List<int> mapIds) async {
+    state = const AsyncValue.loading();
+    final currentState = state.value;
+    state = await AsyncValue.guard(() => _loadCircles(
+          currentState?.sortType ?? SortType.mapName,
+          currentState?.sortDirection ?? SortDirection.asc,
+          mapIds,
+        ));
   }
 }

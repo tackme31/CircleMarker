@@ -13,5 +13,6 @@ class CircleListState with _$CircleListState {
     @Default([]) List<CircleWithMapTitle> circles,
     @Default(SortType.mapName) SortType sortType,
     @Default(SortDirection.asc) SortDirection sortDirection,
+    @Default([]) List<int> selectedMapIds,
   }) = _CircleListState;
 }

@@ -20,6 +20,7 @@ mixin _$CircleListState {
   List<CircleWithMapTitle> get circles => throw _privateConstructorUsedError;
   SortType get sortType => throw _privateConstructorUsedError;
   SortDirection get sortDirection => throw _privateConstructorUsedError;
+  List<int> get selectedMapIds => throw _privateConstructorUsedError;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.
@@ -39,6 +40,7 @@ abstract class $CircleListStateCopyWith<$Res> {
     List<CircleWithMapTitle> circles,
     SortType sortType,
     SortDirection sortDirection,
+    List<int> selectedMapIds,
   });
 }
 
@@ -60,6 +62,7 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
     Object? circles = null,
     Object? sortType = null,
     Object? sortDirection = null,
+    Object? selectedMapIds = null,
   }) {
     return _then(
       _value.copyWith(
@@ -75,6 +78,10 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
                 ? _value.sortDirection
                 : sortDirection // ignore: cast_nullable_to_non_nullable
                       as SortDirection,
+            selectedMapIds: null == selectedMapIds
+                ? _value.selectedMapIds
+                : selectedMapIds // ignore: cast_nullable_to_non_nullable
+                      as List<int>,
           )
           as $Val,
     );
@@ -94,6 +101,7 @@ abstract class _$$CircleListStateImplCopyWith<$Res>
     List<CircleWithMapTitle> circles,
     SortType sortType,
     SortDirection sortDirection,
+    List<int> selectedMapIds,
   });
 }
 
@@ -114,6 +122,7 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
     Object? circles = null,
     Object? sortType = null,
     Object? sortDirection = null,
+    Object? selectedMapIds = null,
   }) {
     return _then(
       _$CircleListStateImpl(
@@ -129,6 +138,10 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
             ? _value.sortDirection
             : sortDirection // ignore: cast_nullable_to_non_nullable
                   as SortDirection,
+        selectedMapIds: null == selectedMapIds
+            ? _value._selectedMapIds
+            : selectedMapIds // ignore: cast_nullable_to_non_nullable
+                  as List<int>,
       ),
     );
   }
@@ -141,7 +154,9 @@ class _$CircleListStateImpl implements _CircleListState {
     final List<CircleWithMapTitle> circles = const [],
     this.sortType = SortType.mapName,
     this.sortDirection = SortDirection.asc,
-  }) : _circles = circles;
+    final List<int> selectedMapIds = const [],
+  }) : _circles = circles,
+       _selectedMapIds = selectedMapIds;
 
   final List<CircleWithMapTitle> _circles;
   @override
@@ -158,10 +173,18 @@ class _$CircleListStateImpl implements _CircleListState {
   @override
   @JsonKey()
   final SortDirection sortDirection;
+  final List<int> _selectedMapIds;
+  @override
+  @JsonKey()
+  List<int> get selectedMapIds {
+    if (_selectedMapIds is EqualUnmodifiableListView) return _selectedMapIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedMapIds);
+  }
 
   @override
   String toString() {
-    return 'CircleListState(circles: $circles, sortType: $sortType, sortDirection: $sortDirection)';
+    return 'CircleListState(circles: $circles, sortType: $sortType, sortDirection: $sortDirection, selectedMapIds: $selectedMapIds)';
   }
 
   @override
@@ -173,7 +196,11 @@ class _$CircleListStateImpl implements _CircleListState {
             (identical(other.sortType, sortType) ||
                 other.sortType == sortType) &&
             (identical(other.sortDirection, sortDirection) ||
-                other.sortDirection == sortDirection));
+                other.sortDirection == sortDirection) &&
+            const DeepCollectionEquality().equals(
+              other._selectedMapIds,
+              _selectedMapIds,
+            ));
   }
 
   @override
@@ -182,6 +209,7 @@ class _$CircleListStateImpl implements _CircleListState {
     const DeepCollectionEquality().hash(_circles),
     sortType,
     sortDirection,
+    const DeepCollectionEquality().hash(_selectedMapIds),
   );
 
   /// Create a copy of CircleListState
@@ -201,6 +229,7 @@ abstract class _CircleListState implements CircleListState {
     final List<CircleWithMapTitle> circles,
     final SortType sortType,
     final SortDirection sortDirection,
+    final List<int> selectedMapIds,
   }) = _$CircleListStateImpl;
 
   @override
@@ -209,6 +238,8 @@ abstract class _CircleListState implements CircleListState {
   SortType get sortType;
   @override
   SortDirection get sortDirection;
+  @override
+  List<int> get selectedMapIds;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.

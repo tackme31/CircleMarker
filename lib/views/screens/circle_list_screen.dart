@@ -1,3 +1,4 @@
+import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/states/circle_list_state.dart';
 import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
@@ -15,6 +16,14 @@ class CircleListScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('サークル'),
         actions: [
+          state.when(
+            data: (data) => IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showMapFilterDialog(context, ref, data),
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
           state.when(
             data: (data) => PopupMenuButton<String>(
               icon: const Icon(Icons.sort),
@@ -96,46 +105,148 @@ class CircleListScreen extends ConsumerWidget {
         ],
       ),
       body: switch (state) {
-        AsyncData(:final value) => ListView.builder(
-          itemCount: value.circles.length,
-          itemBuilder: (context, index) {
-            final circle = value.circles[index].circle;
-            final mapName = value.circles[index].mapTitle ?? 'マップ名なし';
-            final circleName =
-                circle.circleName == null || circle.circleName!.isEmpty
-                ? '名前なし'
-                : circle.circleName!;
-            return ListTile(
-              title: Text("[$mapName] $circleName"),
-              subtitle: Text(
-                circle.spaceNo == null || circle.spaceNo!.isEmpty
-                    ? 'スペース番号なし'
-                    : circle.spaceNo!,
+        AsyncData(:final value) => Column(
+          children: [
+            if (value.selectedMapIds.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 8.0),
+                child: Wrap(
+                  spacing: 8.0,
+                  children: [
+                    Chip(
+                      label: Text(
+                          'フィルター: ${value.selectedMapIds.length}個の配置図'),
+                      deleteIcon: const Icon(Icons.close, size: 18),
+                      onDeleted: () {
+                        ref
+                            .read(circleListViewModelProvider.notifier)
+                            .setMapFilter([]);
+                      },
+                    ),
+                  ],
+                ),
               ),
-              onTap: circle.mapId != null && circle.circleId != null
-                  ? () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => CircleBottomSheet(
-                          circle.mapId!,
-                          circle.circleId,
-                          circleId: circle.circleId!,
-                          width: 0.8,
-                          height: 0.7,
-                          isDeletable: false,
-                        ),
-                      );
-                      // リスト更新
-                      ref.invalidate(circleListViewModelProvider);
-                    }
-                  : null,
-            );
-          },
+            Expanded(
+              child: ListView.builder(
+                itemCount: value.circles.length,
+                itemBuilder: (context, index) {
+                  final circle = value.circles[index].circle;
+                  final mapName = value.circles[index].mapTitle ?? 'マップ名なし';
+                  final circleName =
+                      circle.circleName == null || circle.circleName!.isEmpty
+                      ? '名前なし'
+                      : circle.circleName!;
+                  return ListTile(
+                    title: Text("[$mapName] $circleName"),
+                    subtitle: Text(
+                      circle.spaceNo == null || circle.spaceNo!.isEmpty
+                          ? 'スペース番号なし'
+                          : circle.spaceNo!,
+                    ),
+                    onTap: circle.mapId != null && circle.circleId != null
+                        ? () async {
+                            await showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (context) => CircleBottomSheet(
+                                circle.mapId!,
+                                circle.circleId,
+                                circleId: circle.circleId!,
+                                width: 0.8,
+                                height: 0.7,
+                                isDeletable: false,
+                              ),
+                            );
+                            // リスト更新
+                            ref.invalidate(circleListViewModelProvider);
+                          }
+                        : null,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
         AsyncError(:final error) => Center(child: Text('エラー: $error')),
         _ => const Center(child: CircularProgressIndicator()),
       },
+    );
+  }
+
+  Future<void> _showMapFilterDialog(
+      BuildContext context, WidgetRef ref, CircleListState state) async {
+    final maps = await ref.read(mapRepositoryProvider).getMapDetails();
+    if (!context.mounted) return;
+
+    final selectedMapIds = List<int>.from(state.selectedMapIds);
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('配置図でフィルター'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CheckboxListTile(
+                    title: const Text('すべて選択'),
+                    value: selectedMapIds.isEmpty,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedMapIds.clear();
+                        } else {
+                          selectedMapIds.clear();
+                          selectedMapIds.addAll(maps
+                              .where((m) => m.mapId != null)
+                              .map((m) => m.mapId!)
+                              .toList());
+                        }
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  ...maps.where((m) => m.mapId != null).map((map) {
+                    final isSelected = selectedMapIds.contains(map.mapId!);
+                    return CheckboxListTile(
+                      title: Text(map.title ?? 'マップ名なし'),
+                      value: isSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value == true) {
+                            selectedMapIds.add(map.mapId!);
+                          } else {
+                            selectedMapIds.remove(map.mapId!);
+                          }
+                        });
+                      },
+                    );
+                  }),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('キャンセル'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await ref
+                      .read(circleListViewModelProvider.notifier)
+                      .setMapFilter(selectedMapIds);
+                },
+                child: const Text('適用'),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

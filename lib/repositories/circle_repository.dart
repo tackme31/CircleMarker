@@ -56,11 +56,21 @@ class CircleRepository {
   Future<List<CircleWithMapTitle>> getAllCirclesSorted({
     required String sortType, // 'mapName' or 'spaceNo'
     required String sortDirection, // 'asc' or 'desc'
+    List<int>? mapIds, // Filter by map IDs (empty or null = all maps)
     int? offset,
     int? limit,
   }) async {
     try {
       final db = await _ref.read(databaseProvider.future);
+
+      // Build WHERE clause for map filtering
+      String whereClause = '';
+      List<Object?> whereArgs = [];
+      if (mapIds != null && mapIds.isNotEmpty) {
+        final placeholders = List.filled(mapIds.length, '?').join(', ');
+        whereClause = 'WHERE c.mapId IN ($placeholders)';
+        whereArgs = mapIds;
+      }
 
       // Build ORDER BY clause
       String orderByClause;
@@ -92,11 +102,12 @@ class CircleRepository {
         SELECT c.*, m.title AS mapTitle
         FROM $_tableName c
         LEFT JOIN map_detail m ON c.mapId = m.mapId
+        $whereClause
         ORDER BY $orderByClause
         $limitClause
       ''';
 
-      final result = await db.rawQuery(query);
+      final result = await db.rawQuery(query, whereArgs);
       return result
           .map(
             (row) => CircleWithMapTitle(
