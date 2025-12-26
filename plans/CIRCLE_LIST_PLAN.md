@@ -184,39 +184,35 @@ lib/
 
 ### Phase 4: フィルター機能
 
-**目標**: isDone状態・配置図でフィルタリング
+**目標**: 配置図でフィルタリング
 
 #### 実装内容
 
 1. **State拡張** (`lib/states/circle_list_state.dart`)
    ```dart
-   enum FilterType { all, done, notDone }
-
    @freezed
    class CircleListState with _$CircleListState {
      const factory CircleListState({
        required List<CircleDetail> circles,
+       required List<int> selectedMapIds,  // 追加（空 = 全配置図）
        @Default(SortType.name) SortType sortType,
-       @Default(FilterType.all) FilterType filterType,  // 追加
-       int? selectedMapId,  // 追加（null = 全配置図）
+       @Default(SortDirection.asc) SorDirection sortDirection
      }) = _CircleListState;
    }
    ```
 
 2. **ViewModel拡張** (`lib/viewModels/circle_list_view_model.dart`)
-   - `setFilterType(FilterType type)` メソッド追加
-   - `setMapFilter(int? mapId)` メソッド追加
+   - `setMapFilter(List<int> mapIds)` メソッド追加
    - フィルタリングロジック実装
 
 3. **Screen拡張** (`lib/views/screens/circle_list_screen.dart`)
-   - フィルターチップUI追加（`FilterChip`使用）
-   - 配置図選択ドロップダウン追加（`DropdownButton`）
+   - チェックボックスリストで全配置図を表示
+   - 選択後、OKを押す（あるいは何かしらのインタラクション）でフィルター実行
 
 #### 動作確認項目
 - [ ] 全サークル表示される（デフォルト）
-- [ ] 完了済みのみフィルタリングされる
-- [ ] 未完了のみフィルタリングされる
-- [ ] 特定配置図のサークルのみ表示される
+- [ ] 選択肢に全配置図名が表示される
+- [ ] 指定した配置図のサークルのみ表示される
 - [ ] フィルター + ソート併用が機能する
 
 #### 注意事項
