@@ -1,6 +1,7 @@
 import 'package:circle_marker/exceptions/app_exceptions.dart';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/providers/database_provider.dart';
+import 'package:circle_marker/repositories/circle_with_map_title.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -49,6 +50,67 @@ class CircleRepository {
       rethrow;
     } on Exception catch (e) {
       throw AppException('Unexpected error while loading all circles', e);
+    }
+  }
+
+  Future<List<CircleWithMapTitle>> getAllCirclesSorted({
+    required String sortType, // 'mapName' or 'spaceNo'
+    required String sortDirection, // 'asc' or 'desc'
+    int? offset,
+    int? limit,
+  }) async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+
+      // Build ORDER BY clause
+      String orderByClause;
+      if (sortType == 'mapName') {
+        // Join with map_detail to sort by map title
+        // Handle null map titles by putting them at the end regardless of direction
+        orderByClause = sortDirection == 'asc'
+            ? 'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title ASC'
+            : 'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title DESC';
+      } else {
+        // Sort by spaceNo
+        // Handle null spaceNo by putting them at the end regardless of direction
+        orderByClause = sortDirection == 'asc'
+            ? 'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo ASC'
+            : 'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo DESC';
+      }
+
+      // Build LIMIT/OFFSET clause for future virtual list support
+      String limitClause = '';
+      if (limit != null) {
+        limitClause = 'LIMIT $limit';
+        if (offset != null) {
+          limitClause += ' OFFSET $offset';
+        }
+      }
+
+      final query =
+          '''
+        SELECT c.*, m.title AS mapTitle
+        FROM $_tableName c
+        LEFT JOIN map_detail m ON c.mapId = m.mapId
+        ORDER BY $orderByClause
+        $limitClause
+      ''';
+
+      final result = await db.rawQuery(query);
+      return result
+          .map(
+            (row) => CircleWithMapTitle(
+              circle: CircleDetail.fromJson(row),
+              mapTitle: row['mapTitle'] as String?,
+            ),
+          )
+          .toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to load sorted circles', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while loading sorted circles', e);
     }
   }
 

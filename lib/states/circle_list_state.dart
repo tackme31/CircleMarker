@@ -1,12 +1,17 @@
-import 'package:circle_marker/models/circle_detail.dart';
+import 'package:circle_marker/repositories/circle_with_map_title.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'circle_list_state.freezed.dart';
 
+enum SortType { mapName, spaceNo }
+
+enum SortDirection { asc, desc }
+
 @freezed
 class CircleListState with _$CircleListState {
   const factory CircleListState({
-    @Default([]) List<CircleDetail> circles,
-    @Default({}) Map<int, String> mapNames,  // mapId -> map title lookup
+    @Default([]) List<CircleWithMapTitle> circles,
+    @Default(SortType.mapName) SortType sortType,
+    @Default(SortDirection.asc) SortDirection sortDirection,
   }) = _CircleListState;
 }
