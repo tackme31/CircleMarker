@@ -96,8 +96,9 @@ class MapExportRepository {
 
     // 5. Downloads フォルダに保存
     final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final sanitizedTitle = _sanitizeFileName(exportData.content.map.title);
     final outputPath =
-        '/storage/emulated/0/Download/map_export_${mapId}_$timestamp.cmzip';
+        '/storage/emulated/0/Download/circle_marker_${sanitizedTitle}_${mapId}_$timestamp.cmzip';
     final outputFile = File(outputPath);
     await outputFile.writeAsBytes(zipData);
 
@@ -272,5 +273,10 @@ class MapExportRepository {
       final bytes = await file.readAsBytes();
       archive.addFile(ArchiveFile(archivePath, bytes.length, bytes));
     }
+  }
+
+  String _sanitizeFileName(String input) {
+    final illegalChars = RegExp(r'[\\/:*?"<>|]');
+    return input.replaceAll(illegalChars, '_').trim();
   }
 }
