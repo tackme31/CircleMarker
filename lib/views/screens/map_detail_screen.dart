@@ -1,11 +1,8 @@
-import 'dart:io';
-
+import 'package:circle_marker/viewModels/circle_view_model.dart';
 import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
-import 'package:circle_marker/views/widgets/circle_box.dart';
-import 'package:circle_marker/views/widgets/draggable_line.dart';
+import 'package:circle_marker/views/widgets/circle_marker.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
-import 'package:circle_marker/views/widgets/pixel_positioned.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -184,8 +181,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
       source: ImageSource.gallery,
     );
     if (pickedFile != null) {
-      final newImage = FileImage(File(pickedFile.path));
-      await viewModel.updateCircleImage(circleId, newImage.file.path);
+      await ref
+          .read(circleViewModelProvider(circleId).notifier)
+          .updateImage(pickedFile.path);
     }
   }
 
@@ -277,77 +275,19 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          ...value.circles.map((circle) {
-                            return Opacity(
-                              key: Key(circle.circleId.toString()),
-                              opacity:
+                          ...value.circleIds.map((circleId) {
+                            return CircleMarker(
+                              key: Key(circleId.toString()),
+                              circleId: circleId,
+                              imageOriginalSize: value.baseImageSize,
+                              imageDisplaySize: imageDisplaySize,
+                              dragIconScale:
+                                  _transformController.value.getMaxScaleOnAxis(),
+                              isSelected:
                                   selectedCircleId == null ||
-                                      selectedCircleId == circle.circleId
-                                  ? 1.0
-                                  : 0.5,
-                              child: Stack(
-                                children: [
-                                  DraggableLine(
-                                    startPixelX:
-                                        circle.positionX! +
-                                        circle.sizeWidth! ~/ 2,
-                                    startPixelY:
-                                        circle.positionY! +
-                                        circle.sizeHeight! ~/ 2,
-                                    endPixelX: circle.pointerX!,
-                                    endPixelY: circle.pointerY!,
-                                    imageOriginalSize: value.baseImageSize,
-                                    imageDisplaySize: imageDisplaySize,
-                                    dragIconScale: _transformController.value
-                                        .getMaxScaleOnAxis(),
-                                    showIcon:
-                                        selectedCircleId == circle.circleId,
-                                    onEndPointDragEnd: (newEndX, newEndY) {
-                                      viewModel.updateCirclePointer(
-                                        circle.circleId!,
-                                        newEndX,
-                                        newEndY,
-                                      );
-                                    },
-                                  ),
-                                  PixelPositioned(
-                                    pixelX: circle.positionX!,
-                                    pixelY: circle.positionY!,
-                                    imageDisplaySize: imageDisplaySize,
-                                    imageOriginalSize: value.baseImageSize,
-                                    onTap: () =>
-                                        _onCircleTap(context, circle.circleId!),
-                                    onDragEnd: (x, y) async {
-                                      await viewModel.updateCirclePosition(
-                                        circle.circleId!,
-                                        x,
-                                        y,
-                                      );
-                                    },
-                                    child: Container(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CircleBox(
-                                            circle: circle,
-                                            imageDisplaySize: imageDisplaySize,
-                                            imageOriginalSize:
-                                                value.baseImageSize,
-                                            onLongPress: () {
-                                              _pickCircleImage(
-                                                circle.circleId!,
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                  selectedCircleId == circleId,
+                              onTap: () => _onCircleTap(context, circleId),
+                              onLongPress: () => _pickCircleImage(circleId),
                             );
                           }),
                           // ここに図形を追加

@@ -1626,7 +1626,7 @@ ref.invalidateSelf() → Widget rebuild
 - [x] P1-4: 静的解析設定 (1日)
 
 ### Week 3-4: テストと品質向上
-- [ ] P2-1: Riverpod Family パターン導入 (5日)
+- [x] P2-1: Riverpod Family パターン導入 (5日)
 - [ ] P2-2: 座標変換ロジック分離 (2日)
 - [ ] P2-3: ユニットテスト追加 (3日)
 - [ ] P2-4: マジックナンバー定数化 (1日)

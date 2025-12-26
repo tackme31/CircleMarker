@@ -1,8 +1,49 @@
 import 'dart:io';
 
 import 'package:circle_marker/models/circle_detail.dart';
+import 'package:circle_marker/viewModels/circle_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+/// 個別サークルを Consumer として管理するラッパーウィジェット
+///
+/// Riverpod Family パターンを使用して、各サークルを独立して watch します。
+/// これにより、1つのサークル更新時に他のサークルが再描画されることを防ぎます。
+class CircleBoxWrapper extends ConsumerWidget {
+  const CircleBoxWrapper({
+    super.key,
+    required this.circleId,
+    required this.imageOriginalSize,
+    required this.imageDisplaySize,
+    this.onLongPress,
+  });
+
+  final int circleId;
+  final Size imageOriginalSize;
+  final Size imageDisplaySize;
+  final void Function()? onLongPress;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final circleAsync = ref.watch(circleViewModelProvider(circleId));
+
+    return circleAsync.when(
+      data: (circle) => CircleBox(
+        circle: circle,
+        imageOriginalSize: imageOriginalSize,
+        imageDisplaySize: imageDisplaySize,
+        onLongPress: onLongPress,
+      ),
+      loading: () => const SizedBox.shrink(),
+      error: (error, stack) => const Icon(Icons.error, color: Colors.red),
+    );
+  }
+}
+
+/// サークルボックスのプレゼンテーション層ウィジェット
+///
+/// このウィジェットは純粋なプレゼンテーション層として、
+/// サークルデータを表示します。
 class CircleBox extends StatelessWidget {
   const CircleBox({
     super.key,

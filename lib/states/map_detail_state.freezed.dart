@@ -20,7 +20,7 @@ mixin _$MapDetailState {
   MapDetail get mapDetail => throw _privateConstructorUsedError;
   File get baseImage => throw _privateConstructorUsedError;
   Size get baseImageSize => throw _privateConstructorUsedError;
-  List<CircleDetail> get circles => throw _privateConstructorUsedError;
+  List<int> get circleIds => throw _privateConstructorUsedError;
 
   /// Create a copy of MapDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -40,7 +40,7 @@ abstract class $MapDetailStateCopyWith<$Res> {
     MapDetail mapDetail,
     File baseImage,
     Size baseImageSize,
-    List<CircleDetail> circles,
+    List<int> circleIds,
   });
 
   $MapDetailCopyWith<$Res> get mapDetail;
@@ -64,7 +64,7 @@ class _$MapDetailStateCopyWithImpl<$Res, $Val extends MapDetailState>
     Object? mapDetail = null,
     Object? baseImage = null,
     Object? baseImageSize = null,
-    Object? circles = null,
+    Object? circleIds = null,
   }) {
     return _then(
       _value.copyWith(
@@ -80,10 +80,10 @@ class _$MapDetailStateCopyWithImpl<$Res, $Val extends MapDetailState>
                 ? _value.baseImageSize
                 : baseImageSize // ignore: cast_nullable_to_non_nullable
                       as Size,
-            circles: null == circles
-                ? _value.circles
-                : circles // ignore: cast_nullable_to_non_nullable
-                      as List<CircleDetail>,
+            circleIds: null == circleIds
+                ? _value.circleIds
+                : circleIds // ignore: cast_nullable_to_non_nullable
+                      as List<int>,
           )
           as $Val,
     );
@@ -113,7 +113,7 @@ abstract class _$$MapDetailStateImplCopyWith<$Res>
     MapDetail mapDetail,
     File baseImage,
     Size baseImageSize,
-    List<CircleDetail> circles,
+    List<int> circleIds,
   });
 
   @override
@@ -137,7 +137,7 @@ class __$$MapDetailStateImplCopyWithImpl<$Res>
     Object? mapDetail = null,
     Object? baseImage = null,
     Object? baseImageSize = null,
-    Object? circles = null,
+    Object? circleIds = null,
   }) {
     return _then(
       _$MapDetailStateImpl(
@@ -153,10 +153,10 @@ class __$$MapDetailStateImplCopyWithImpl<$Res>
             ? _value.baseImageSize
             : baseImageSize // ignore: cast_nullable_to_non_nullable
                   as Size,
-        circles: null == circles
-            ? _value._circles
-            : circles // ignore: cast_nullable_to_non_nullable
-                  as List<CircleDetail>,
+        circleIds: null == circleIds
+            ? _value._circleIds
+            : circleIds // ignore: cast_nullable_to_non_nullable
+                  as List<int>,
       ),
     );
   }
@@ -169,8 +169,8 @@ class _$MapDetailStateImpl implements _MapDetailState {
     required this.mapDetail,
     required this.baseImage,
     required this.baseImageSize,
-    required final List<CircleDetail> circles,
-  }) : _circles = circles;
+    required final List<int> circleIds,
+  }) : _circleIds = circleIds;
 
   @override
   final MapDetail mapDetail;
@@ -178,17 +178,17 @@ class _$MapDetailStateImpl implements _MapDetailState {
   final File baseImage;
   @override
   final Size baseImageSize;
-  final List<CircleDetail> _circles;
+  final List<int> _circleIds;
   @override
-  List<CircleDetail> get circles {
-    if (_circles is EqualUnmodifiableListView) return _circles;
+  List<int> get circleIds {
+    if (_circleIds is EqualUnmodifiableListView) return _circleIds;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_circles);
+    return EqualUnmodifiableListView(_circleIds);
   }
 
   @override
   String toString() {
-    return 'MapDetailState(mapDetail: $mapDetail, baseImage: $baseImage, baseImageSize: $baseImageSize, circles: $circles)';
+    return 'MapDetailState(mapDetail: $mapDetail, baseImage: $baseImage, baseImageSize: $baseImageSize, circleIds: $circleIds)';
   }
 
   @override
@@ -202,7 +202,10 @@ class _$MapDetailStateImpl implements _MapDetailState {
                 other.baseImage == baseImage) &&
             (identical(other.baseImageSize, baseImageSize) ||
                 other.baseImageSize == baseImageSize) &&
-            const DeepCollectionEquality().equals(other._circles, _circles));
+            const DeepCollectionEquality().equals(
+              other._circleIds,
+              _circleIds,
+            ));
   }
 
   @override
@@ -211,7 +214,7 @@ class _$MapDetailStateImpl implements _MapDetailState {
     mapDetail,
     baseImage,
     baseImageSize,
-    const DeepCollectionEquality().hash(_circles),
+    const DeepCollectionEquality().hash(_circleIds),
   );
 
   /// Create a copy of MapDetailState
@@ -231,7 +234,7 @@ abstract class _MapDetailState implements MapDetailState {
     required final MapDetail mapDetail,
     required final File baseImage,
     required final Size baseImageSize,
-    required final List<CircleDetail> circles,
+    required final List<int> circleIds,
   }) = _$MapDetailStateImpl;
 
   @override
@@ -241,7 +244,7 @@ abstract class _MapDetailState implements MapDetailState {
   @override
   Size get baseImageSize;
   @override
-  List<CircleDetail> get circles;
+  List<int> get circleIds;
 
   /// Create a copy of MapDetailState
   /// with the given fields replaced by the non-null parameter values.

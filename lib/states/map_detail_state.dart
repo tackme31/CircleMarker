@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/models/map_detail.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,6 +12,6 @@ class MapDetailState with _$MapDetailState {
     required MapDetail mapDetail,
     required File baseImage,
     required Size baseImageSize,
-    required List<CircleDetail> circles,
+    required List<int> circleIds,
   }) = _MapDetailState;
 }

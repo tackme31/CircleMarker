@@ -37,6 +37,29 @@ class CircleRepository {
     }
   }
 
+  Future<CircleDetail> getCircle(int circleId) async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+      final circles = await db.query(
+        _tableName,
+        where: 'circleId = ?',
+        whereArgs: [circleId],
+      );
+
+      if (circles.isEmpty) {
+        throw AppException('Circle not found: $circleId');
+      }
+
+      return CircleDetail.fromJson(circles.first);
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to load circle', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while loading circle', e);
+    }
+  }
+
   Future<CircleDetail> insertCircleDetail(CircleDetail circleDetail) async {
     try {
       final db = await _ref.read(databaseProvider.future);

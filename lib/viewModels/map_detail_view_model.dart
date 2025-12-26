@@ -3,14 +3,22 @@ import 'dart:io';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/repositories/circle_repository.dart';
 import 'package:circle_marker/repositories/map_repository.dart';
-import 'package:circle_marker/repositories/image_repository.dart';
 import 'package:circle_marker/states/map_detail_state.dart';
-import 'package:circle_marker/exceptions/app_exceptions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter/material.dart';
 
 part 'map_detail_view_model.g.dart';
 
+/// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+///
+/// このクラスは以下の責務を持つ:
+/// - マップとサークル ID リストの読み込み
+/// - サークルの追加・削除
+/// - マップ情報の更新
+///
+/// ## 状態管理
+/// - [MapDetailState] を通じてマップと ID リストを保持
+/// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
 @riverpod
 class MapDetailViewModel extends _$MapDetailViewModel {
   @override
@@ -32,10 +40,20 @@ class MapDetailViewModel extends _$MapDetailViewModel {
       mapDetail: map,
       baseImage: file,
       baseImageSize: baseImageSize,
-      circles: circles,
+      circleIds: circles.map((c) => c.circleId!).toList(),
     );
   }
 
+  /// 新規サークルを追加する
+  ///
+  /// [mapId] マップ ID
+  /// [positionX] 画像座標系での X 位置
+  /// [positionY] 画像座標系での Y 位置
+  /// [sizeHeight] サークルの高さ
+  /// [sizeWidth] サークルの幅
+  ///
+  /// ## Returns
+  /// 追加されたサークルの詳細
   Future<CircleDetail> addCircleDetail(
     int mapId,
     int positionX,
@@ -61,23 +79,35 @@ class MapDetailViewModel extends _$MapDetailViewModel {
         .read(circleRepositoryProvider)
         .insertCircleDetail(circleDetail);
 
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(circleDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
+    // ID リストに追加
+    final currentState = await future;
+    state = AsyncData(
+      currentState.copyWith(
+        circleIds: [...currentState.circleIds, insertedCircle.circleId!],
+      ),
+    );
 
     return insertedCircle;
   }
 
+  /// サークルを削除する
+  ///
+  /// [circleId] 削除するサークルの ID
   Future<void> removeCircle(int circleId) async {
     await ref.read(circleRepositoryProvider).deleteCircle(circleId);
 
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
+    // ID リストから削除
+    final currentState = await future;
+    state = AsyncData(
+      currentState.copyWith(
+        circleIds: currentState.circleIds.where((id) => id != circleId).toList(),
+      ),
+    );
   }
 
+  /// マップタイトルを更新する
+  ///
+  /// [title] 新しいタイトル
   Future<void> updateMapTile(String title) async {
     final updatedMap = state.value!.mapDetail.copyWith(title: title);
     final result = await ref
@@ -85,126 +115,5 @@ class MapDetailViewModel extends _$MapDetailViewModel {
         .updateMapDetail(updatedMap);
 
     state = AsyncData(state.value!.copyWith(mapDetail: result));
-  }
-
-  Future<void> updateCirclePosition(
-    int circleId,
-    int positionX,
-    int positionY,
-  ) async {
-    await ref
-        .read(circleRepositoryProvider)
-        .updatePosition(circleId, positionX, positionY);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
-  }
-
-  Future<void> updateCirclePointer(
-    int circleId,
-    int pointerX,
-    int pointerY,
-  ) async {
-    await ref
-        .read(circleRepositoryProvider)
-        .updatePointer(circleId, pointerX, pointerY);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
-  }
-
-  Future<void> updateCircleName(int circleId, String circleName) async {
-    await ref
-        .read(circleRepositoryProvider)
-        .updateCircleName(circleId, circleName);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
-  }
-
-  Future<void> updateCircleSpaceNo(int circleId, String spaceNo) async {
-    await ref.read(circleRepositoryProvider).updateSpaceNo(circleId, spaceNo);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
-  }
-
-  Future<void> updateCircleNote(int circleId, String note) async {
-    await ref.read(circleRepositoryProvider).updateNote(circleId, note);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
-  }
-
-  Future<void> updateCircleDescription(int circleId, String description) async {
-    await ref
-        .read(circleRepositoryProvider)
-        .updateDescription(circleId, description);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
-  }
-
-  Future<void> updateCircleImage(int circleId, String imagePath) async {
-    try {
-      // ImageRepository で画像を圧縮保存
-      final compressedPath = await ref
-          .read(imageRepositoryProvider.notifier)
-          .saveCircleImage(imagePath);
-
-      await ref
-          .read(circleRepositoryProvider)
-          .updateImagePath(circleId, compressedPath);
-
-      final circles = await ref
-          .read(circleRepositoryProvider)
-          .getCircles(state.value!.mapDetail.mapId!);
-      state = AsyncData(state.value!.copyWith(circles: circles));
-    } on ImageOperationException catch (e) {
-      debugPrint('Failed to update circle image: $e');
-      rethrow;
-    }
-  }
-
-  Future<void> updateCircleMenuImage(int circleId, String menuImagePath) async {
-    try {
-      // ImageRepository で画像を圧縮保存
-      final compressedPath = await ref
-          .read(imageRepositoryProvider.notifier)
-          .saveCircleImage(menuImagePath);
-
-      await ref
-          .read(circleRepositoryProvider)
-          .updateMenuImagePath(circleId, compressedPath);
-
-      final circles = await ref
-          .read(circleRepositoryProvider)
-          .getCircles(state.value!.mapDetail.mapId!);
-      state = AsyncData(state.value!.copyWith(circles: circles));
-    } on ImageOperationException catch (e) {
-      debugPrint('Failed to update menu image: $e');
-      rethrow;
-    }
-  }
-
-  Future<void> updateIsDone(int circleId, bool isDone) async {
-    await ref.read(circleRepositoryProvider).updateIsDone(circleId, isDone);
-
-    final circles = await ref
-        .read(circleRepositoryProvider)
-        .getCircles(state.value!.mapDetail.mapId!);
-    state = AsyncData(state.value!.copyWith(circles: circles));
   }
 }

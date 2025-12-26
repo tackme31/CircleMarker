@@ -7,7 +7,7 @@ part of 'map_detail_view_model.dart';
 // **************************************************************************
 
 String _$mapDetailViewModelHash() =>
-    r'47dd616ded4bfb2c295b341872d3ab6b73d724ed';
+    r'5126217faeee9c72d257829bfb543c3e7784d808';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -37,16 +37,60 @@ abstract class _$MapDetailViewModel
   FutureOr<MapDetailState> build(int mapId);
 }
 
-/// See also [MapDetailViewModel].
+/// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+///
+/// このクラスは以下の責務を持つ:
+/// - マップとサークル ID リストの読み込み
+/// - サークルの追加・削除
+/// - マップ情報の更新
+///
+/// ## 状態管理
+/// - [MapDetailState] を通じてマップと ID リストを保持
+/// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
+///
+/// Copied from [MapDetailViewModel].
 @ProviderFor(MapDetailViewModel)
 const mapDetailViewModelProvider = MapDetailViewModelFamily();
 
-/// See also [MapDetailViewModel].
+/// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+///
+/// このクラスは以下の責務を持つ:
+/// - マップとサークル ID リストの読み込み
+/// - サークルの追加・削除
+/// - マップ情報の更新
+///
+/// ## 状態管理
+/// - [MapDetailState] を通じてマップと ID リストを保持
+/// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
+///
+/// Copied from [MapDetailViewModel].
 class MapDetailViewModelFamily extends Family<AsyncValue<MapDetailState>> {
-  /// See also [MapDetailViewModel].
+  /// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+  ///
+  /// このクラスは以下の責務を持つ:
+  /// - マップとサークル ID リストの読み込み
+  /// - サークルの追加・削除
+  /// - マップ情報の更新
+  ///
+  /// ## 状態管理
+  /// - [MapDetailState] を通じてマップと ID リストを保持
+  /// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
+  ///
+  /// Copied from [MapDetailViewModel].
   const MapDetailViewModelFamily();
 
-  /// See also [MapDetailViewModel].
+  /// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+  ///
+  /// このクラスは以下の責務を持つ:
+  /// - マップとサークル ID リストの読み込み
+  /// - サークルの追加・削除
+  /// - マップ情報の更新
+  ///
+  /// ## 状態管理
+  /// - [MapDetailState] を通じてマップと ID リストを保持
+  /// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
+  ///
+  /// Copied from [MapDetailViewModel].
   MapDetailViewModelProvider call(int mapId) {
     return MapDetailViewModelProvider(mapId);
   }
@@ -73,14 +117,36 @@ class MapDetailViewModelFamily extends Family<AsyncValue<MapDetailState>> {
   String? get name => r'mapDetailViewModelProvider';
 }
 
-/// See also [MapDetailViewModel].
+/// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+///
+/// このクラスは以下の責務を持つ:
+/// - マップとサークル ID リストの読み込み
+/// - サークルの追加・削除
+/// - マップ情報の更新
+///
+/// ## 状態管理
+/// - [MapDetailState] を通じてマップと ID リストを保持
+/// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
+///
+/// Copied from [MapDetailViewModel].
 class MapDetailViewModelProvider
     extends
         AutoDisposeAsyncNotifierProviderImpl<
           MapDetailViewModel,
           MapDetailState
         > {
-  /// See also [MapDetailViewModel].
+  /// マップ詳細画面の状態とビジネスロジックを管理する ViewModel
+  ///
+  /// このクラスは以下の責務を持つ:
+  /// - マップとサークル ID リストの読み込み
+  /// - サークルの追加・削除
+  /// - マップ情報の更新
+  ///
+  /// ## 状態管理
+  /// - [MapDetailState] を通じてマップと ID リストを保持
+  /// - 個別サークルは [CircleViewModel] で管理（Riverpod Family パターン）
+  ///
+  /// Copied from [MapDetailViewModel].
   MapDetailViewModelProvider(int mapId)
     : this._internal(
         () => MapDetailViewModel()..mapId = mapId,
