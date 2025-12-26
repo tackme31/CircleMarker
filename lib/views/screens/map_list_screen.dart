@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:circle_marker/utils/error_handler.dart';
 import 'package:circle_marker/viewModels/map_export_view_model.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
+import 'package:circle_marker/viewModels/markdown_output_view_model.dart';
 import 'package:circle_marker/views/widgets/map_export_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                               ),
                             ),
                             PopupMenuButton<String>(
-                              onSelected: (value) {
+                              onSelected: (value) async {
                                 switch (value) {
                                   case 'delete':
                                     _deleteMap(map);
@@ -68,10 +69,17 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                   case 'export':
                                     _showExportDialog(map.mapId!);
                                     break;
+                                  case 'markdown':
+                                    await _generateMarkdown(map.mapId!);
+                                    break;
                                   default:
                                 }
                               },
                               itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'markdown',
+                                  child: Text('Markdownで出力'),
+                                ),
                                 const PopupMenuItem(
                                   value: 'export',
                                   child: Text('エクスポート'),
@@ -295,6 +303,37 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         context.pop();
       }
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ErrorHandler.getUserFriendlyMessage(error)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  /// Markdown出力を実行する
+  Future<void> _generateMarkdown(int mapId) async {
+    try {
+      await ref
+          .read(markdownOutputViewModelProvider.notifier)
+          .generateAndShare(mapId);
+
+      // エラー時のスナックバー表示
+      final state = ref.read(markdownOutputViewModelProvider);
+      if (state.errorMessage != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error, stackTrace) {
+      ErrorHandler.handleError(error, stackTrace);
+
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ErrorHandler.getUserFriendlyMessage(error)),
