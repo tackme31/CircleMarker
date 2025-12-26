@@ -17,6 +17,7 @@ class CircleMarker extends ConsumerWidget {
     required this.imageDisplaySize,
     required this.dragIconScale,
     required this.isSelected,
+    required this.opacity,
     required this.onTap,
     required this.onLongPress,
   });
@@ -26,6 +27,7 @@ class CircleMarker extends ConsumerWidget {
   final Size imageDisplaySize;
   final double dragIconScale;
   final bool isSelected;
+  final double opacity;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
 
@@ -36,7 +38,7 @@ class CircleMarker extends ConsumerWidget {
     return circleAsync.when(
       data: (circle) {
         return Opacity(
-          opacity: isSelected ? 1.0 : 0.5,
+          opacity: opacity,
           child: Stack(
             children: [
               // ポインターライン

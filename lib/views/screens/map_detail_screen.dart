@@ -281,11 +281,14 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               circleId: circleId,
                               imageOriginalSize: value.baseImageSize,
                               imageDisplaySize: imageDisplaySize,
-                              dragIconScale:
-                                  _transformController.value.getMaxScaleOnAxis(),
-                              isSelected:
+                              dragIconScale: _transformController.value
+                                  .getMaxScaleOnAxis(),
+                              isSelected: selectedCircleId == circleId,
+                              opacity:
                                   selectedCircleId == null ||
-                                  selectedCircleId == circleId,
+                                      selectedCircleId == circleId
+                                  ? 1.0
+                                  : 0.5,
                               onTap: () => _onCircleTap(context, circleId),
                               onLongPress: () => _pickCircleImage(circleId),
                             );
