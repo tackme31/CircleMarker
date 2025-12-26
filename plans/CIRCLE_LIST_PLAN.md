@@ -134,40 +134,51 @@ lib/
 
 ### Phase 3: ソート機能
 
-**目標**: サークル名・スペース番号・isDone順でソート
+**目標**: マップ名・スペース番号でソート
 
 #### 実装内容
 
 1. **State拡張** (`lib/states/circle_list_state.dart`)
    ```dart
-   enum SortType { name, spaceNo, isDone }
+   enum SortType { mapName, spaceNo }
+   enum SortDirection { desc, asc }
 
    @freezed
    class CircleListState with _$CircleListState {
      const factory CircleListState({
        required List<CircleDetail> circles,
-       @Default(SortType.name) SortType sortType,  // 追加
+       @Default(SortType.mapName) SortType sortType,  // 追加
+       @Default(SortDirection.asc) SorDirection sortDirection,  // 追加
      }) = _CircleListState;
    }
    ```
 
-2. **ViewModel拡張** (`lib/viewModels/circle_list_view_model.dart`)
-   - `setSortType(SortType type)` メソッド追加
+1. **Repository拡張** (`lib/repositories/circle_list_repositories.dart`)
+   - ソート機能を実装（新しい関数を生やす）
+   - 将来的な仮想リストを見越してOFFSET, LIMITを渡せるようにする
+   - マップ名でソートするため、要JOIN?
+
+1. **ViewModel拡張** (`lib/viewModels/circle_list_view_model.dart`)
+   - `setSortType(SortType type, SortDirection sortDirection)` メソッド追加
    - ソートロジック実装（Dart標準の`sort`使用）
 
-3. **Screen拡張** (`lib/views/screens/circle_list_screen.dart`)
+1. **Screen拡張** (`lib/views/screens/circle_list_screen.dart`)
    - AppBarに`PopupMenuButton`追加
+       - マップ名（昇順）
+       - マップ名（降順）
+       - スペース番号（昇順）
+       - スペース番号（降順）
    - ソートタイプ選択UI
 
 #### 動作確認項目
 - [ ] ソートメニューが表示される
-- [ ] サークル名順でソートされる
+- [ ] マップ名（IDではない）でソートされる
 - [ ] スペース番号順でソートされる
-- [ ] isDone順でソートされる（未完了→完了）
+- [ ] 昇順・降順を切り替えられる
 
 #### 注意事項
-- **null処理**: サークル名・スペース番号がnullの場合は末尾に配置
-- **昇順のみ**: 降順は実装しない（シンプル化）
+- **null処理**: スペース番号がnullの場合、SortDirectionに拘らず末尾に配置
+- **マップ不明時**: サークルに設定されているマップIDに相当するMapDetailが無い場合、SortDirectionに拘らず末尾に配置
 
 ---
 
