@@ -84,11 +84,11 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         content: Text('「${map.title}」を削除しますか？'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: const Text('キャンセル'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: const Text('削除'),
           ),
         ],

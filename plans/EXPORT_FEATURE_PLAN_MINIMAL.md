@@ -3,7 +3,7 @@
 ## 概要
 
 Circle Marker アプリにおいて、マップ単位でのデータのエクスポート・インポート機能を実装する。
-**個人用・Android専用の最低限動作する実装**を目指し、完璧なエラーハンドリングや最適化は後回しにする。
+**個人用・Android 専用の最低限動作する実装**を目指し、完璧なエラーハンドリングや最適化は後回しにする。
 
 ## 前提条件
 
@@ -546,7 +546,7 @@ class MapExportDialog extends HookConsumerWidget {
               : const Text('このマップをエクスポートしますか？'),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
           child: const Text('キャンセル'),
         ),
         if (!viewModel.isExporting && viewModel.exportedFilePath == null)
@@ -555,7 +555,7 @@ class MapExportDialog extends HookConsumerWidget {
               await ref.read(mapExportViewModelProvider.notifier).exportMap(mapId);
               if (viewModel.exportedFilePath != null) {
                 await ref.read(mapExportViewModelProvider.notifier).shareExportedMap(viewModel.exportedFilePath!);
-                if (context.mounted) Navigator.pop(context);
+                if (context.mounted) context.pop();
               }
             },
             child: const Text('エクスポート'),
@@ -588,7 +588,7 @@ class MapImportDialog extends HookConsumerWidget {
               : const Text('インポートするファイルを選択してください'),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
           child: const Text('キャンセル'),
         ),
         if (!viewModel.isImporting)
@@ -602,7 +602,7 @@ class MapImportDialog extends HookConsumerWidget {
               if (result != null && result.files.single.path != null) {
                 await ref.read(mapExportViewModelProvider.notifier).importMap(result.files.single.path!);
                 if (context.mounted && viewModel.errorMessage == null) {
-                  Navigator.pop(context);
+                  context.pop();
                   // 成功メッセージ表示
                 }
               }

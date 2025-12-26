@@ -673,11 +673,11 @@ Future<void> shareExportedMap(String filePath) async {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: const Text('キャンセル'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: const Text('続行'),
           ),
         ],

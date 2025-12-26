@@ -6,6 +6,7 @@ import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -151,7 +152,7 @@ class CircleBottomSheet extends ConsumerWidget {
                                   return;
                                 }
 
-                                Navigator.pop(context);
+                                context.pop();
                               },
                               icon: const Icon(
                                 Icons.delete,
