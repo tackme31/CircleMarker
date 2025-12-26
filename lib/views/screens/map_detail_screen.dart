@@ -9,9 +9,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MapDetailScreen extends ConsumerStatefulWidget {
-  const MapDetailScreen({super.key, required this.mapId});
+  const MapDetailScreen({
+    super.key,
+    required this.mapId,
+    this.initialSelectedCircleId,
+  });
 
   final int mapId;
+  final int? initialSelectedCircleId;
 
   @override
   ConsumerState<MapDetailScreen> createState() => _MapDetailScreenState();
@@ -277,24 +282,30 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          ...value.circleIds.map((circleId) {
-                            return CircleMarker(
-                              key: Key(circleId.toString()),
-                              circleId: circleId,
-                              imageOriginalSize: value.baseImageSize,
-                              imageDisplaySize: imageDisplaySize,
-                              dragIconScale: _transformController.value
-                                  .getMaxScaleOnAxis(),
-                              isSelected: selectedCircleId == circleId,
-                              opacity:
-                                  selectedCircleId == null ||
-                                      selectedCircleId == circleId
-                                  ? 1.0
-                                  : 0.5,
-                              onTap: () => _onCircleTap(context, circleId),
-                              onLongPress: () => _pickCircleImage(circleId),
-                            );
-                          }),
+                          ...value.circleIds
+                              .where(
+                                (id) =>
+                                    widget.initialSelectedCircleId == null ||
+                                    widget.initialSelectedCircleId == id,
+                              )
+                              .map((circleId) {
+                                return CircleMarker(
+                                  key: Key(circleId.toString()),
+                                  circleId: circleId,
+                                  imageOriginalSize: value.baseImageSize,
+                                  imageDisplaySize: imageDisplaySize,
+                                  dragIconScale: _transformController.value
+                                      .getMaxScaleOnAxis(),
+                                  isSelected: selectedCircleId == circleId,
+                                  opacity:
+                                      selectedCircleId == null ||
+                                          selectedCircleId == circleId
+                                      ? 1.0
+                                      : 0.5,
+                                  onTap: () => _onCircleTap(context, circleId),
+                                  onLongPress: () => _pickCircleImage(circleId),
+                                );
+                              }),
                           // ここに図形を追加
                         ],
                       ),

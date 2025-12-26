@@ -3,6 +3,7 @@ import 'package:circle_marker/states/circle_list_state.dart';
 import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CircleListScreen extends ConsumerWidget {
@@ -134,13 +135,13 @@ class CircleListScreen extends ConsumerWidget {
                 itemCount: value.circles.length,
                 itemBuilder: (context, index) {
                   final circle = value.circles[index].circle;
-                  final mapName = value.circles[index].mapTitle ?? 'マップ名なし';
+                  final mapName = value.circles[index].mapTitle;
                   final circleName =
                       circle.circleName == null || circle.circleName!.isEmpty
                       ? '名前なし'
                       : circle.circleName!;
                   return ListTile(
-                    title: Text("[$mapName] $circleName"),
+                    title: Text("[${mapName ?? 'マップ名なし'}] $circleName"),
                     subtitle: Text(
                       circle.spaceNo == null || circle.spaceNo!.isEmpty
                           ? 'スペース番号なし'
@@ -161,6 +162,16 @@ class CircleListScreen extends ConsumerWidget {
                               ),
                             );
                           }
+                        : null,
+                    trailing: mapName != null
+                        ? IconButton(
+                            icon: const Icon(Icons.location_pin),
+                            onPressed: () {
+                              context.push(
+                                '/mapList/${circle.mapId}?circleId=${circle.circleId}',
+                              );
+                            },
+                          )
                         : null,
                   );
                 },

@@ -60,8 +60,16 @@ class AppRouter extends _$AppRouter {
             if (mapId == null) {
               return const MaterialPage(child: SizedBox.shrink());
             }
+
+            // Get circleId from query parameters
+            final circleIdStr = state.uri.queryParameters['circleId'];
+            final circleId = circleIdStr != null ? int.tryParse(circleIdStr) : null;
+
             return MaterialPage(
-              child: MapDetailScreen(mapId: int.parse(mapId)),
+              child: MapDetailScreen(
+                mapId: int.parse(mapId),
+                initialSelectedCircleId: circleId,
+              ),
             );
           },
         ),
