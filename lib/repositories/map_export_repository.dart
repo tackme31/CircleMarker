@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sqflite/sqflite.dart';
 
 part 'map_export_repository.g.dart';
 
@@ -108,171 +109,63 @@ class MapExportRepository {
   }
 
   Future<int> importMap(String filePath) async {
-    // ZIP 解凍
-    final zipFile = File(filePath);
-    final zipBytes = await zipFile.readAsBytes();
-    final archive = ZipDecoder().decodeBytes(zipBytes);
+    // 1. ZIP解凍と検証
+    final (archive, content) = _extractAndValidateArchive(filePath);
 
-    // manifest.json 読み込み（最初は読み飛ばしてもOK）
-    final manifestFile = archive.findFile('manifest.json')!;
-    final manifestJson = jsonDecode(
-      utf8.decode(manifestFile.content as List<int>),
-    );
+    // 2. 画像を一時ディレクトリに展開
+    final extractDir = await _extractImagesToTempDirectory(archive);
 
-    // マニフェストは今のところ使用しないが、将来の互換性のために読み込んでおく
-    final _ = MapExportManifest.fromJson(manifestJson);
+    try {
+      late int newMapId;
 
-    // map.json 読み込み
-    final mapFile = archive.findFile('map.json')!;
-    final mapJson = jsonDecode(utf8.decode(mapFile.content as List<int>));
-    final content = MapExportContent.fromJson(mapJson);
-
-    // 画像を一時ディレクトリに展開
-    final tempDir = await getTemporaryDirectory();
-    final extractDir = Directory(
-      '${tempDir.path}/import_${DateTime.now().millisecondsSinceEpoch}',
-    );
-    await extractDir.create();
-
-    for (final file in archive) {
-      if (file.isFile && file.name.startsWith('images/')) {
-        final outputFile = File('${extractDir.path}/${file.name}');
-        await outputFile.create(recursive: true);
-        await outputFile.writeAsBytes(file.content as List<int>);
-      }
-    }
-
-    // DB に保存（トランザクション使用）
-    final db = await DatabaseHelper.instance.database;
-    late int newMapId;
-
-    // 全体をトランザクションで囲む
-    await db.transaction((txn) async {
-      // 仮のマップを挿入してmapIdを取得
-      newMapId = await txn.insert('map_detail', {
-        'title': content.map.title,
-        'baseImagePath': '',
-        'thumbnailPath': null,
-      });
-
-      // 画像を新構造のパスに保存
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final mapDirPath = '${appDocDir.path}/maps/$newMapId';
-      final circlesDirPath = '$mapDirPath/circles';
-
-      // 必要なディレクトリを事前作成
-      final circlesDir = Directory(circlesDirPath);
-      await circlesDir.create(recursive: true);
-
-      // マップ画像をコピー
-      final newMapBasePath = '$mapDirPath/base_image.jpg';
-      final mapBaseFile = File(
-        '${extractDir.path}/${content.map.baseImagePath}',
-      );
-      if (!await mapBaseFile.exists()) {
-        throw Exception(
-          'Map base image not found: ${content.map.baseImagePath}\n'
-          'Expected at: ${mapBaseFile.path}',
-        );
-      }
-      await mapBaseFile.copy(newMapBasePath);
-
-      // サムネイル画像をコピー
-      String? newThumbnailPath;
-      if (content.map.thumbnailPath != null) {
-        newThumbnailPath = '$mapDirPath/thumbnail.jpg';
-        final thumbnailFile = File(
-          '${extractDir.path}/${content.map.thumbnailPath}',
-        );
-        if (await thumbnailFile.exists()) {
-          await thumbnailFile.copy(newThumbnailPath);
-        }
-      }
-
-      // マップの画像パスを更新
-      await txn.update(
-        'map_detail',
-        {'baseImagePath': newMapBasePath, 'thumbnailPath': newThumbnailPath},
-        where: 'mapId = ?',
-        whereArgs: [newMapId],
-      );
-
-      // サークルを挿入してcircleIdを取得し、画像をコピー
-      for (final circle in content.circles) {
-        // サークルを挿入
-        final circleId = await txn.insert('circle_detail', {
-          'positionX': circle.positionX,
-          'positionY': circle.positionY,
-          'sizeWidth': circle.sizeWidth,
-          'sizeHeight': circle.sizeHeight,
-          'pointerX': circle.pointerX,
-          'pointerY': circle.pointerY,
-          'mapId': newMapId,
-          'circleName': circle.circleName,
-          'spaceNo': circle.spaceNo,
-          'imagePath': null, // 後で更新
-          'menuImagePath': null, // 後で更新
-          'note': circle.note,
-          'description': circle.description,
-          'color': circle.color,
-          'isDone': circle.isDone,
+      // 3. DBトランザクション開始
+      final db = await DatabaseHelper.instance.database;
+      await db.transaction((txn) async {
+        // 3-1. 仮マップ挿入
+        newMapId = await txn.insert('map_detail', {
+          'title': content.map.title,
+          'baseImagePath': '',
+          'thumbnailPath': null,
         });
 
-        // サークル画像をコピー
-        String? newCircleImagePath;
-        if (circle.imagePath != null) {
-          final circleImageFile = File(
-            '${extractDir.path}/${circle.imagePath}',
-          );
+        // 3-2. ディレクトリ作成
+        final circlesDirPath = await _createMapDirectories(newMapId);
 
-          // ファイルが存在する場合のみコピー
-          if (await circleImageFile.exists()) {
-            newCircleImagePath = '$circlesDirPath/$circleId.jpg';
-            await circleImageFile.copy(newCircleImagePath);
-          } else {
-            // ファイルが見つからない場合は警告のみ（処理は続行）
-            debugPrint(
-              'Warning: Circle image not found: ${circle.imagePath}, skipping',
-            );
-          }
-        }
+        // 3-3. マップ画像コピー
+        final mapImages = await _copyMapImages(
+          extractDir,
+          circlesDirPath.replaceFirst('/circles', ''),
+          content.map,
+        );
 
-        // メニュー画像をコピー
-        String? newMenuImagePath;
-        if (circle.menuImagePath != null) {
-          final menuImageFile = File(
-            '${extractDir.path}/${circle.menuImagePath}',
-          );
+        // 3-4. マップ画像パス更新
+        await txn.update(
+          'map_detail',
+          {
+            'baseImagePath': mapImages.basePath,
+            'thumbnailPath': mapImages.thumbnailPath,
+          },
+          where: 'mapId = ?',
+          whereArgs: [newMapId],
+        );
 
-          if (await menuImageFile.exists()) {
-            newMenuImagePath = '$circlesDirPath/${circleId}_menu.jpg';
-            await menuImageFile.copy(newMenuImagePath);
-          } else {
-            debugPrint(
-              'Warning: Menu image not found: ${circle.menuImagePath}, skipping',
-            );
-          }
-        }
-
-        // 画像パスを更新
-        if (newCircleImagePath != null || newMenuImagePath != null) {
-          await txn.update(
-            'circle_detail',
-            {
-              if (newCircleImagePath != null) 'imagePath': newCircleImagePath,
-              if (newMenuImagePath != null) 'menuImagePath': newMenuImagePath,
-            },
-            where: 'circleId = ?',
-            whereArgs: [circleId],
+        // 3-5. サークル挿入と画像コピー
+        for (final circle in content.circles) {
+          await _insertCircleWithImages(
+            txn,
+            newMapId,
+            circle,
+            circlesDirPath,
+            extractDir,
           );
         }
-      }
-    });
+      });
 
-    // 一時ディレクトリ削除
-    await extractDir.delete(recursive: true);
-
-    return newMapId;
+      return newMapId;
+    } finally {
+      // 4. 一時ディレクトリ削除
+      await extractDir.delete(recursive: true);
+    }
   }
 
   MapExportData _createExportData(
@@ -343,4 +236,201 @@ class MapExportRepository {
     final illegalChars = RegExp(r'[\\/:*?"<>|]');
     return input.replaceAll(illegalChars, '_').trim();
   }
+
+  /// ZIP アーカイブを読み込み、manifest と map データを検証して返却
+  (Archive, MapExportContent) _extractAndValidateArchive(String filePath) {
+    final zipFile = File(filePath);
+    final zipBytes = zipFile.readAsBytesSync();
+    final archive = ZipDecoder().decodeBytes(zipBytes);
+
+    // manifest.json 読み込み
+    final manifestFile = archive.findFile('manifest.json')!;
+    final manifestJson = jsonDecode(
+      utf8.decode(manifestFile.content as List<int>),
+    );
+
+    // マニフェストは今のところ使用しないが、将来の互換性のために読み込んでおく
+    final _ = MapExportManifest.fromJson(manifestJson);
+
+    // map.json 読み込み
+    final mapFile = archive.findFile('map.json')!;
+    final mapJson = jsonDecode(utf8.decode(mapFile.content as List<int>));
+    final content = MapExportContent.fromJson(mapJson);
+
+    return (archive, content);
+  }
+
+  /// アーカイブから画像を一時ディレクトリに展開
+  Future<Directory> _extractImagesToTempDirectory(Archive archive) async {
+    final tempDir = await getTemporaryDirectory();
+    final extractDir = Directory(
+      '${tempDir.path}/import_${DateTime.now().millisecondsSinceEpoch}',
+    );
+    await extractDir.create();
+
+    for (final file in archive) {
+      if (file.isFile && file.name.startsWith('images/')) {
+        final outputFile = File('${extractDir.path}/${file.name}');
+        await outputFile.create(recursive: true);
+        await outputFile.writeAsBytes(file.content as List<int>);
+      }
+    }
+
+    return extractDir;
+  }
+
+  /// マップとサークル用のディレクトリを作成
+  Future<String> _createMapDirectories(int mapId) async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final mapDirPath = '${appDocDir.path}/maps/$mapId';
+    final circlesDirPath = '$mapDirPath/circles';
+
+    final circlesDir = Directory(circlesDirPath);
+    await circlesDir.create(recursive: true);
+
+    return circlesDirPath;
+  }
+
+  /// マップ画像（ベース画像とサムネイル）をコピー
+  Future<_MapImagePaths> _copyMapImages(
+    Directory extractDir,
+    String mapDirPath,
+    MapExportMapData mapData,
+  ) async {
+    // ベース画像をコピー
+    final newMapBasePath = '$mapDirPath/base_image.jpg';
+    final mapBaseFile = File('${extractDir.path}/${mapData.baseImagePath}');
+    if (!await mapBaseFile.exists()) {
+      throw Exception(
+        'Map base image not found: ${mapData.baseImagePath}\n'
+        'Expected at: ${mapBaseFile.path}',
+      );
+    }
+    await mapBaseFile.copy(newMapBasePath);
+
+    // サムネイル画像をコピー
+    String? newThumbnailPath;
+    if (mapData.thumbnailPath != null) {
+      newThumbnailPath = '$mapDirPath/thumbnail.jpg';
+      final thumbnailFile = File('${extractDir.path}/${mapData.thumbnailPath}');
+      if (await thumbnailFile.exists()) {
+        await thumbnailFile.copy(newThumbnailPath);
+      }
+    }
+
+    return _MapImagePaths(
+      basePath: newMapBasePath,
+      thumbnailPath: newThumbnailPath,
+    );
+  }
+
+  /// サークル画像（通常画像とメニュー画像）をコピー
+  Future<_CircleImagePaths> _copyCircleImages(
+    Directory extractDir,
+    String circlesDirPath,
+    int circleId,
+    CircleExportData circle,
+  ) async {
+    String? newCircleImagePath;
+    String? newMenuImagePath;
+
+    // 通常画像をコピー
+    if (circle.imagePath != null) {
+      final circleImageFile = File('${extractDir.path}/${circle.imagePath}');
+
+      if (await circleImageFile.exists()) {
+        newCircleImagePath = '$circlesDirPath/$circleId.jpg';
+        await circleImageFile.copy(newCircleImagePath);
+      } else {
+        debugPrint(
+          'Warning: Circle image not found: ${circle.imagePath}, skipping',
+        );
+      }
+    }
+
+    // メニュー画像をコピー
+    if (circle.menuImagePath != null) {
+      final menuImageFile = File('${extractDir.path}/${circle.menuImagePath}');
+
+      if (await menuImageFile.exists()) {
+        newMenuImagePath = '$circlesDirPath/${circleId}_menu.jpg';
+        await menuImageFile.copy(newMenuImagePath);
+      } else {
+        debugPrint(
+          'Warning: Menu image not found: ${circle.menuImagePath}, skipping',
+        );
+      }
+    }
+
+    return _CircleImagePaths(
+      imagePath: newCircleImagePath,
+      menuImagePath: newMenuImagePath,
+    );
+  }
+
+  /// サークルをDB挿入し、画像をコピーして画像パスを更新
+  Future<void> _insertCircleWithImages(
+    Transaction txn,
+    int newMapId,
+    CircleExportData circle,
+    String circlesDirPath,
+    Directory extractDir,
+  ) async {
+    // サークルを挿入
+    final circleId = await txn.insert('circle_detail', {
+      'positionX': circle.positionX,
+      'positionY': circle.positionY,
+      'sizeWidth': circle.sizeWidth,
+      'sizeHeight': circle.sizeHeight,
+      'pointerX': circle.pointerX,
+      'pointerY': circle.pointerY,
+      'mapId': newMapId,
+      'circleName': circle.circleName,
+      'spaceNo': circle.spaceNo,
+      'imagePath': null, // 後で更新
+      'menuImagePath': null, // 後で更新
+      'note': circle.note,
+      'description': circle.description,
+      'color': circle.color,
+      'isDone': circle.isDone,
+    });
+
+    // 画像をコピー
+    final imagePaths = await _copyCircleImages(
+      extractDir,
+      circlesDirPath,
+      circleId,
+      circle,
+    );
+
+    // 画像パスを更新
+    if (imagePaths.imagePath != null || imagePaths.menuImagePath != null) {
+      await txn.update(
+        'circle_detail',
+        {
+          if (imagePaths.imagePath != null) 'imagePath': imagePaths.imagePath,
+          if (imagePaths.menuImagePath != null)
+            'menuImagePath': imagePaths.menuImagePath,
+        },
+        where: 'circleId = ?',
+        whereArgs: [circleId],
+      );
+    }
+  }
+}
+
+/// マップ画像のコピー結果を保持
+class _MapImagePaths {
+  const _MapImagePaths({required this.basePath, this.thumbnailPath});
+
+  final String basePath;
+  final String? thumbnailPath;
+}
+
+/// サークル画像のコピー結果を保持
+class _CircleImagePaths {
+  const _CircleImagePaths({this.imagePath, this.menuImagePath});
+
+  final String? imagePath;
+  final String? menuImagePath;
 }
