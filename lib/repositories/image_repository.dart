@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -107,5 +108,73 @@ class ImageRepository extends _$ImageRepository {
         e,
       );
     }
+  }
+
+  /// マップ画像とサムネイルを削除
+  ///
+  /// [originalPath] 元画像のパス (nullable)
+  /// [thumbnailPath] サムネイルのパス (nullable)
+  /// Returns: 削除されたファイル数 (0-2)
+  Future<int> deleteMapImages({
+    String? originalPath,
+    String? thumbnailPath,
+  }) async {
+    int deletedCount = 0;
+    final List<String> errors = [];
+
+    Future<void> deleteFile(String? path, String fileType) async {
+      if (path == null || path.isEmpty) return;
+
+      try {
+        final file = File(path);
+        if (await file.exists()) {
+          await file.delete();
+          deletedCount++;
+          debugPrint('Deleted $fileType: $path');
+        } else {
+          debugPrint('$fileType not found (already deleted?): $path');
+        }
+      } on FileSystemException catch (e) {
+        final errorMsg = 'Failed to delete $fileType: $path - ${e.message}';
+        debugPrint(errorMsg);
+        errors.add(errorMsg);
+      }
+    }
+
+    // 元画像とサムネイルを削除
+    await deleteFile(originalPath, 'map image');
+    await deleteFile(thumbnailPath, 'thumbnail');
+
+    // エラーがあった場合でも例外をスローしない（ログのみ）
+    if (errors.isNotEmpty) {
+      debugPrint('Image deletion completed with errors: ${errors.join(', ')}');
+    }
+
+    return deletedCount;
+  }
+
+  /// 複数のサークル画像を一括削除
+  ///
+  /// [imagePaths] 削除する画像パスのリスト
+  /// Returns: 削除されたファイル数
+  Future<int> deleteCircleImages(List<String?> imagePaths) async {
+    int deletedCount = 0;
+
+    for (final path in imagePaths) {
+      if (path == null || path.isEmpty) continue;
+
+      try {
+        final file = File(path);
+        if (await file.exists()) {
+          await file.delete();
+          deletedCount++;
+        }
+      } on FileSystemException catch (e) {
+        debugPrint('Failed to delete circle image: $path - ${e.message}');
+        // 処理継続
+      }
+    }
+
+    return deletedCount;
   }
 }

@@ -1,5 +1,4 @@
 import 'package:circle_marker/models/map_detail.dart';
-import 'package:circle_marker/repositories/circle_repository.dart';
 import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/repositories/image_repository.dart';
 import 'package:circle_marker/states/map_list_state.dart';
@@ -66,8 +65,9 @@ class MapListViewModel extends _$MapListViewModel {
   }
 
   Future<void> removeMap(int mapId) async {
+    // deleteMapDetail() のトランザクション内でサークルも削除されるため、
+    // deleteCircles() の呼び出しは不要
     await ref.read(mapRepositoryProvider).deleteMapDetail(mapId);
-    await ref.read(circleRepositoryProvider).deleteCircles(mapId);
 
     // 現在の検索クエリで再検索
     final currentState = state.value;

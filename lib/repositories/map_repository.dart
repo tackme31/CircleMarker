@@ -1,7 +1,11 @@
 import 'package:circle_marker/exceptions/app_exceptions.dart';
+import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/models/map_detail.dart';
 import 'package:circle_marker/providers/database_provider.dart';
+import 'package:circle_marker/repositories/circle_repository.dart';
+import 'package:circle_marker/repositories/image_repository.dart';
 import 'package:circle_marker/repositories/map_with_circle_count.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -237,7 +241,19 @@ class MapRepository {
     try {
       final db = await _ref.read(databaseProvider.future);
 
-      // トランザクションで関連データも削除
+      // 1. 画像パスを取得（削除前に取得）
+      MapDetail? mapDetail;
+      List<CircleDetail> circles = [];
+
+      try {
+        mapDetail = await getMapDetail(mapId);
+        circles = await _ref.read(circleRepositoryProvider).getCircles(mapId);
+      } on AppException catch (e) {
+        debugPrint('Failed to fetch data for deletion: $e');
+        // データが見つからない場合は削除済みと判断して続行
+      }
+
+      // 2. トランザクションでDBレコード削除（先にDBを削除）
       await db.transaction((txn) async {
         // サークルデータ削除
         await txn.delete(
@@ -248,6 +264,39 @@ class MapRepository {
         // マップデータ削除
         await txn.delete('map_detail', where: 'mapId = ?', whereArgs: [mapId]);
       });
+
+      // 3. DB削除成功後に画像ファイルを削除
+      // DB削除が失敗した場合は、ここに到達せずファイルは残る（次回削除可能）
+      if (mapDetail != null) {
+        try {
+          final deletedCount = await _ref
+              .read(imageRepositoryProvider.notifier)
+              .deleteMapImages(
+                originalPath: mapDetail.baseImagePath,
+                thumbnailPath: mapDetail.thumbnailPath,
+              );
+          debugPrint('Deleted $deletedCount map image files');
+        } catch (e) {
+          debugPrint('Failed to delete map images: $e');
+          // エラーログのみ、DBは削除済みなので孤立ファイルとして残る
+        }
+      }
+
+      // 4. サークル画像を削除
+      if (circles.isNotEmpty) {
+        try {
+          final imagePaths = circles
+              .expand((circle) => [circle.imagePath, circle.menuImagePath])
+              .toList();
+          final deletedCount = await _ref
+              .read(imageRepositoryProvider.notifier)
+              .deleteCircleImages(imagePaths);
+          debugPrint('Deleted $deletedCount circle image files');
+        } catch (e) {
+          debugPrint('Failed to delete circle images: $e');
+          // エラーログのみ、DBは削除済みなので孤立ファイルとして残る
+        }
+      }
     } on sqflite.DatabaseException catch (e) {
       throw AppException('Failed to delete map', e);
     } on AppException {
