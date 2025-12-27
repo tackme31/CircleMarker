@@ -125,6 +125,103 @@ class CircleRepository {
     }
   }
 
+  Future<List<CircleWithMapTitle>> searchCirclesSorted({
+    required String searchQuery,
+    required String sortType, // 'mapName' or 'spaceNo'
+    required String sortDirection, // 'asc' or 'desc'
+    List<int>? mapIds, // Filter by map IDs (empty or null = all maps)
+    int? offset,
+    int? limit,
+  }) async {
+    try {
+      // Normalize query: trim whitespace
+      final normalizedQuery = searchQuery.trim();
+
+      // If normalized query is empty, return getAllCirclesSorted for consistency
+      if (normalizedQuery.isEmpty) {
+        return getAllCirclesSorted(
+          sortType: sortType,
+          sortDirection: sortDirection,
+          mapIds: mapIds,
+          offset: offset,
+          limit: limit,
+        );
+      }
+
+      final db = await _ref.read(databaseProvider.future);
+
+      // Build WHERE clause for search (OR) + map filter (AND)
+      final searchPattern = '%$normalizedQuery%';
+      String whereClause =
+          '''
+        WHERE (
+          LOWER(c.circleName) LIKE LOWER(?) OR
+          LOWER(c.spaceNo) LIKE LOWER(?) OR
+          LOWER(m.title) LIKE LOWER(?)
+        )
+      ''';
+      final List<Object?> whereArgs = [searchPattern, searchPattern, searchPattern];
+
+      // Add map filter if provided
+      if (mapIds != null && mapIds.isNotEmpty) {
+        final placeholders = List.filled(mapIds.length, '?').join(', ');
+        whereClause += ' AND c.mapId IN ($placeholders)';
+        whereArgs.addAll(mapIds);
+      }
+
+      // Build ORDER BY clause (reuse exact logic from getAllCirclesSorted)
+      String orderByClause;
+      if (sortType == 'mapName') {
+        // Join with map_detail to sort by map title
+        // Handle null map titles by putting them at the end regardless of direction
+        orderByClause = sortDirection == 'asc'
+            ? 'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title ASC'
+            : 'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title DESC';
+      } else {
+        // Sort by spaceNo
+        // Handle null spaceNo by putting them at the end regardless of direction
+        orderByClause = sortDirection == 'asc'
+            ? 'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo ASC'
+            : 'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo DESC';
+      }
+
+      // Build LIMIT/OFFSET clause for future virtual list support
+      String limitClause = '';
+      if (limit != null) {
+        limitClause = 'LIMIT $limit';
+        if (offset != null) {
+          limitClause += ' OFFSET $offset';
+        }
+      }
+
+      final query =
+          '''
+        SELECT c.*, m.title AS mapTitle
+        FROM $_tableName c
+        LEFT JOIN map_detail m ON c.mapId = m.mapId
+        $whereClause
+        ORDER BY $orderByClause
+        $limitClause
+      ''';
+
+      final result = await db.rawQuery(query, whereArgs);
+      return result
+          .map(
+            (row) => CircleWithMapTitle(
+              circle: CircleDetail.fromJson(row),
+              mapTitle: row['mapTitle'] as String?,
+            ),
+          )
+          .toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to search circles', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while searching circles', e);
+    }
+  }
+
   Future<CircleDetail> getCircle(int circleId) async {
     try {
       final db = await _ref.read(databaseProvider.future);

@@ -21,6 +21,7 @@ mixin _$CircleListState {
   SortType get sortType => throw _privateConstructorUsedError;
   SortDirection get sortDirection => throw _privateConstructorUsedError;
   List<int> get selectedMapIds => throw _privateConstructorUsedError;
+  String get searchQuery => throw _privateConstructorUsedError;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.
@@ -41,6 +42,7 @@ abstract class $CircleListStateCopyWith<$Res> {
     SortType sortType,
     SortDirection sortDirection,
     List<int> selectedMapIds,
+    String searchQuery,
   });
 }
 
@@ -63,6 +65,7 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
     Object? sortType = null,
     Object? sortDirection = null,
     Object? selectedMapIds = null,
+    Object? searchQuery = null,
   }) {
     return _then(
       _value.copyWith(
@@ -82,6 +85,10 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
                 ? _value.selectedMapIds
                 : selectedMapIds // ignore: cast_nullable_to_non_nullable
                       as List<int>,
+            searchQuery: null == searchQuery
+                ? _value.searchQuery
+                : searchQuery // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -102,6 +109,7 @@ abstract class _$$CircleListStateImplCopyWith<$Res>
     SortType sortType,
     SortDirection sortDirection,
     List<int> selectedMapIds,
+    String searchQuery,
   });
 }
 
@@ -123,6 +131,7 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
     Object? sortType = null,
     Object? sortDirection = null,
     Object? selectedMapIds = null,
+    Object? searchQuery = null,
   }) {
     return _then(
       _$CircleListStateImpl(
@@ -142,6 +151,10 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
             ? _value._selectedMapIds
             : selectedMapIds // ignore: cast_nullable_to_non_nullable
                   as List<int>,
+        searchQuery: null == searchQuery
+            ? _value.searchQuery
+            : searchQuery // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -155,6 +168,7 @@ class _$CircleListStateImpl implements _CircleListState {
     this.sortType = SortType.mapName,
     this.sortDirection = SortDirection.asc,
     final List<int> selectedMapIds = const [],
+    this.searchQuery = '',
   }) : _circles = circles,
        _selectedMapIds = selectedMapIds;
 
@@ -183,8 +197,12 @@ class _$CircleListStateImpl implements _CircleListState {
   }
 
   @override
+  @JsonKey()
+  final String searchQuery;
+
+  @override
   String toString() {
-    return 'CircleListState(circles: $circles, sortType: $sortType, sortDirection: $sortDirection, selectedMapIds: $selectedMapIds)';
+    return 'CircleListState(circles: $circles, sortType: $sortType, sortDirection: $sortDirection, selectedMapIds: $selectedMapIds, searchQuery: $searchQuery)';
   }
 
   @override
@@ -200,7 +218,9 @@ class _$CircleListStateImpl implements _CircleListState {
             const DeepCollectionEquality().equals(
               other._selectedMapIds,
               _selectedMapIds,
-            ));
+            ) &&
+            (identical(other.searchQuery, searchQuery) ||
+                other.searchQuery == searchQuery));
   }
 
   @override
@@ -210,6 +230,7 @@ class _$CircleListStateImpl implements _CircleListState {
     sortType,
     sortDirection,
     const DeepCollectionEquality().hash(_selectedMapIds),
+    searchQuery,
   );
 
   /// Create a copy of CircleListState
@@ -230,6 +251,7 @@ abstract class _CircleListState implements CircleListState {
     final SortType sortType,
     final SortDirection sortDirection,
     final List<int> selectedMapIds,
+    final String searchQuery,
   }) = _$CircleListStateImpl;
 
   @override
@@ -240,6 +262,8 @@ abstract class _CircleListState implements CircleListState {
   SortDirection get sortDirection;
   @override
   List<int> get selectedMapIds;
+  @override
+  String get searchQuery;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.

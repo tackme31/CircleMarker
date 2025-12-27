@@ -14,6 +14,7 @@ class CircleListState with _$CircleListState {
     @Default(SortType.mapName) SortType sortType,
     @Default(SortDirection.asc) SortDirection sortDirection,
     @Default([]) List<int> selectedMapIds,
+    @Default('') String searchQuery,
   }) = _CircleListState;
 }
 
