@@ -152,4 +152,26 @@ class MapRepository {
       throw AppException('Unexpected error while deleting map', e);
     }
   }
+
+  Future<void> updateBaseImagePath(
+    int mapId,
+    String newPath,
+    String? thumbnailPath,
+  ) async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+      await db.update(
+        _tableName,
+        {'baseImagePath': newPath, 'thumbnailPath': thumbnailPath},
+        where: 'mapId = ?',
+        whereArgs: [mapId],
+      );
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to update base image path', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while updating base image path', e);
+    }
+  }
 }

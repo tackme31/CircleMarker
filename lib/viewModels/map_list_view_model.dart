@@ -76,4 +76,28 @@ class MapListViewModel extends _$MapListViewModel {
     // サークルリストも更新
     ref.invalidate(circleListViewModelProvider);
   }
+
+  Future<void> updateMapImage(int mapId, String newImagePath) async {
+    try {
+      // ImageRepository で画像を保存し、サムネイルを生成
+      final imagePaths = await ref
+          .read(imageRepositoryProvider.notifier)
+          .saveMapImageWithThumbnail(newImagePath);
+
+      await ref
+          .read(mapRepositoryProvider)
+          .updateBaseImagePath(
+            mapId,
+            imagePaths.original,
+            imagePaths.thumbnail,
+          );
+
+      // 現在の検索クエリで再検索
+      final currentState = state.value;
+      await searchMaps(currentState?.searchQuery ?? '');
+    } on ImageOperationException catch (e) {
+      debugPrint('Failed to update map image: $e');
+      rethrow;
+    }
+  }
 }

@@ -122,16 +122,22 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                       child: PopupMenuButton<String>(
                                         onSelected: (value) async {
                                           switch (value) {
-                                            case 'delete':
-                                              _deleteMap(map);
-                                              break;
-                                            case 'export':
-                                              _showExportDialog(map.mapId!);
-                                              break;
                                             case 'markdown':
                                               await _generateMarkdown(
                                                 map.mapId!,
                                               );
+                                              break;
+                                            case 'export':
+                                              _showExportDialog(map.mapId!);
+                                              break;
+                                            case 'image':
+                                              await _setImage(
+                                                map.mapId!,
+                                                picker,
+                                              );
+                                              break;
+                                            case 'delete':
+                                              _deleteMap(map);
                                               break;
                                             default:
                                           }
@@ -144,6 +150,10 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                           const PopupMenuItem(
                                             value: 'export',
                                             child: Text('エクスポート'),
+                                          ),
+                                          const PopupMenuItem(
+                                            value: 'image',
+                                            child: Text('画像変更'),
                                           ),
                                           const PopupMenuItem(
                                             value: 'delete',
@@ -436,6 +446,23 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           duration: const Duration(seconds: 5),
         ),
       );
+    }
+  }
+
+  Future<void> _setImage(int mapId, ImagePicker picker) async {
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedFile == null) return;
+
+      final viewModel = ref.read(mapListViewModelProvider.notifier);
+      await viewModel.updateMapImage(mapId, pickedFile.path);
+
+      ref.invalidate(mapListViewModelProvider);
+    } catch (error, stackTrace) {
+      ErrorHandler.handleError(error, stackTrace);
+      // Handle error appropriately, possibly by showing a snackbar.
     }
   }
 }
