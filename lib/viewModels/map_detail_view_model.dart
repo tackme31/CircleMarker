@@ -100,7 +100,9 @@ class MapDetailViewModel extends _$MapDetailViewModel {
     final currentState = await future;
     state = AsyncData(
       currentState.copyWith(
-        circleIds: currentState.circleIds.where((id) => id != circleId).toList(),
+        circleIds: currentState.circleIds
+            .where((id) => id != circleId)
+            .toList(),
       ),
     );
   }

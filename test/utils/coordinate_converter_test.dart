@@ -4,55 +4,64 @@ import 'package:circle_marker/utils/coordinate_converter.dart';
 
 void main() {
   group('CoordinateConverter', () {
-    test('converts pixel to display correctly with BoxFit.contain (equal aspect ratio)', () {
-      const converter = CoordinateConverter(
-        imageSize: Size(1000, 1000),
-        containerSize: Size(500, 500),
-      );
+    test(
+      'converts pixel to display correctly with BoxFit.contain (equal aspect ratio)',
+      () {
+        const converter = CoordinateConverter(
+          imageSize: Size(1000, 1000),
+          containerSize: Size(500, 500),
+        );
 
-      expect(converter.scale, 0.5);
-      expect(converter.offset, const Offset(0, 0));
+        expect(converter.scale, 0.5);
+        expect(converter.offset, const Offset(0, 0));
 
-      final result = converter.pixelToDisplay(const Offset(500, 500));
-      expect(result.dx, 250);
-      expect(result.dy, 250);
-    });
+        final result = converter.pixelToDisplay(const Offset(500, 500));
+        expect(result.dx, 250);
+        expect(result.dy, 250);
+      },
+    );
 
-    test('handles aspect ratio mismatch correctly (wide image in square container)', () {
-      const converter = CoordinateConverter(
-        imageSize: Size(1000, 500), // 横長画像
-        containerSize: Size(400, 400), // 正方形コンテナ
-      );
+    test(
+      'handles aspect ratio mismatch correctly (wide image in square container)',
+      () {
+        const converter = CoordinateConverter(
+          imageSize: Size(1000, 500), // 横長画像
+          containerSize: Size(400, 400), // 正方形コンテナ
+        );
 
-      // 幅に合わせる (400 / 1000 = 0.4)
-      expect(converter.scale, 0.4);
+        // 幅に合わせる (400 / 1000 = 0.4)
+        expect(converter.scale, 0.4);
 
-      // 実際の表示サイズ: 400 x 200
-      expect(converter.displaySize.width, 400);
-      expect(converter.displaySize.height, 200);
+        // 実際の表示サイズ: 400 x 200
+        expect(converter.displaySize.width, 400);
+        expect(converter.displaySize.height, 200);
 
-      // 上下に100pxのオフセット
-      expect(converter.offset.dx, 0);
-      expect(converter.offset.dy, 100);
-    });
+        // 上下に100pxのオフセット
+        expect(converter.offset.dx, 0);
+        expect(converter.offset.dy, 100);
+      },
+    );
 
-    test('handles aspect ratio mismatch correctly (tall image in square container)', () {
-      const converter = CoordinateConverter(
-        imageSize: Size(500, 1000), // 縦長画像
-        containerSize: Size(400, 400), // 正方形コンテナ
-      );
+    test(
+      'handles aspect ratio mismatch correctly (tall image in square container)',
+      () {
+        const converter = CoordinateConverter(
+          imageSize: Size(500, 1000), // 縦長画像
+          containerSize: Size(400, 400), // 正方形コンテナ
+        );
 
-      // 高さに合わせる (400 / 1000 = 0.4)
-      expect(converter.scale, 0.4);
+        // 高さに合わせる (400 / 1000 = 0.4)
+        expect(converter.scale, 0.4);
 
-      // 実際の表示サイズ: 200 x 400
-      expect(converter.displaySize.width, 200);
-      expect(converter.displaySize.height, 400);
+        // 実際の表示サイズ: 200 x 400
+        expect(converter.displaySize.width, 200);
+        expect(converter.displaySize.height, 400);
 
-      // 左右に100pxのオフセット
-      expect(converter.offset.dx, 100);
-      expect(converter.offset.dy, 0);
-    });
+        // 左右に100pxのオフセット
+        expect(converter.offset.dx, 100);
+        expect(converter.offset.dy, 0);
+      },
+    );
 
     test('converts display to pixel correctly', () {
       const converter = CoordinateConverter(
@@ -83,7 +92,9 @@ void main() {
       );
 
       // 250.7 -> 501.4 -> rounds to 501
-      final result = converter.displayToPixelRounded(const Offset(250.7, 250.7));
+      final result = converter.displayToPixelRounded(
+        const Offset(250.7, 250.7),
+      );
       expect(result.dx, 501);
       expect(result.dy, 501);
     });
@@ -166,7 +177,10 @@ void main() {
 
       final result = converter.pixelToDisplay(const Offset(1000, 500));
       expect(result.dx, closeTo(400, 0.001)); // 画像の右端
-      expect(result.dy, closeTo(300, 0.001)); // 画像の下端 (offset.dy + displayHeight)
+      expect(
+        result.dy,
+        closeTo(300, 0.001),
+      ); // 画像の下端 (offset.dy + displayHeight)
     });
   });
 }

@@ -95,7 +95,9 @@ class CircleListViewModel extends _$CircleListViewModel {
     final currentState = state.value;
 
     state = await AsyncValue.guard(() async {
-      final circles = await ref.read(circleRepositoryProvider).searchCirclesSorted(
+      final circles = await ref
+          .read(circleRepositoryProvider)
+          .searchCirclesSorted(
             searchQuery: query,
             sortType: currentState?.sortType ?? SortType.mapName,
             sortDirection: currentState?.sortDirection ?? SortDirection.asc,

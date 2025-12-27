@@ -80,10 +80,13 @@ class _PixelPositionedState extends State<PixelPositioned> {
         onPanEnd: (details) {
           if (widget.onDragEnd != null) {
             // 表示座標をピクセル座標に逆変換
-            final currentDisplayPosition =
-                Offset(_currentDisplayX, _currentDisplayY);
-            final pixelPosition =
-                _converter.displayToPixelRounded(currentDisplayPosition);
+            final currentDisplayPosition = Offset(
+              _currentDisplayX,
+              _currentDisplayY,
+            );
+            final pixelPosition = _converter.displayToPixelRounded(
+              currentDisplayPosition,
+            );
 
             widget.onDragEnd!(
               pixelPosition.dx.toInt(),

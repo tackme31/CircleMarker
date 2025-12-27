@@ -328,9 +328,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                   onTap: () => _onCircleTap(context, circleId),
                                   onLongPress: () => _pickCircleImage(circleId),
                                   onDragUpdate: (displayPosition) =>
-                                      _onCircleDragUpdate(circleId, displayPosition),
+                                      _onCircleDragUpdate(
+                                        circleId,
+                                        displayPosition,
+                                      ),
                                   onDragEnd: () => _onCircleDragEnd(circleId),
-                                  draggingStartDisplayPosition: _draggingDisplayPositions[circleId],
+                                  draggingStartDisplayPosition:
+                                      _draggingDisplayPositions[circleId],
                                 );
                               }),
                           // ここに図形を追加

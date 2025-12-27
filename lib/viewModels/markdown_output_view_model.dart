@@ -20,10 +20,7 @@ class MarkdownOutputViewModel extends _$MarkdownOutputViewModel {
       final markdown = await repository.generateMarkdown(mapId);
 
       // 共有
-      await Share.share(
-        markdown,
-        subject: 'サークル一覧',
-      );
+      await Share.share(markdown, subject: 'サークル一覧');
 
       state = state.copyWith(isGenerating: false);
     } catch (e) {

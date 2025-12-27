@@ -142,7 +142,8 @@ class MapRepository {
     try {
       final db = await _ref.read(databaseProvider.future);
 
-      final query = '''
+      final query =
+          '''
         SELECT
           m.mapId,
           m.title,
@@ -165,10 +166,7 @@ class MapRepository {
         final mapData = Map<String, dynamic>.from(row)..remove('circleCount');
         final map = MapDetail.fromJson(mapData);
 
-        return MapWithCircleCount(
-          map: map,
-          circleCount: circleCount,
-        );
+        return MapWithCircleCount(map: map, circleCount: circleCount);
       }).toList();
     } on sqflite.DatabaseException catch (e) {
       throw AppException('Failed to load maps with circle count', e);
@@ -199,7 +197,8 @@ class MapRepository {
         return getMapDetailsWithCircleCount();
       }
 
-      final sqlQuery = '''
+      final sqlQuery =
+          '''
         SELECT
           m.mapId,
           m.title,
@@ -220,10 +219,7 @@ class MapRepository {
         final mapData = Map<String, dynamic>.from(row)..remove('circleCount');
         final map = MapDetail.fromJson(mapData);
 
-        return MapWithCircleCount(
-          map: map,
-          circleCount: circleCount,
-        );
+        return MapWithCircleCount(map: map, circleCount: circleCount);
       }).toList();
     } on sqflite.DatabaseException catch (e) {
       throw AppException('Failed to search maps with circle count', e);

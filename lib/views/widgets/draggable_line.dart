@@ -42,7 +42,10 @@ class _DraggableLineState extends State<DraggableLine> {
       imageSize: widget.imageOriginalSize,
       containerSize: widget.imageDisplaySize,
     );
-    _endPosition = _converter.pixelToDisplayInt(widget.endPixelX, widget.endPixelY);
+    _endPosition = _converter.pixelToDisplayInt(
+      widget.endPixelX,
+      widget.endPixelY,
+    );
   }
 
   @override
@@ -59,14 +62,18 @@ class _DraggableLineState extends State<DraggableLine> {
     // 外部からendPixelが更新された場合も表示座標を更新
     if (oldWidget.endPixelX != widget.endPixelX ||
         oldWidget.endPixelY != widget.endPixelY) {
-      _endPosition = _converter.pixelToDisplayInt(widget.endPixelX, widget.endPixelY);
+      _endPosition = _converter.pixelToDisplayInt(
+        widget.endPixelX,
+        widget.endPixelY,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     // ドラッグ中ならdraggingStartDisplayPositionを使用、そうでなければピクセル座標から計算
-    final start = widget.draggingStartDisplayPosition ??
+    final start =
+        widget.draggingStartDisplayPosition ??
         _converter.pixelToDisplayInt(widget.startPixelX, widget.startPixelY);
 
     const iconSize = 24.0;
@@ -95,7 +102,9 @@ class _DraggableLineState extends State<DraggableLine> {
                   });
                 },
                 onPanEnd: (details) {
-                  final newPixel = _converter.displayToPixelRounded(_endPosition);
+                  final newPixel = _converter.displayToPixelRounded(
+                    _endPosition,
+                  );
                   widget.onEndPointDragEnd?.call(
                     newPixel.dx.round(),
                     newPixel.dy.round(),

@@ -38,10 +38,7 @@ class CoordinateConverter {
 
   /// BoxFit.contain を考慮した実際の画像表示サイズを取得
   Size get displaySize {
-    return Size(
-      imageSize.width * scale,
-      imageSize.height * scale,
-    );
+    return Size(imageSize.width * scale, imageSize.height * scale);
   }
 
   /// 画像座標をディスプレイ座標に変換
@@ -89,10 +86,7 @@ class CoordinateConverter {
   /// [pixelSize] 元画像上のサイズ
   /// 戻り値: コンテナ内での表示サイズ
   Size sizePixelToDisplay(Size pixelSize) {
-    return Size(
-      pixelSize.width * scale,
-      pixelSize.height * scale,
-    );
+    return Size(pixelSize.width * scale, pixelSize.height * scale);
   }
 
   /// サイズをディスプレイ座標から画像座標に変換
@@ -100,9 +94,6 @@ class CoordinateConverter {
   /// [displaySize] コンテナ内での表示サイズ
   /// 戻り値: 元画像上のサイズ
   Size sizeDisplayToPixel(Size displaySize) {
-    return Size(
-      displaySize.width / scale,
-      displaySize.height / scale,
-    );
+    return Size(displaySize.width / scale, displaySize.height / scale);
   }
 }

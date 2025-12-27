@@ -63,7 +63,9 @@ class AppRouter extends _$AppRouter {
 
             // Get circleId from query parameters
             final circleIdStr = state.uri.queryParameters['circleId'];
-            final circleId = circleIdStr != null ? int.tryParse(circleIdStr) : null;
+            final circleId = circleIdStr != null
+                ? int.tryParse(circleIdStr)
+                : null;
 
             return MaterialPage(
               child: MapDetailScreen(
