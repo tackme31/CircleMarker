@@ -1,5 +1,6 @@
 import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/states/circle_list_state.dart';
+import 'package:circle_marker/utils/enums.dart';
 import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
 import 'package:circle_marker/views/widgets/circle_list_item.dart';

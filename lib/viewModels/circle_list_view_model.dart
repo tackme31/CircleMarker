@@ -1,5 +1,6 @@
 import 'package:circle_marker/repositories/circle_repository.dart';
 import 'package:circle_marker/states/circle_list_state.dart';
+import 'package:circle_marker/utils/enums.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'circle_list_view_model.g.dart';
@@ -16,14 +17,11 @@ class CircleListViewModel extends _$CircleListViewModel {
     SortDirection sortDirection,
     List<int> selectedMapIds,
   ) async {
-    final sortTypeStr = sortType.displayName;
-    final sortDirStr = sortDirection.displayName;
-
     final circles = await ref
         .read(circleRepositoryProvider)
         .getAllCirclesSorted(
-          sortType: sortTypeStr,
-          sortDirection: sortDirStr,
+          sortType: sortType,
+          sortDirection: sortDirection,
           mapIds: selectedMapIds.isEmpty ? null : selectedMapIds,
         );
     return CircleListState(

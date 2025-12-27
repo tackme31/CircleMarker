@@ -2,6 +2,8 @@ import 'package:circle_marker/exceptions/app_exceptions.dart';
 import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/providers/database_provider.dart';
 import 'package:circle_marker/repositories/circle_with_map_title.dart';
+import 'package:circle_marker/utils/enums.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -54,8 +56,8 @@ class CircleRepository {
   }
 
   Future<List<CircleWithMapTitle>> getAllCirclesSorted({
-    required String sortType, // 'mapName' or 'spaceNo'
-    required String sortDirection, // 'asc' or 'desc'
+    required SortType sortType, // 'mapName' or 'spaceNo'
+    required SortDirection sortDirection, // 'asc' or 'desc'
     List<int>? mapIds, // Filter by map IDs (empty or null = all maps)
     int? offset,
     int? limit,
@@ -73,8 +75,8 @@ class CircleRepository {
 
   Future<List<CircleWithMapTitle>> searchCirclesSorted({
     required String searchQuery,
-    required String sortType, // 'mapName' or 'spaceNo'
-    required String sortDirection, // 'asc' or 'desc'
+    required SortType sortType, // 'mapName' or 'spaceNo'
+    required SortDirection sortDirection, // 'asc' or 'desc'
     List<int>? mapIds, // Filter by map IDs (empty or null = all maps)
     int? offset,
     int? limit,
@@ -92,8 +94,7 @@ class CircleRepository {
 
       if (normalizedQuery.isNotEmpty) {
         final searchPattern = '%$normalizedQuery%';
-        whereClause =
-            '''
+        whereClause = '''
         WHERE (
           LOWER(c.circleName) LIKE LOWER(?) OR
           LOWER(c.spaceNo) LIKE LOWER(?) OR
@@ -114,18 +115,30 @@ class CircleRepository {
 
       // Build ORDER BY clause (reuse exact logic from getAllCirclesSorted)
       String orderByClause;
-      if (sortType == 'mapName') {
+      switch (sortType) {
         // Join with map_detail to sort by map title
         // Handle null map titles by putting them at the end regardless of direction
-        orderByClause = sortDirection == 'asc'
-            ? 'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title ASC'
-            : 'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title DESC';
-      } else {
+        case SortType.mapName when sortDirection == SortDirection.asc:
+          orderByClause =
+              'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title ASC';
+          break;
+        case SortType.mapName when sortDirection == SortDirection.desc:
+          orderByClause =
+              'CASE WHEN m.title IS NULL THEN 1 ELSE 0 END, m.title DESC';
+          break;
         // Sort by spaceNo
         // Handle null spaceNo by putting them at the end regardless of direction
-        orderByClause = sortDirection == 'asc'
-            ? 'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo ASC'
-            : 'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo DESC';
+        case SortType.spaceNo when sortDirection == SortDirection.asc:
+          orderByClause =
+              'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo ASC';
+          break;
+        case SortType.spaceNo when sortDirection == SortDirection.desc:
+          orderByClause =
+              'CASE WHEN c.spaceNo IS NULL OR c.spaceNo = \'\' THEN 1 ELSE 0 END, c.spaceNo DESC';
+          break;
+        default:
+          orderByClause = 'c.circleId ASC';
+          break;
       }
 
       // Build LIMIT/OFFSET clause for future virtual list support
