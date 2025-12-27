@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MapListState {
   List<MapDetail> get maps => throw _privateConstructorUsedError;
+  String get searchQuery => throw _privateConstructorUsedError;
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +34,7 @@ abstract class $MapListStateCopyWith<$Res> {
     $Res Function(MapListState) then,
   ) = _$MapListStateCopyWithImpl<$Res, MapListState>;
   @useResult
-  $Res call({List<MapDetail> maps});
+  $Res call({List<MapDetail> maps, String searchQuery});
 }
 
 /// @nodoc
@@ -50,13 +51,17 @@ class _$MapListStateCopyWithImpl<$Res, $Val extends MapListState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? maps = null}) {
+  $Res call({Object? maps = null, Object? searchQuery = null}) {
     return _then(
       _value.copyWith(
             maps: null == maps
                 ? _value.maps
                 : maps // ignore: cast_nullable_to_non_nullable
                       as List<MapDetail>,
+            searchQuery: null == searchQuery
+                ? _value.searchQuery
+                : searchQuery // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -72,7 +77,7 @@ abstract class _$$MapListStateImplCopyWith<$Res>
   ) = __$$MapListStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<MapDetail> maps});
+  $Res call({List<MapDetail> maps, String searchQuery});
 }
 
 /// @nodoc
@@ -88,13 +93,17 @@ class __$$MapListStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? maps = null}) {
+  $Res call({Object? maps = null, Object? searchQuery = null}) {
     return _then(
       _$MapListStateImpl(
         maps: null == maps
             ? _value._maps
             : maps // ignore: cast_nullable_to_non_nullable
                   as List<MapDetail>,
+        searchQuery: null == searchQuery
+            ? _value.searchQuery
+            : searchQuery // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -103,8 +112,10 @@ class __$$MapListStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$MapListStateImpl implements _MapListState {
-  const _$MapListStateImpl({final List<MapDetail> maps = const []})
-    : _maps = maps;
+  const _$MapListStateImpl({
+    final List<MapDetail> maps = const [],
+    this.searchQuery = '',
+  }) : _maps = maps;
 
   final List<MapDetail> _maps;
   @override
@@ -116,8 +127,12 @@ class _$MapListStateImpl implements _MapListState {
   }
 
   @override
+  @JsonKey()
+  final String searchQuery;
+
+  @override
   String toString() {
-    return 'MapListState(maps: $maps)';
+    return 'MapListState(maps: $maps, searchQuery: $searchQuery)';
   }
 
   @override
@@ -125,12 +140,17 @@ class _$MapListStateImpl implements _MapListState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MapListStateImpl &&
-            const DeepCollectionEquality().equals(other._maps, _maps));
+            const DeepCollectionEquality().equals(other._maps, _maps) &&
+            (identical(other.searchQuery, searchQuery) ||
+                other.searchQuery == searchQuery));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_maps));
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_maps),
+    searchQuery,
+  );
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.
@@ -142,11 +162,15 @@ class _$MapListStateImpl implements _MapListState {
 }
 
 abstract class _MapListState implements MapListState {
-  const factory _MapListState({final List<MapDetail> maps}) =
-      _$MapListStateImpl;
+  const factory _MapListState({
+    final List<MapDetail> maps,
+    final String searchQuery,
+  }) = _$MapListStateImpl;
 
   @override
   List<MapDetail> get maps;
+  @override
+  String get searchQuery;
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.

@@ -5,6 +5,8 @@ part 'map_list_state.freezed.dart';
 
 @freezed
 class MapListState with _$MapListState {
-  const factory MapListState({@Default([]) List<MapDetail> maps}) =
-      _MapListState;
+  const factory MapListState({
+    @Default([]) List<MapDetail> maps,
+    @Default('') String searchQuery,
+  }) = _MapListState;
 }

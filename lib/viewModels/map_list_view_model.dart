@@ -15,7 +15,27 @@ class MapListViewModel extends _$MapListViewModel {
   @override
   Future<MapListState> build() async {
     final maps = await ref.watch(mapRepositoryProvider).getMapDetails();
-    return MapListState(maps: maps);
+    return MapListState(maps: maps, searchQuery: '');
+  }
+
+  /// マップタイトルで検索
+  ///
+  /// Repository層のSQL検索を呼び出し、結果でstateを更新
+  Future<void> searchMaps(String query) async {
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      final maps = await ref
+          .read(mapRepositoryProvider)
+          .searchMapsByTitle(query);
+
+      return MapListState(maps: maps, searchQuery: query);
+    });
+  }
+
+  /// 検索をクリア
+  void clearSearch() {
+    searchMaps('');
   }
 
   Future<MapDetail> addMapDetail(String imagePath) async {
@@ -34,8 +54,9 @@ class MapListViewModel extends _$MapListViewModel {
           .read(mapRepositoryProvider)
           .insertMapDetail(mapDetail);
 
-      final maps = await ref.read(mapRepositoryProvider).getMapDetails();
-      state = AsyncData(MapListState(maps: maps));
+      // 現在の検索クエリで再検索
+      final currentState = state.value;
+      await searchMaps(currentState?.searchQuery ?? '');
 
       return insertedMap;
     } on ImageOperationException catch (e) {
@@ -48,8 +69,9 @@ class MapListViewModel extends _$MapListViewModel {
     await ref.read(mapRepositoryProvider).deleteMapDetail(mapId);
     await ref.read(circleRepositoryProvider).deleteCircles(mapId);
 
-    final maps = await ref.read(mapRepositoryProvider).getMapDetails();
-    state = AsyncData(MapListState(maps: maps));
+    // 現在の検索クエリで再検索
+    final currentState = state.value;
+    await searchMaps(currentState?.searchQuery ?? '');
 
     // サークルリストも更新
     ref.invalidate(circleListViewModelProvider);
