@@ -76,10 +76,14 @@ class CircleViewModel extends _$CircleViewModel {
     try {
       final circle = await future;
 
-      // ImageRepository で画像を圧縮保存
+      // ImageRepository で画像を圧縮保存（mapIdとcircleIdを渡す）
       final compressedPath = await ref
           .read(imageRepositoryProvider.notifier)
-          .saveCircleImage(imagePath);
+          .saveCircleImage(
+            imagePath,
+            mapId: circle.mapId!,
+            circleId: circle.circleId!,
+          );
 
       await ref
           .read(circleRepositoryProvider)
@@ -97,10 +101,14 @@ class CircleViewModel extends _$CircleViewModel {
     try {
       final circle = await future;
 
-      // ImageRepository で画像を圧縮保存
+      // ImageRepository で画像を圧縮保存（mapIdとcircleIdを渡す）
       final compressedPath = await ref
           .read(imageRepositoryProvider.notifier)
-          .saveCircleImage(menuImagePath);
+          .saveCircleMenuImage(
+            menuImagePath,
+            mapId: circle.mapId!,
+            circleId: circle.circleId!,
+          );
 
       await ref
           .read(circleRepositoryProvider)

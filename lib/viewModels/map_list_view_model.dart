@@ -41,25 +41,39 @@ class MapListViewModel extends _$MapListViewModel {
 
   Future<MapDetail> addMapDetail(String imagePath) async {
     try {
-      // ImageRepository で画像を保存し、サムネイルを生成
-      final imagePaths = await ref
-          .read(imageRepositoryProvider.notifier)
-          .saveMapImageWithThumbnail(imagePath);
-
-      final mapDetail = MapDetail(
+      // 1. 仮のMapDetailをDB挿入してmapIdを取得
+      const tempMapDetail = MapDetail(
         title: 'New Map',
-        baseImagePath: imagePaths.original,
-        thumbnailPath: imagePaths.thumbnail,
+        baseImagePath: null,
+        thumbnailPath: null,
       );
       final insertedMap = await ref
           .read(mapRepositoryProvider)
-          .insertMapDetail(mapDetail);
+          .insertMapDetail(tempMapDetail);
 
-      // 現在の検索クエリで再検索
+      // 2. mapIdを使って画像を保存し、サムネイルを生成
+      final imagePaths = await ref
+          .read(imageRepositoryProvider.notifier)
+          .saveMapImageWithThumbnail(imagePath, mapId: insertedMap.mapId!);
+
+      // 3. 画像パスでMapDetailを更新
+      await ref
+          .read(mapRepositoryProvider)
+          .updateBaseImagePath(
+            insertedMap.mapId!,
+            imagePaths.original,
+            imagePaths.thumbnail,
+          );
+
+      // 4. 現在の検索クエリで再検索
       final currentState = state.value;
       await searchMaps(currentState?.searchQuery ?? '');
 
-      return insertedMap;
+      // 5. 更新されたMapDetailを返す
+      return insertedMap.copyWith(
+        baseImagePath: imagePaths.original,
+        thumbnailPath: imagePaths.thumbnail,
+      );
     } on ImageOperationException catch (e) {
       debugPrint('Failed to add map: $e');
       rethrow;
@@ -84,7 +98,7 @@ class MapListViewModel extends _$MapListViewModel {
       // ImageRepository で画像を保存し、サムネイルを生成
       final imagePaths = await ref
           .read(imageRepositoryProvider.notifier)
-          .saveMapImageWithThumbnail(newImagePath);
+          .saveMapImageWithThumbnail(newImagePath, mapId: mapId);
 
       await ref
           .read(mapRepositoryProvider)

@@ -111,7 +111,9 @@ class __$$MapImagePathsImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$MapImagePathsImpl implements _MapImagePaths {
+class _$MapImagePathsImpl
+    with DiagnosticableTreeMixin
+    implements _MapImagePaths {
   const _$MapImagePathsImpl({required this.original, required this.thumbnail});
 
   @override
@@ -120,8 +122,17 @@ class _$MapImagePathsImpl implements _MapImagePaths {
   final String thumbnail;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapImagePaths(original: $original, thumbnail: $thumbnail)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapImagePaths'))
+      ..add(DiagnosticsProperty('original', original))
+      ..add(DiagnosticsProperty('thumbnail', thumbnail));
   }
 
   @override
