@@ -31,6 +31,9 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
   double _currentScale = 1.0;
   bool _orientationLocked = false;
 
+  // ドラッグ中のサークル位置を保持（ディスプレイ座標）
+  final Map<int, Offset> _draggingDisplayPositions = {};
+
   Future _onLongPressStart(
     BuildContext context,
     LongPressStartDetails details,
@@ -195,6 +198,20 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     }
   }
 
+  // ドラッグ更新コールバック
+  void _onCircleDragUpdate(int circleId, Offset displayPosition) {
+    setState(() {
+      _draggingDisplayPositions[circleId] = displayPosition;
+    });
+  }
+
+  // ドラッグ終了コールバック
+  void _onCircleDragEnd(int circleId) {
+    setState(() {
+      _draggingDisplayPositions.remove(circleId);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -305,6 +322,10 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
                                       : 0.5,
                                   onTap: () => _onCircleTap(context, circleId),
                                   onLongPress: () => _pickCircleImage(circleId),
+                                  onDragUpdate: (displayPosition) =>
+                                      _onCircleDragUpdate(circleId, displayPosition),
+                                  onDragEnd: () => _onCircleDragEnd(circleId),
+                                  draggingStartDisplayPosition: _draggingDisplayPositions[circleId],
                                 );
                               }),
                           // ここに図形を追加
