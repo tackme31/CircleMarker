@@ -162,7 +162,11 @@ class CircleListScreen extends ConsumerWidget {
                                   circleId: circle.circleId!,
                                   width: 0.8,
                                   height: 0.7,
-                                  isDeletable: false,
+                                  onDelete: (circleId) => ref
+                                      .read(
+                                        circleListViewModelProvider.notifier,
+                                      )
+                                      .removeCircle(circleId),
                                 ),
                               );
                             }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:circle_marker/viewModels/circle_view_model.dart';
-import 'package:circle_marker/viewModels/map_detail_view_model.dart';
 import 'package:circle_marker/views/widgets/editable_image.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ class CircleBottomSheet extends ConsumerWidget {
     required this.circleId,
     required this.width,
     required this.height,
-    this.isDeletable = true,
+    this.onDelete,
     super.key,
   });
 
@@ -26,7 +25,7 @@ class CircleBottomSheet extends ConsumerWidget {
   final double width;
   final double height;
   final int? selectedCircleId;
-  final bool isDeletable;
+  final Function(int circleId)? onDelete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,7 +33,6 @@ class CircleBottomSheet extends ConsumerWidget {
     final circleViewModel = ref.read(
       circleViewModelProvider(circleId).notifier,
     );
-    final mapViewModel = ref.read(mapDetailViewModelProvider(mapId).notifier);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -148,31 +146,28 @@ class CircleBottomSheet extends ConsumerWidget {
                               },
                             ),
                             const Gap(8),
-                            if (isDeletable)
-                              ElevatedButton.icon(
-                                onPressed: () async {
-                                  await mapViewModel.removeCircle(
-                                    selectedCircleId!,
-                                  );
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                await onDelete?.call(circle.circleId!);
 
-                                  if (!context.mounted) {
-                                    return;
-                                  }
+                                if (!context.mounted) {
+                                  return;
+                                }
 
-                                  context.pop();
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                                label: const Text(
-                                  '削除',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
+                                context.pop();
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
                               ),
+                              label: const Text(
+                                '削除',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                            ),
                           ],
                         ),
                         Row(

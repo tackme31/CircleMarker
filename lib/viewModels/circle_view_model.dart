@@ -31,7 +31,9 @@ class CircleViewModel extends _$CircleViewModel {
   /// スペース番号を更新
   Future<void> updateSpaceNo(String spaceNo) async {
     final circle = await future;
-    await ref.read(circleRepositoryProvider).updateSpaceNo(circle.circleId!, spaceNo);
+    await ref
+        .read(circleRepositoryProvider)
+        .updateSpaceNo(circle.circleId!, spaceNo);
     ref.invalidateSelf();
   }
 
@@ -115,7 +117,9 @@ class CircleViewModel extends _$CircleViewModel {
   Future<void> toggleDone() async {
     final circle = await future;
     final newIsDone = circle.isDone == 1 ? false : true;
-    await ref.read(circleRepositoryProvider).updateIsDone(circle.circleId!, newIsDone);
+    await ref
+        .read(circleRepositoryProvider)
+        .updateIsDone(circle.circleId!, newIsDone);
     ref.invalidateSelf();
   }
 }

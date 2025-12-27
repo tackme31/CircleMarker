@@ -136,6 +136,7 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
             circleId: circleId,
             width: 0.8,
             height: 0.3,
+            onDelete: (circleId) => viewModel.removeCircle(circleId),
           );
         },
       );
