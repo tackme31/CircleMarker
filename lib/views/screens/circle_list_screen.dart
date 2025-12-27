@@ -146,26 +146,30 @@ class CircleListScreen extends ConsumerWidget {
                     return CircleListItem(
                       circle: circle,
                       mapTitle: mapTitle,
-                      onTap: circle.mapId != null && circle.circleId != null
-                          ? () async {
-                              await showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (context) => CircleBottomSheet(
-                                  circle.mapId!,
-                                  circle.circleId,
-                                  circleId: circle.circleId!,
-                                  width: 0.8,
-                                  height: 0.7,
-                                  onDelete: (circleId) => ref
-                                      .read(
-                                        circleListViewModelProvider.notifier,
-                                      )
-                                      .removeCircle(circleId),
-                                ),
-                              );
-                            }
-                          : () {},
+                      onTap: () async {
+                        if (circle.mapId == null || circle.circleId == null) {
+                          return;
+                        }
+
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => CircleBottomSheet(
+                            circle.mapId!,
+                            circle.circleId,
+                            circleId: circle.circleId!,
+                            width: 0.8,
+                            height: 0.7,
+                            onDelete: (circleId) => ref
+                                .read(circleListViewModelProvider.notifier)
+                                .removeCircle(circleId),
+                          ),
+                        );
+
+                        ref
+                            .read(circleListViewModelProvider.notifier)
+                            .refresh();
+                      },
                       onNavigateToMap: () {
                         if (circle.mapId != null && circle.circleId != null) {
                           context.push(
