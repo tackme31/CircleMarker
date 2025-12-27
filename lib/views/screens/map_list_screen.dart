@@ -25,7 +25,15 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     final ImagePicker picker = ImagePicker();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('配置図')),
+      appBar: AppBar(
+        title: const Text('配置図'),
+        actions: [
+          IconButton(
+            onPressed: _importMap,
+            icon: const Icon(Icons.file_upload),
+          ),
+        ],
+      ),
       body: switch (state) {
         AsyncData(:final value) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -49,26 +57,16 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // サムネイル画像表示
-                        AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: _buildMapThumbnail(map),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  map.title ?? 'No title',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
-                                ),
-                              ),
-                              PopupMenuButton<String>(
+                        Stack(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: _buildMapThumbnail(map),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: PopupMenuButton<String>(
                                 onSelected: (value) async {
                                   switch (value) {
                                     case 'delete':
@@ -98,6 +96,21 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                   ),
                                 ],
                               ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  map.title ?? 'No title',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -114,21 +127,10 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            heroTag: 'import',
-            onPressed: _importMap,
-            child: const Icon(Icons.upload_file),
-          ),
-          const Gap(16),
-          FloatingActionButton(
-            heroTag: 'add',
-            onPressed: () => _addMap(picker),
-            child: const Icon(Icons.add),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'add',
+        onPressed: () => _addMap(picker),
+        child: const Icon(Icons.add),
       ),
     );
   }
