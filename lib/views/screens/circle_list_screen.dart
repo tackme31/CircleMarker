@@ -8,16 +8,65 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class CircleListScreen extends ConsumerWidget {
+class CircleListScreen extends ConsumerStatefulWidget {
   const CircleListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CircleListScreen> createState() => _CircleListScreenState();
+}
+
+class _CircleListScreenState extends ConsumerState<CircleListScreen> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(circleListViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('サークル'),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'サークルを検索',
+              prefixIcon: const Icon(Icons.search),
+              prefixIconConstraints: const BoxConstraints(
+                minHeight: 0,
+                minWidth: 0,
+              ),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: _clearSearch,
+                    )
+                  : null,
+              suffixIconConstraints: const BoxConstraints(
+                minHeight: 0,
+                minWidth: 0,
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              border: InputBorder.none,
+            ),
+            textInputAction: TextInputAction.search,
+            onSubmitted: _onSearchSubmitted,
+            onChanged: (value) {
+              setState(() {}); // Update clear button visibility
+            },
+          ),
+        ),
         actions: [
           state.when(
             data: (data) => IconButton(
@@ -189,6 +238,17 @@ class CircleListScreen extends ConsumerWidget {
         _ => const Center(child: CircularProgressIndicator()),
       },
     );
+  }
+
+  /// 検索実行時のコールバック
+  Future<void> _onSearchSubmitted(String query) async {
+    await ref.read(circleListViewModelProvider.notifier).searchCircles(query);
+  }
+
+  /// 検索クリア
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(circleListViewModelProvider.notifier).clearSearch();
   }
 
   Future<void> _showMapFilterDialog(
