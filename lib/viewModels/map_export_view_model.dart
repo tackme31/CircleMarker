@@ -1,5 +1,6 @@
 import 'package:circle_marker/repositories/map_export_repository.dart';
 import 'package:circle_marker/states/map_export_state.dart';
+import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -19,15 +20,9 @@ class MapExportViewModel extends _$MapExportViewModel {
       final repository = ref.read(mapExportRepositoryProvider);
       final filePath = await repository.exportMap(mapId);
 
-      state = state.copyWith(
-        isExporting: false,
-        exportedFilePath: filePath,
-      );
+      state = state.copyWith(isExporting: false, exportedFilePath: filePath);
     } catch (e) {
-      state = state.copyWith(
-        isExporting: false,
-        errorMessage: 'エクスポート失敗: $e',
-      );
+      state = state.copyWith(isExporting: false, errorMessage: 'エクスポート失敗: $e');
     }
   }
 
@@ -40,13 +35,10 @@ class MapExportViewModel extends _$MapExportViewModel {
 
       state = state.copyWith(isImporting: false);
 
-      // マップ詳細画面に遷移（ナビゲーション処理は UI 側で）
-      // UI側でimportMapの戻り値を使って遷移処理を実装する
+      // サークルリスト更新
+      ref.invalidate(circleListViewModelProvider);
     } catch (e) {
-      state = state.copyWith(
-        isImporting: false,
-        errorMessage: 'インポート失敗: $e',
-      );
+      state = state.copyWith(isImporting: false, errorMessage: 'インポート失敗: $e');
     }
   }
 
