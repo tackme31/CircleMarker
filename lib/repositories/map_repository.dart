@@ -95,6 +95,40 @@ class MapRepository {
     }
   }
 
+  /// タイトルによる部分一致検索
+  ///
+  /// [query]が空の場合は全件取得と同じ動作
+  /// SQLiteのLIKE句を使用した部分一致検索（case-insensitive）
+  Future<List<MapDetail>> searchMapsByTitle(String query) async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+
+      final normalizedQuery = query.trim();
+
+      if (normalizedQuery.isEmpty) {
+        // 検索クエリが空の場合は全件取得
+        return getMapDetails();
+      }
+
+      // LIKE句による部分一致検索
+      // SQLiteのLIKEはデフォルトでcase-insensitiveだが、明示的にLOWER()を使用して保証
+      final maps = await db.query(
+        _tableName,
+        where: 'LOWER(title) LIKE LOWER(?)',
+        whereArgs: ['%$normalizedQuery%'],
+        orderBy: 'mapId DESC',
+      );
+
+      return maps.map(MapDetail.fromJson).toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to search maps', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while searching maps', e);
+    }
+  }
+
   Future<void> deleteMapDetail(int mapId) async {
     try {
       final db = await _ref.read(databaseProvider.future);
