@@ -4,6 +4,7 @@ import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/repositories/image_repository.dart';
 import 'package:circle_marker/states/map_list_state.dart';
 import 'package:circle_marker/exceptions/app_exceptions.dart';
+import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter/foundation.dart';
 
@@ -49,5 +50,8 @@ class MapListViewModel extends _$MapListViewModel {
 
     final maps = await ref.read(mapRepositoryProvider).getMapDetails();
     state = AsyncData(MapListState(maps: maps));
+
+    // サークルリストも更新
+    ref.invalidate(circleListViewModelProvider);
   }
 }
