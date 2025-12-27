@@ -3,7 +3,6 @@ import 'package:circle_marker/models/circle_detail.dart';
 import 'package:circle_marker/providers/database_provider.dart';
 import 'package:circle_marker/repositories/circle_with_map_title.dart';
 import 'package:circle_marker/utils/enums.dart';
-import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;

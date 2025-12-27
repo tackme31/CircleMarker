@@ -9,17 +9,19 @@ part 'circle_list_view_model.g.dart';
 class CircleListViewModel extends _$CircleListViewModel {
   @override
   Future<CircleListState> build() async {
-    return _loadCircles(SortType.mapName, SortDirection.asc, []);
+    return _loadCircles(SortType.mapName, SortDirection.asc, [], '');
   }
 
   Future<CircleListState> _loadCircles(
     SortType sortType,
     SortDirection sortDirection,
     List<int> selectedMapIds,
+    String searchQuery,
   ) async {
     final circles = await ref
         .read(circleRepositoryProvider)
-        .getAllCirclesSorted(
+        .searchCirclesSorted(
+          searchQuery: searchQuery,
           sortType: sortType,
           sortDirection: sortDirection,
           mapIds: selectedMapIds.isEmpty ? null : selectedMapIds,
@@ -29,14 +31,20 @@ class CircleListViewModel extends _$CircleListViewModel {
       sortType: sortType,
       sortDirection: sortDirection,
       selectedMapIds: selectedMapIds,
+      searchQuery: searchQuery,
     );
   }
 
   Future<void> setSort(SortType sortType, SortDirection sortDirection) async {
     state = const AsyncValue.loading();
-    final currentMapIds = state.value?.selectedMapIds ?? [];
+    final currentState = state.value;
     state = await AsyncValue.guard(
-      () => _loadCircles(sortType, sortDirection, currentMapIds),
+      () => _loadCircles(
+        sortType,
+        sortDirection,
+        currentState?.selectedMapIds ?? [],
+        currentState?.searchQuery ?? '',
+      ),
     );
   }
 
@@ -48,6 +56,7 @@ class CircleListViewModel extends _$CircleListViewModel {
         currentState?.sortType ?? SortType.mapName,
         currentState?.sortDirection ?? SortDirection.asc,
         mapIds,
+        currentState?.searchQuery ?? '',
       ),
     );
   }
@@ -60,6 +69,7 @@ class CircleListViewModel extends _$CircleListViewModel {
           currentState.sortType,
           currentState.sortDirection,
           currentState.selectedMapIds,
+          currentState.searchQuery,
         ),
       );
     }
@@ -74,8 +84,37 @@ class CircleListViewModel extends _$CircleListViewModel {
           currentState.sortType,
           currentState.sortDirection,
           currentState.selectedMapIds,
+          currentState.searchQuery,
         ),
       );
     }
+  }
+
+  Future<void> searchCircles(String query) async {
+    state = const AsyncValue.loading();
+    final currentState = state.value;
+
+    state = await AsyncValue.guard(() async {
+      final circles = await ref.read(circleRepositoryProvider).searchCirclesSorted(
+            searchQuery: query,
+            sortType: currentState?.sortType ?? SortType.mapName,
+            sortDirection: currentState?.sortDirection ?? SortDirection.asc,
+            mapIds: currentState?.selectedMapIds.isEmpty ?? true
+                ? null
+                : currentState?.selectedMapIds,
+          );
+
+      return CircleListState(
+        circles: circles,
+        sortType: currentState?.sortType ?? SortType.mapName,
+        sortDirection: currentState?.sortDirection ?? SortDirection.asc,
+        selectedMapIds: currentState?.selectedMapIds ?? [],
+        searchQuery: query,
+      );
+    });
+  }
+
+  void clearSearch() {
+    searchCircles('');
   }
 }
