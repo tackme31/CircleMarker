@@ -29,77 +29,84 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
       body: switch (state) {
         AsyncData(:final value) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: ListView.separated(
-            separatorBuilder: (context, index) => const Gap(12),
-            itemCount: value.maps.length,
-            itemBuilder: (context, index) {
-              final map = value.maps[index];
-              return Card(
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () async {
-                    await context.push('/mapList/${map.mapId}');
-                    ref.invalidate(mapListViewModelProvider);
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // サムネイル画像表示
-                      AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: _buildMapThumbnail(map),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                map.title ?? 'No title',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                            PopupMenuButton<String>(
-                              onSelected: (value) async {
-                                switch (value) {
-                                  case 'delete':
-                                    _deleteMap(map);
-                                    break;
-                                  case 'export':
-                                    _showExportDialog(map.mapId!);
-                                    break;
-                                  case 'markdown':
-                                    await _generateMarkdown(map.mapId!);
-                                    break;
-                                  default:
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'markdown',
-                                  child: Text('Markdownで出力'),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'export',
-                                  child: Text('エクスポート'),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text('削除'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(mapListViewModelProvider);
             },
+            child: ListView.separated(
+              separatorBuilder: (context, index) => const Gap(12),
+              itemCount: value.maps.length,
+              itemBuilder: (context, index) {
+                final map = value.maps[index];
+                return Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () async {
+                      await context.push('/mapList/${map.mapId}');
+                      ref.invalidate(mapListViewModelProvider);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // サムネイル画像表示
+                        AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: _buildMapThumbnail(map),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  map.title ?? 'No title',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
+                              ),
+                              PopupMenuButton<String>(
+                                onSelected: (value) async {
+                                  switch (value) {
+                                    case 'delete':
+                                      _deleteMap(map);
+                                      break;
+                                    case 'export':
+                                      _showExportDialog(map.mapId!);
+                                      break;
+                                    case 'markdown':
+                                      await _generateMarkdown(map.mapId!);
+                                      break;
+                                    default:
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: 'markdown',
+                                    child: Text('Markdownで出力'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'export',
+                                    child: Text('エクスポート'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('削除'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
         AsyncError(:final error) => Center(

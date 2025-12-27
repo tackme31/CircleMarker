@@ -131,50 +131,55 @@ class CircleListScreen extends ConsumerWidget {
                 ),
               ),
             Expanded(
-              child: ListView.builder(
-                itemCount: value.circles.length,
-                itemBuilder: (context, index) {
-                  final circle = value.circles[index].circle;
-                  final mapName = value.circles[index].mapTitle;
-                  final circleName =
-                      circle.circleName == null || circle.circleName!.isEmpty
-                      ? '名前なし'
-                      : circle.circleName!;
-                  return ListTile(
-                    title: Text("[${mapName ?? 'マップ名なし'}] $circleName"),
-                    subtitle: Text(
-                      circle.spaceNo == null || circle.spaceNo!.isEmpty
-                          ? 'スペース番号なし'
-                          : circle.spaceNo!,
-                    ),
-                    onTap: circle.mapId != null && circle.circleId != null
-                        ? () async {
-                            await showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (context) => CircleBottomSheet(
-                                circle.mapId!,
-                                circle.circleId,
-                                circleId: circle.circleId!,
-                                width: 0.8,
-                                height: 0.7,
-                                isDeletable: false,
-                              ),
-                            );
-                          }
-                        : null,
-                    trailing: mapName != null
-                        ? IconButton(
-                            icon: const Icon(Icons.location_pin),
-                            onPressed: () {
-                              context.push(
-                                '/mapList/${circle.mapId}?circleId=${circle.circleId}',
-                              );
-                            },
-                          )
-                        : null,
-                  );
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(circleListViewModelProvider);
                 },
+                child: ListView.builder(
+                  itemCount: value.circles.length,
+                  itemBuilder: (context, index) {
+                    final circle = value.circles[index].circle;
+                    final mapName = value.circles[index].mapTitle;
+                    final circleName =
+                        circle.circleName == null || circle.circleName!.isEmpty
+                        ? '名前なし'
+                        : circle.circleName!;
+                    return ListTile(
+                      title: Text("[${mapName ?? 'マップ名なし'}] $circleName"),
+                      subtitle: Text(
+                        circle.spaceNo == null || circle.spaceNo!.isEmpty
+                            ? 'スペース番号なし'
+                            : circle.spaceNo!,
+                      ),
+                      onTap: circle.mapId != null && circle.circleId != null
+                          ? () async {
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => CircleBottomSheet(
+                                  circle.mapId!,
+                                  circle.circleId,
+                                  circleId: circle.circleId!,
+                                  width: 0.8,
+                                  height: 0.7,
+                                  isDeletable: false,
+                                ),
+                              );
+                            }
+                          : null,
+                      trailing: mapName != null
+                          ? IconButton(
+                              icon: const Icon(Icons.location_pin),
+                              onPressed: () {
+                                context.push(
+                                  '/mapList/${circle.mapId}?circleId=${circle.circleId}',
+                                );
+                              },
+                            )
+                          : null,
+                    );
+                  },
+                ),
               ),
             ),
           ],
