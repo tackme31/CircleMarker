@@ -133,7 +133,7 @@ class CircleListScreen extends ConsumerWidget {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  ref.invalidate(circleListViewModelProvider);
+                  ref.read(circleListViewModelProvider.notifier).refresh();
                 },
                 child: ListView.builder(
                   itemCount: value.circles.length,

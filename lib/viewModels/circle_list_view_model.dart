@@ -54,6 +54,19 @@ class CircleListViewModel extends _$CircleListViewModel {
     );
   }
 
+  Future<void> refresh() async {
+    final currentState = state.value;
+    if (currentState != null) {
+      state = await AsyncValue.guard(
+        () => _loadCircles(
+          currentState.sortType,
+          currentState.sortDirection,
+          currentState.selectedMapIds,
+        ),
+      );
+    }
+  }
+
   Future<void> removeCircle(int circleId) async {
     await ref.read(circleRepositoryProvider).deleteCircle(circleId);
     final currentState = state.value;
