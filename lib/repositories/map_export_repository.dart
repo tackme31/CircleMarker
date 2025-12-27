@@ -142,19 +142,39 @@ class MapExportRepository {
 
     // 5. 画像を保存（新しいパスに）
     final appDocDir = await getApplicationDocumentsDirectory();
+
+    // 必要なディレクトリを事前作成
+    final mapsDir = Directory('${appDocDir.path}/maps');
+    final thumbnailsDir = Directory('${appDocDir.path}/maps/thumbnails');
+    final circlesDir = Directory('${appDocDir.path}/circles');
+
+    await mapsDir.create(recursive: true);
+    await thumbnailsDir.create(recursive: true);
+    await circlesDir.create(recursive: true);
+
     final newMapBasePath =
         '${appDocDir.path}/maps/${DateTime.now().millisecondsSinceEpoch}.jpg';
-    await File(
-      '${extractDir.path}/${content.map.baseImagePath}',
-    ).copy(newMapBasePath);
+
+    // ファイル存在確認してからコピー
+    final mapBaseFile = File('${extractDir.path}/${content.map.baseImagePath}');
+    if (!await mapBaseFile.exists()) {
+      throw Exception(
+        'Map base image not found: ${content.map.baseImagePath}\n'
+        'Expected at: ${mapBaseFile.path}',
+      );
+    }
+    await mapBaseFile.copy(newMapBasePath);
 
     String? newThumbnailPath;
     if (content.map.thumbnailPath != null) {
       newThumbnailPath =
           '${appDocDir.path}/maps/thumbnails/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      await File(
+      final thumbnailFile = File(
         '${extractDir.path}/${content.map.thumbnailPath}',
-      ).copy(newThumbnailPath);
+      );
+      if (await thumbnailFile.exists()) {
+        await thumbnailFile.copy(newThumbnailPath);
+      }
     }
 
     // 6. DB に保存（トランザクション使用）
@@ -170,24 +190,44 @@ class MapExportRepository {
       });
 
       // サークル挿入
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
       int circleIndex = 1;
+
       for (final circle in content.circles) {
         String? newCircleImagePath;
         if (circle.imagePath != null) {
-          newCircleImagePath =
-              '${appDocDir.path}/circles/${DateTime.now().millisecondsSinceEpoch}_$circleIndex.jpg';
-          await File(
+          final circleImageFile = File(
             '${extractDir.path}/${circle.imagePath}',
-          ).copy(newCircleImagePath);
+          );
+
+          // ファイルが存在する場合のみコピー（古いバグのあるZIPファイルにも対応）
+          if (await circleImageFile.exists()) {
+            newCircleImagePath =
+                '${appDocDir.path}/circles/${timestamp}_$circleIndex.jpg';
+            await circleImageFile.copy(newCircleImagePath);
+          } else {
+            // ファイルが見つからない場合は警告のみ（処理は続行）
+            print(
+              'Warning: Circle image not found: ${circle.imagePath}, skipping',
+            );
+          }
         }
 
         String? newMenuImagePath;
         if (circle.menuImagePath != null) {
-          newMenuImagePath =
-              '${appDocDir.path}/circles/${DateTime.now().millisecondsSinceEpoch}_${circleIndex}_menu.jpg';
-          await File(
+          final menuImageFile = File(
             '${extractDir.path}/${circle.menuImagePath}',
-          ).copy(newMenuImagePath);
+          );
+
+          if (await menuImageFile.exists()) {
+            newMenuImagePath =
+                '${appDocDir.path}/circles/${timestamp}_${circleIndex}_menu.jpg';
+            await menuImageFile.copy(newMenuImagePath);
+          } else {
+            print(
+              'Warning: Menu image not found: ${circle.menuImagePath}, skipping',
+            );
+          }
         }
 
         await txn.insert('circle_detail', {
@@ -222,6 +262,36 @@ class MapExportRepository {
     MapDetail mapDetail,
     List<CircleDetail> circles,
   ) {
+    // エクスポート時と同じインデックス付けロジックを使用
+    int circleIndex = 1;
+    final circleExportDataList = <CircleExportData>[];
+
+    for (final circle in circles) {
+      circleExportDataList.add(
+        CircleExportData(
+          positionX: circle.positionX!,
+          positionY: circle.positionY!,
+          sizeWidth: circle.sizeWidth!,
+          sizeHeight: circle.sizeHeight!,
+          pointerX: circle.pointerX!,
+          pointerY: circle.pointerY!,
+          circleName: circle.circleName!,
+          spaceNo: circle.spaceNo!,
+          imagePath: circle.imagePath != null
+              ? 'images/circles/circle_$circleIndex.jpg'
+              : null,
+          menuImagePath: circle.menuImagePath != null
+              ? 'images/circles/circle_${circleIndex}_menu.jpg'
+              : null,
+          note: circle.note,
+          description: circle.description,
+          color: circle.color,
+          isDone: circle.isDone!,
+        ),
+      );
+      circleIndex++;
+    }
+
     return MapExportData(
       manifest: MapExportManifest(
         version: '1.0',
@@ -235,30 +305,7 @@ class MapExportRepository {
               ? 'images/map_thumb.jpg'
               : null,
         ),
-        circles: circles.asMap().entries.map((entry) {
-          final index = entry.key + 1;
-          final circle = entry.value;
-          return CircleExportData(
-            positionX: circle.positionX!,
-            positionY: circle.positionY!,
-            sizeWidth: circle.sizeWidth!,
-            sizeHeight: circle.sizeHeight!,
-            pointerX: circle.pointerX!,
-            pointerY: circle.pointerY!,
-            circleName: circle.circleName!,
-            spaceNo: circle.spaceNo!,
-            imagePath: circle.imagePath != null
-                ? 'images/circles/circle_$index.jpg'
-                : null,
-            menuImagePath: circle.menuImagePath != null
-                ? 'images/circles/circle_${index}_menu.jpg'
-                : null,
-            note: circle.note,
-            description: circle.description,
-            color: circle.color,
-            isDone: circle.isDone!,
-          );
-        }).toList(),
+        circles: circleExportDataList,
       ),
     );
   }
