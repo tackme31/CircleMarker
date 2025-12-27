@@ -19,6 +19,20 @@ class MapListScreen extends ConsumerStatefulWidget {
 }
 
 class _MapListScreenState extends ConsumerState<MapListScreen> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapListViewModelProvider);
@@ -34,103 +48,172 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           ),
         ],
       ),
-      body: switch (state) {
-        AsyncData(:final value) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(mapListViewModelProvider);
-            },
-            child: ListView.separated(
-              separatorBuilder: (context, index) => const Gap(12),
-              itemCount: value.maps.length,
-              itemBuilder: (context, index) {
-                final map = value.maps[index];
-                return Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: () async {
-                      await context.push('/mapList/${map.mapId}');
-                      ref.invalidate(mapListViewModelProvider);
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // サムネイル画像表示
-                        Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: _buildMapThumbnail(map),
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: PopupMenuButton<String>(
-                                onSelected: (value) async {
-                                  switch (value) {
-                                    case 'delete':
-                                      _deleteMap(map);
-                                      break;
-                                    case 'export':
-                                      _showExportDialog(map.mapId!);
-                                      break;
-                                    case 'markdown':
-                                      await _generateMarkdown(map.mapId!);
-                                      break;
-                                    default:
-                                  }
+      body: Column(
+        children: [
+          _buildSearchBar(),
+          Expanded(
+            child: switch (state) {
+              AsyncData(:final value) => value.maps.isEmpty
+                  ? _buildEmptySearchResult()
+                  : Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          final currentQuery = value.searchQuery;
+                          await ref
+                              .read(mapListViewModelProvider.notifier)
+                              .searchMaps(currentQuery);
+                        },
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) => const Gap(12),
+                          itemCount: value.maps.length,
+                          itemBuilder: (context, index) {
+                            final map = value.maps[index];
+                            return Card(
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                onTap: () async {
+                                  await context.push('/mapList/${map.mapId}');
+                                  ref.invalidate(mapListViewModelProvider);
                                 },
-                                itemBuilder: (context) => [
-                                  const PopupMenuItem(
-                                    value: 'markdown',
-                                    child: Text('Markdownで出力'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 'export',
-                                    child: Text('エクスポート'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 'delete',
-                                    child: Text('削除'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  map.title ?? 'No title',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // サムネイル画像表示
+                                    Stack(
+                                      children: [
+                                        AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: _buildMapThumbnail(map),
+                                        ),
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: PopupMenuButton<String>(
+                                            onSelected: (value) async {
+                                              switch (value) {
+                                                case 'delete':
+                                                  _deleteMap(map);
+                                                  break;
+                                                case 'export':
+                                                  _showExportDialog(map.mapId!);
+                                                  break;
+                                                case 'markdown':
+                                                  await _generateMarkdown(map.mapId!);
+                                                  break;
+                                                default:
+                                              }
+                                            },
+                                            itemBuilder: (context) => [
+                                              const PopupMenuItem(
+                                                value: 'markdown',
+                                                child: Text('Markdownで出力'),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: 'export',
+                                                child: Text('エクスポート'),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: 'delete',
+                                                child: Text('削除'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(14),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              map.title ?? 'No title',
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+              AsyncError(:final error) => Center(
+                  child: Text('Something went wrong: $error'),
+                ),
+              _ => const Center(child: CircularProgressIndicator()),
+            },
           ),
-        ),
-        AsyncError(:final error) => Center(
-          child: Text('Something went wrong: $error'),
-        ),
-        _ => const Center(child: CircularProgressIndicator()),
-      },
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'add',
         onPressed: () => _addMap(picker),
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  /// 検索実行時のコールバック
+  Future<void> _onSearchSubmitted(String query) async {
+    await ref.read(mapListViewModelProvider.notifier).searchMaps(query);
+  }
+
+  /// 検索クリア
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(mapListViewModelProvider.notifier).clearSearch();
+  }
+
+  /// 検索バーを構築
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'マップを検索',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: _clearSearch,
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        ),
+        textInputAction: TextInputAction.search,
+        onSubmitted: _onSearchSubmitted,
+        onChanged: (value) {
+          setState(() {}); // suffixIconの表示切り替え
+        },
+      ),
+    );
+  }
+
+  /// 検索結果が0件の場合の表示
+  Widget _buildEmptySearchResult() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            '検索結果がありません',
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+        ],
       ),
     );
   }
