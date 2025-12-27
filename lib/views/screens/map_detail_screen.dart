@@ -207,8 +207,13 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
 
   // ドラッグ終了コールバック
   void _onCircleDragEnd(int circleId) {
-    setState(() {
-      _draggingDisplayPositions.remove(circleId);
+    // データベース更新とRiverpod状態反映を待つため、次のフレームまで削除を遅延
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _draggingDisplayPositions.remove(circleId);
+        });
+      }
     });
   }
 

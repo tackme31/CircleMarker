@@ -2,6 +2,7 @@ import 'package:circle_marker/viewModels/circle_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_box.dart';
 import 'package:circle_marker/views/widgets/draggable_line.dart';
 import 'package:circle_marker/views/widgets/pixel_positioned.dart';
+import 'package:circle_marker/utils/coordinate_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -43,6 +44,15 @@ class CircleMarker extends ConsumerWidget {
 
     return circleAsync.when(
       data: (circle) {
+        // CircleBoxのディスプレイサイズを計算（中心座標計算に必要）
+        final converter = CoordinateConverter(
+          imageSize: imageOriginalSize,
+          containerSize: imageDisplaySize,
+        );
+        final circleDisplaySize = converter.sizePixelToDisplay(
+          Size(circle.sizeWidth!.toDouble(), circle.sizeHeight!.toDouble()),
+        );
+
         return Opacity(
           opacity: opacity,
           child: Stack(
@@ -71,7 +81,14 @@ class CircleMarker extends ConsumerWidget {
                 imageDisplaySize: imageDisplaySize,
                 imageOriginalSize: imageOriginalSize,
                 onTap: onTap,
-                onDragUpdate: onDragUpdate,
+                onDragUpdate: (displayPosition) {
+                  // CircleBoxの左上座標を中心座標に変換
+                  final centerPosition = Offset(
+                    displayPosition.dx + circleDisplaySize.width / 2,
+                    displayPosition.dy + circleDisplaySize.height / 2,
+                  );
+                  onDragUpdate?.call(centerPosition);
+                },
                 onDragEnd: (x, y) async {
                   await ref
                       .read(circleViewModelProvider(circleId).notifier)
