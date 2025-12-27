@@ -14,8 +14,8 @@ class AppLayout extends ConsumerWidget {
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (index) => navigationShell.goBranch(index),
         selectedIndex: navigationShell.currentIndex,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        height: 60,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        height: 64,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.map), label: '配置図'),
           NavigationDestination(icon: Icon(Icons.person), label: 'サークル'),
