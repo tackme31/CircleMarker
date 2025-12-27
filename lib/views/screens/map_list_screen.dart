@@ -50,7 +50,10 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                         child: _buildMapThumbnail(map),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         child: Row(
                           children: [
                             Expanded(
