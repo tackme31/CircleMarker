@@ -10,6 +10,7 @@ class PixelPositioned extends StatefulWidget {
     required this.imageDisplaySize,
     required this.child,
     this.onDragEnd,
+    this.onDragUpdate,
     this.onTap,
   });
 
@@ -20,6 +21,7 @@ class PixelPositioned extends StatefulWidget {
   final Widget child;
 
   final void Function(int newPixelX, int newPixelY)? onDragEnd;
+  final void Function(Offset displayPosition)? onDragUpdate;
   final void Function()? onTap;
 
   @override
@@ -71,6 +73,9 @@ class _PixelPositionedState extends State<PixelPositioned> {
             _currentDisplayX += details.delta.dx;
             _currentDisplayY += details.delta.dy;
           });
+
+          // ドラッグ中の座標を親に通知（ディスプレイ座標）
+          widget.onDragUpdate?.call(Offset(_currentDisplayX, _currentDisplayY));
         },
         onPanEnd: (details) {
           if (widget.onDragEnd != null) {
