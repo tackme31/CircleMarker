@@ -197,9 +197,6 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                                   .textTheme
                                                   .labelLarge
                                                   ?.copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onPrimaryContainer,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                             ),
