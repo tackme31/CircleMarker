@@ -14,7 +14,7 @@ part 'map_list_view_model.g.dart';
 class MapListViewModel extends _$MapListViewModel {
   @override
   Future<MapListState> build() async {
-    final maps = await ref.watch(mapRepositoryProvider).getMapDetails();
+    final maps = await ref.watch(mapRepositoryProvider).getMapDetailsWithCircleCount();
     return MapListState(maps: maps, searchQuery: '');
   }
 
@@ -27,7 +27,7 @@ class MapListViewModel extends _$MapListViewModel {
     state = await AsyncValue.guard(() async {
       final maps = await ref
           .read(mapRepositoryProvider)
-          .searchMapsByTitle(query);
+          .searchMapsByTitleWithCircleCount(query);
 
       return MapListState(maps: maps, searchQuery: query);
     });

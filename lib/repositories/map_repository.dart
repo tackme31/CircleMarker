@@ -1,6 +1,7 @@
 import 'package:circle_marker/exceptions/app_exceptions.dart';
 import 'package:circle_marker/models/map_detail.dart';
 import 'package:circle_marker/providers/database_provider.dart';
+import 'package:circle_marker/repositories/map_with_circle_count.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -126,6 +127,109 @@ class MapRepository {
       rethrow;
     } on Exception catch (e) {
       throw AppException('Unexpected error while searching maps', e);
+    }
+  }
+
+  /// マップ一覧をサークル数付きで取得
+  ///
+  /// LEFT JOINとCOUNTを使用して各マップのサークル数を効率的に取得
+  /// サークルが0件のマップも含まれる
+  Future<List<MapWithCircleCount>> getMapDetailsWithCircleCount() async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+
+      final query = '''
+        SELECT
+          m.mapId,
+          m.title,
+          m.baseImagePath,
+          m.thumbnailPath,
+          COUNT(c.circleId) AS circleCount
+        FROM $_tableName m
+        LEFT JOIN circle_detail c ON m.mapId = c.mapId
+        GROUP BY m.mapId, m.title, m.baseImagePath, m.thumbnailPath
+        ORDER BY m.mapId DESC
+      ''';
+
+      final result = await db.rawQuery(query);
+
+      return result.map((row) {
+        // Extract count separately as it's not part of MapDetail
+        final circleCount = row['circleCount'] as int;
+
+        // Create MapDetail from the row (excluding circleCount)
+        final mapData = Map<String, dynamic>.from(row)..remove('circleCount');
+        final map = MapDetail.fromJson(mapData);
+
+        return MapWithCircleCount(
+          map: map,
+          circleCount: circleCount,
+        );
+      }).toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to load maps with circle count', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException(
+        'Unexpected error while loading maps with circle count',
+        e,
+      );
+    }
+  }
+
+  /// タイトルによる部分一致検索（サークル数付き）
+  ///
+  /// [query]が空の場合は全件取得と同じ動作
+  /// LEFT JOINとCOUNTを使用して各マップのサークル数を効率的に取得
+  Future<List<MapWithCircleCount>> searchMapsByTitleWithCircleCount(
+    String query,
+  ) async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+
+      final normalizedQuery = query.trim();
+
+      if (normalizedQuery.isEmpty) {
+        // 検索クエリが空の場合は全件取得
+        return getMapDetailsWithCircleCount();
+      }
+
+      final sqlQuery = '''
+        SELECT
+          m.mapId,
+          m.title,
+          m.baseImagePath,
+          m.thumbnailPath,
+          COUNT(c.circleId) AS circleCount
+        FROM $_tableName m
+        LEFT JOIN circle_detail c ON m.mapId = c.mapId
+        WHERE LOWER(m.title) LIKE LOWER(?)
+        GROUP BY m.mapId, m.title, m.baseImagePath, m.thumbnailPath
+        ORDER BY m.mapId DESC
+      ''';
+
+      final result = await db.rawQuery(sqlQuery, ['%$normalizedQuery%']);
+
+      return result.map((row) {
+        final circleCount = row['circleCount'] as int;
+        final mapData = Map<String, dynamic>.from(row)..remove('circleCount');
+        final map = MapDetail.fromJson(mapData);
+
+        return MapWithCircleCount(
+          map: map,
+          circleCount: circleCount,
+        );
+      }).toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to search maps with circle count', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException(
+        'Unexpected error while searching maps with circle count',
+        e,
+      );
     }
   }
 

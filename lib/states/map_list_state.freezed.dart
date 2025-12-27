@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$MapListState {
-  List<MapDetail> get maps => throw _privateConstructorUsedError;
+  List<MapWithCircleCount> get maps => throw _privateConstructorUsedError;
   String get searchQuery => throw _privateConstructorUsedError;
 
   /// Create a copy of MapListState
@@ -34,7 +34,7 @@ abstract class $MapListStateCopyWith<$Res> {
     $Res Function(MapListState) then,
   ) = _$MapListStateCopyWithImpl<$Res, MapListState>;
   @useResult
-  $Res call({List<MapDetail> maps, String searchQuery});
+  $Res call({List<MapWithCircleCount> maps, String searchQuery});
 }
 
 /// @nodoc
@@ -57,7 +57,7 @@ class _$MapListStateCopyWithImpl<$Res, $Val extends MapListState>
             maps: null == maps
                 ? _value.maps
                 : maps // ignore: cast_nullable_to_non_nullable
-                      as List<MapDetail>,
+                      as List<MapWithCircleCount>,
             searchQuery: null == searchQuery
                 ? _value.searchQuery
                 : searchQuery // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,7 @@ abstract class _$$MapListStateImplCopyWith<$Res>
   ) = __$$MapListStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<MapDetail> maps, String searchQuery});
+  $Res call({List<MapWithCircleCount> maps, String searchQuery});
 }
 
 /// @nodoc
@@ -99,7 +99,7 @@ class __$$MapListStateImplCopyWithImpl<$Res>
         maps: null == maps
             ? _value._maps
             : maps // ignore: cast_nullable_to_non_nullable
-                  as List<MapDetail>,
+                  as List<MapWithCircleCount>,
         searchQuery: null == searchQuery
             ? _value.searchQuery
             : searchQuery // ignore: cast_nullable_to_non_nullable
@@ -113,14 +113,14 @@ class __$$MapListStateImplCopyWithImpl<$Res>
 
 class _$MapListStateImpl implements _MapListState {
   const _$MapListStateImpl({
-    final List<MapDetail> maps = const [],
+    final List<MapWithCircleCount> maps = const [],
     this.searchQuery = '',
   }) : _maps = maps;
 
-  final List<MapDetail> _maps;
+  final List<MapWithCircleCount> _maps;
   @override
   @JsonKey()
-  List<MapDetail> get maps {
+  List<MapWithCircleCount> get maps {
     if (_maps is EqualUnmodifiableListView) return _maps;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_maps);
@@ -163,12 +163,12 @@ class _$MapListStateImpl implements _MapListState {
 
 abstract class _MapListState implements MapListState {
   const factory _MapListState({
-    final List<MapDetail> maps,
+    final List<MapWithCircleCount> maps,
     final String searchQuery,
   }) = _$MapListStateImpl;
 
   @override
-  List<MapDetail> get maps;
+  List<MapWithCircleCount> get maps;
   @override
   String get searchQuery;
 

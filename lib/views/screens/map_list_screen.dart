@@ -98,12 +98,14 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                       separatorBuilder: (context, index) => const Gap(12),
                       itemCount: value.maps.length,
                       itemBuilder: (context, index) {
-                        final map = value.maps[index];
+                        final mapWithCount = value.maps[index];
                         return Card(
                           clipBehavior: Clip.antiAlias,
                           child: InkWell(
                             onTap: () async {
-                              await context.push('/mapList/${map.mapId}');
+                              await context.push(
+                                '/mapList/${mapWithCount.map.mapId}',
+                              );
                               ref.invalidate(mapListViewModelProvider);
                             },
                             child: Column(
@@ -114,7 +116,9 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                   children: [
                                     AspectRatio(
                                       aspectRatio: 16 / 9,
-                                      child: _buildMapThumbnail(map),
+                                      child: _buildMapThumbnail(
+                                        mapWithCount.map,
+                                      ),
                                     ),
                                     Positioned(
                                       right: 0,
@@ -124,20 +128,22 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                           switch (value) {
                                             case 'markdown':
                                               await _generateMarkdown(
-                                                map.mapId!,
+                                                mapWithCount.map.mapId!,
                                               );
                                               break;
                                             case 'export':
-                                              _showExportDialog(map.mapId!);
+                                              _showExportDialog(
+                                                mapWithCount.map.mapId!,
+                                              );
                                               break;
                                             case 'image':
                                               await _setImage(
-                                                map.mapId!,
+                                                mapWithCount.map.mapId!,
                                                 picker,
                                               );
                                               break;
                                             case 'delete':
-                                              _deleteMap(map);
+                                              _deleteMap(mapWithCount.map);
                                               break;
                                             default:
                                           }
@@ -170,10 +176,34 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          map.title ?? 'No title',
+                                          mapWithCount.map.title ?? 'No title',
                                           style: Theme.of(
                                             context,
                                           ).textTheme.titleMedium,
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.person, size: 16),
+                                            const Gap(4),
+                                            Text(
+                                              '${mapWithCount.circleCount}',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge
+                                                  ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
