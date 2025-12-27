@@ -13,6 +13,7 @@ class DraggableLine extends StatefulWidget {
     this.onEndPointDragEnd,
     this.dragIconScale = 1.0,
     required this.showIcon,
+    this.draggingStartDisplayPosition,
   });
 
   final int startPixelX;
@@ -24,6 +25,7 @@ class DraggableLine extends StatefulWidget {
   final void Function(int newEndX, int newEndY)? onEndPointDragEnd;
   final double dragIconScale;
   final bool showIcon;
+  final Offset? draggingStartDisplayPosition;
 
   @override
   State<DraggableLine> createState() => _DraggableLineState();
@@ -63,7 +65,9 @@ class _DraggableLineState extends State<DraggableLine> {
 
   @override
   Widget build(BuildContext context) {
-    final start = _converter.pixelToDisplayInt(widget.startPixelX, widget.startPixelY);
+    // ドラッグ中ならdraggingStartDisplayPositionを使用、そうでなければピクセル座標から計算
+    final start = widget.draggingStartDisplayPosition ??
+        _converter.pixelToDisplayInt(widget.startPixelX, widget.startPixelY);
 
     const iconSize = 24.0;
     final scale = 1 / widget.dragIconScale;

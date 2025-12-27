@@ -20,6 +20,9 @@ class CircleMarker extends ConsumerWidget {
     required this.opacity,
     required this.onTap,
     required this.onLongPress,
+    this.onDragUpdate,
+    this.onDragEnd,
+    this.draggingStartDisplayPosition,
   });
 
   final int circleId;
@@ -30,6 +33,9 @@ class CircleMarker extends ConsumerWidget {
   final double opacity;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  final void Function(Offset displayPosition)? onDragUpdate;
+  final VoidCallback? onDragEnd;
+  final Offset? draggingStartDisplayPosition;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,6 +57,7 @@ class CircleMarker extends ConsumerWidget {
                 imageDisplaySize: imageDisplaySize,
                 dragIconScale: dragIconScale,
                 showIcon: isSelected,
+                draggingStartDisplayPosition: draggingStartDisplayPosition,
                 onEndPointDragEnd: (newEndX, newEndY) {
                   ref
                       .read(circleViewModelProvider(circleId).notifier)
@@ -64,10 +71,13 @@ class CircleMarker extends ConsumerWidget {
                 imageDisplaySize: imageDisplaySize,
                 imageOriginalSize: imageOriginalSize,
                 onTap: onTap,
+                onDragUpdate: onDragUpdate,
                 onDragEnd: (x, y) async {
                   await ref
                       .read(circleViewModelProvider(circleId).notifier)
                       .updatePosition(x, y);
+
+                  onDragEnd?.call();
                 },
                 child: Container(
                   color: Colors.white.withValues(alpha: 0.7),
