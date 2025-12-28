@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/utils/error_handler.dart';
 import 'package:circle_marker/viewModels/map_export_view_model.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
@@ -77,6 +78,14 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           ),
         ),
         actions: [
+          state.when(
+            data: (data) => IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showEventFilterDialog(context, ref, data),
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
           IconButton(
             onPressed: _importMap,
             icon: const Icon(Icons.file_upload),
@@ -84,140 +93,177 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         ],
       ),
       body: switch (state) {
-        AsyncData(:final value) =>
-          value.maps.isEmpty
-              ? _buildEmptySearchResult()
-              : Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: RefreshIndicator(
-                    onRefresh: () async {
-                      final currentQuery = value.searchQuery;
-                      await ref
-                          .read(mapListViewModelProvider.notifier)
-                          .searchMaps(currentQuery);
-                    },
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) => const Gap(12),
-                      itemCount: value.maps.length,
-                      itemBuilder: (context, index) {
-                        final mapWithCount = value.maps[index];
-                        return Card(
-                          clipBehavior: Clip.antiAlias,
-                          child: InkWell(
-                            onTap: () async {
-                              _searchFocusNode.unfocus();
+        AsyncData(:final value) => Column(
+          children: [
+            // フィルター状態表示
+            if (value.selectedEventNames.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Wrap(
+                  spacing: 8.0,
+                  children: [
+                    Chip(
+                      label: Text(
+                        'フィルター: ${value.selectedEventNames.length}個のイベント',
+                      ),
+                      deleteIcon: const Icon(Icons.close, size: 18),
+                      onDeleted: () {
+                        ref
+                            .read(mapListViewModelProvider.notifier)
+                            .clearEventFilter();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            // マップリスト
+            Expanded(
+              child: value.maps.isEmpty
+                  ? _buildEmptySearchResult()
+                  : Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          final currentQuery = value.searchQuery;
+                          await ref
+                              .read(mapListViewModelProvider.notifier)
+                              .searchMaps(currentQuery);
+                        },
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) => const Gap(12),
+                          itemCount: value.maps.length,
+                          itemBuilder: (context, index) {
+                            final mapWithCount = value.maps[index];
+                            return Card(
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                onTap: () async {
+                                  _searchFocusNode.unfocus();
 
-                              await context.push(
-                                '/mapList/${mapWithCount.map.mapId}',
-                              );
-                              ref.invalidate(mapListViewModelProvider);
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // サムネイル画像表示
-                                Stack(
+                                  await context.push(
+                                    '/mapList/${mapWithCount.map.mapId}',
+                                  );
+                                  ref.invalidate(mapListViewModelProvider);
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AspectRatio(
-                                      aspectRatio: 16 / 9,
-                                      child: _buildMapThumbnail(
-                                        mapWithCount.map,
-                                      ),
+                                    // サムネイル画像表示
+                                    Stack(
+                                      children: [
+                                        AspectRatio(
+                                          aspectRatio: 16 / 9,
+                                          child: _buildMapThumbnail(
+                                            mapWithCount.map,
+                                          ),
+                                        ),
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: PopupMenuButton<String>(
+                                            onSelected: (value) async {
+                                              switch (value) {
+                                                case 'markdown':
+                                                  await _generateMarkdown(
+                                                    mapWithCount.map.mapId!,
+                                                  );
+                                                  break;
+                                                case 'export':
+                                                  _showExportDialog(
+                                                    mapWithCount.map.mapId!,
+                                                  );
+                                                  break;
+                                                case 'image':
+                                                  await _setImage(
+                                                    mapWithCount.map.mapId!,
+                                                    picker,
+                                                  );
+                                                  break;
+                                                case 'delete':
+                                                  _deleteMap(mapWithCount.map);
+                                                  break;
+                                                default:
+                                              }
+                                            },
+                                            itemBuilder: (context) => [
+                                              const PopupMenuItem(
+                                                value: 'markdown',
+                                                child: Text('Markdownで出力'),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: 'export',
+                                                child: Text('エクスポート'),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: 'image',
+                                                child: Text('画像変更'),
+                                              ),
+                                              const PopupMenuItem(
+                                                value: 'delete',
+                                                child: Text('削除'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: PopupMenuButton<String>(
-                                        onSelected: (value) async {
-                                          switch (value) {
-                                            case 'markdown':
-                                              await _generateMarkdown(
-                                                mapWithCount.map.mapId!,
-                                              );
-                                              break;
-                                            case 'export':
-                                              _showExportDialog(
-                                                mapWithCount.map.mapId!,
-                                              );
-                                              break;
-                                            case 'image':
-                                              await _setImage(
-                                                mapWithCount.map.mapId!,
-                                                picker,
-                                              );
-                                              break;
-                                            case 'delete':
-                                              _deleteMap(mapWithCount.map);
-                                              break;
-                                            default:
-                                          }
-                                        },
-                                        itemBuilder: (context) => [
-                                          const PopupMenuItem(
-                                            value: 'markdown',
-                                            child: Text('Markdownで出力'),
+                                    Padding(
+                                      padding: const EdgeInsets.all(14),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              _buildMapDisplayTitle(
+                                                mapWithCount.map,
+                                              ),
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium,
+                                            ),
                                           ),
-                                          const PopupMenuItem(
-                                            value: 'export',
-                                            child: Text('エクスポート'),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'image',
-                                            child: Text('画像変更'),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'delete',
-                                            child: Text('削除'),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.person,
+                                                  size: 16,
+                                                ),
+                                                const Gap(4),
+                                                Text(
+                                                  '${mapWithCount.circleCount}',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .labelLarge
+                                                      ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(14),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          mapWithCount.map.title ?? 'No title',
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.titleMedium,
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.person, size: 16),
-                                            const Gap(4),
-                                            Text(
-                                              '${mapWithCount.circleCount}',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelLarge
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+            ),
+          ],
+        ),
         AsyncError(:final error) => Center(
           child: Text('Something went wrong: $error'),
         ),
@@ -495,5 +541,108 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
       ErrorHandler.handleError(error, stackTrace);
       // Handle error appropriately, possibly by showing a snackbar.
     }
+  }
+
+  /// マップの表示タイトルを構築
+  ///
+  /// - eventName と title が両方ある場合: "{eventName}/{title}"
+  /// - eventName のみの場合: "{eventName}"
+  /// - title のみの場合: "{title}"
+  /// - 両方空の場合: "無題のマップ"
+  String _buildMapDisplayTitle(map) {
+    final eventName = map.eventName?.trim() ?? '';
+    final title = map.title?.trim() ?? '';
+
+    if (eventName.isEmpty && title.isEmpty) {
+      return '無題のマップ';
+    } else if (eventName.isEmpty) {
+      return title;
+    } else if (title.isEmpty) {
+      return eventName;
+    } else {
+      return '$eventName / $title';
+    }
+  }
+
+  /// イベント名フィルターダイアログを表示
+  Future<void> _showEventFilterDialog(
+    BuildContext context,
+    WidgetRef ref,
+    state,
+  ) async {
+    // イベント名一覧を取得
+    final eventNames = await ref
+        .read(mapRepositoryProvider)
+        .getDistinctEventNames();
+    if (!context.mounted) return;
+
+    // 「無題のイベント」を選択肢に追加
+    final allEventOptions = ['無題のイベント', ...eventNames];
+
+    final selectedEventNames = List<String>.from(state.selectedEventNames);
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('イベントでフィルター'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CheckboxListTile(
+                    title: const Text('すべて選択'),
+                    value: selectedEventNames.isEmpty,
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedEventNames.clear();
+                        } else {
+                          selectedEventNames.clear();
+                          selectedEventNames.addAll(allEventOptions);
+                        }
+                      });
+                    },
+                  ),
+                  const Divider(),
+                  ...allEventOptions.map((eventName) {
+                    final isSelected = selectedEventNames.contains(eventName);
+                    return CheckboxListTile(
+                      title: Text(eventName),
+                      value: isSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value == true) {
+                            selectedEventNames.add(eventName);
+                          } else {
+                            selectedEventNames.remove(eventName);
+                          }
+                        });
+                      },
+                    );
+                  }),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('キャンセル'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await ref
+                      .read(mapListViewModelProvider.notifier)
+                      .setEventFilter(selectedEventNames);
+                },
+                child: const Text('適用'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
