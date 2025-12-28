@@ -148,12 +148,12 @@ class ImageRepository extends _$ImageRepository {
     }
   }
 
-  /// サークルメニュー画像を保存 (圧縮のみ)
+  /// サークルメニュー画像を保存 (圧縮なし)
   ///
   /// [sourcePath] 元画像のパス
   /// [mapId] マップID
   /// [circleId] サークルID
-  /// Returns: 圧縮後の画像パス
+  /// Returns: コピー後の画像パス
   /// Throws: [ImageOperationException] 画像処理に失敗した場合
   Future<String> saveCircleMenuImage(
     String sourcePath, {
@@ -161,23 +161,16 @@ class ImageRepository extends _$ImageRepository {
     required int circleId,
   }) async {
     final outputPath = await _getCircleMenuImagePath(mapId, circleId);
+    final outputFile = File(outputPath);
+    final inputFile = File(sourcePath);
 
     // ディレクトリ作成
-    final circleDir = Directory(outputPath).parent;
-    await circleDir.create(recursive: true);
+    if (!await outputFile.parent.exists()) {
+      await outputFile.parent.create(recursive: true);
+    }
 
     try {
-      final result = await FlutterImageCompress.compressAndGetFile(
-        sourcePath,
-        outputPath,
-        minWidth: 300,
-        minHeight: 300,
-        quality: 90,
-      );
-
-      if (result == null) {
-        throw ImageOperationException('Failed to compress menu image');
-      }
+      await inputFile.copy(outputPath);
 
       return outputPath;
     } on FileSystemException catch (e) {
