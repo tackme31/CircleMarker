@@ -17,6 +17,7 @@ class CircleListScreen extends ConsumerStatefulWidget {
 
 class _CircleListScreenState extends ConsumerState<CircleListScreen> {
   late final TextEditingController _searchController;
+  final _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
           padding: const EdgeInsets.only(left: 8),
           child: TextField(
             controller: _searchController,
+            focusNode: _searchFocusNode,
             decoration: InputDecoration(
               hintText: 'サークルを検索',
               prefixIcon: const Icon(Icons.search),
@@ -197,6 +199,8 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
                       circle: circle,
                       mapTitle: mapTitle,
                       onTap: () async {
+                        _searchFocusNode.unfocus();
+
                         if (circle.mapId == null || circle.circleId == null) {
                           return;
                         }

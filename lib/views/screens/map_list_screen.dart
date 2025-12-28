@@ -20,6 +20,7 @@ class MapListScreen extends ConsumerStatefulWidget {
 
 class _MapListScreenState extends ConsumerState<MapListScreen> {
   late final TextEditingController _searchController;
+  final _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         title: Padding(
           padding: const EdgeInsets.only(left: 8),
           child: TextField(
+            focusNode: _searchFocusNode,
             controller: _searchController,
             decoration: InputDecoration(
               hintText: 'マップを検索',
@@ -103,6 +105,8 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                           clipBehavior: Clip.antiAlias,
                           child: InkWell(
                             onTap: () async {
+                              _searchFocusNode.unfocus();
+
                               await context.push(
                                 '/mapList/${mapWithCount.map.mapId}',
                               );
