@@ -16,11 +16,7 @@ class MapListViewModel extends _$MapListViewModel {
     final maps = await ref
         .watch(mapRepositoryProvider)
         .getMapDetailsWithCircleCount();
-    return MapListState(
-      maps: maps,
-      searchQuery: '',
-      selectedEventNames: [],
-    );
+    return MapListState(maps: maps, searchQuery: '', selectedEventNames: []);
   }
 
   /// マップタイトルで検索
@@ -173,6 +169,24 @@ class MapListViewModel extends _$MapListViewModel {
         maps: maps,
         searchQuery: searchQuery,
         selectedEventNames: eventNames,
+      );
+    });
+  }
+
+  Future<void> refresh() async {
+    final currentState = state.value;
+    final searchQuery = currentState?.searchQuery ?? '';
+    final selectedEventNames = currentState?.selectedEventNames ?? [];
+
+    state = await AsyncValue.guard(() async {
+      final maps = await ref
+          .read(mapRepositoryProvider)
+          .searchMapsWithEventFilter(searchQuery, selectedEventNames);
+
+      return MapListState(
+        maps: maps,
+        searchQuery: searchQuery,
+        selectedEventNames: selectedEventNames,
       );
     });
   }

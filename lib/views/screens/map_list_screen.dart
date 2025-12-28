@@ -147,7 +147,9 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                   await context.push(
                                     '/mapList/${mapWithCount.map.mapId}',
                                   );
-                                  ref.invalidate(mapListViewModelProvider);
+                                  await ref
+                                      .read(mapListViewModelProvider.notifier)
+                                      .refresh();
                                 },
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
