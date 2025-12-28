@@ -9,7 +9,7 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._internal();
 
   sqflite.Database? _database;
-  static const int _version = 4;
+  static const int _version = 5;
 
   Future<sqflite.Database> get database async {
     try {
@@ -63,6 +63,11 @@ class DatabaseHelper {
           ALTER TABLE map_detail ADD COLUMN thumbnailPath TEXT
         ''');
       }
+      if (oldVersion < 5) {
+        await db.execute('''
+          ALTER TABLE map_detail ADD COLUMN eventName TEXT
+        ''');
+      }
     } on sqflite.DatabaseException catch (e) {
       throw DatabaseException('Database migration failed', e);
     }
@@ -74,6 +79,7 @@ class DatabaseHelper {
   CREATE TABLE map_detail(
     mapId INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
+    eventName TEXT,
     baseImagePath TEXT NOT NULL,
     thumbnailPath TEXT
   )

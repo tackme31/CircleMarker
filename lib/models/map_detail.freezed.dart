@@ -23,6 +23,7 @@ MapDetail _$MapDetailFromJson(Map<String, dynamic> json) {
 mixin _$MapDetail {
   int? get mapId => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
+  String? get eventName => throw _privateConstructorUsedError;
   String? get baseImagePath => throw _privateConstructorUsedError;
   String? get thumbnailPath => throw _privateConstructorUsedError;
 
@@ -44,6 +45,7 @@ abstract class $MapDetailCopyWith<$Res> {
   $Res call({
     int? mapId,
     String? title,
+    String? eventName,
     String? baseImagePath,
     String? thumbnailPath,
   });
@@ -66,6 +68,7 @@ class _$MapDetailCopyWithImpl<$Res, $Val extends MapDetail>
   $Res call({
     Object? mapId = freezed,
     Object? title = freezed,
+    Object? eventName = freezed,
     Object? baseImagePath = freezed,
     Object? thumbnailPath = freezed,
   }) {
@@ -78,6 +81,10 @@ class _$MapDetailCopyWithImpl<$Res, $Val extends MapDetail>
             title: freezed == title
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            eventName: freezed == eventName
+                ? _value.eventName
+                : eventName // ignore: cast_nullable_to_non_nullable
                       as String?,
             baseImagePath: freezed == baseImagePath
                 ? _value.baseImagePath
@@ -105,6 +112,7 @@ abstract class _$$MapDetailImplCopyWith<$Res>
   $Res call({
     int? mapId,
     String? title,
+    String? eventName,
     String? baseImagePath,
     String? thumbnailPath,
   });
@@ -126,6 +134,7 @@ class __$$MapDetailImplCopyWithImpl<$Res>
   $Res call({
     Object? mapId = freezed,
     Object? title = freezed,
+    Object? eventName = freezed,
     Object? baseImagePath = freezed,
     Object? thumbnailPath = freezed,
   }) {
@@ -138,6 +147,10 @@ class __$$MapDetailImplCopyWithImpl<$Res>
         title: freezed == title
             ? _value.title
             : title // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        eventName: freezed == eventName
+            ? _value.eventName
+            : eventName // ignore: cast_nullable_to_non_nullable
                   as String?,
         baseImagePath: freezed == baseImagePath
             ? _value.baseImagePath
@@ -158,6 +171,7 @@ class _$MapDetailImpl implements _MapDetail {
   const _$MapDetailImpl({
     this.mapId,
     this.title,
+    this.eventName,
     this.baseImagePath,
     this.thumbnailPath,
   });
@@ -170,13 +184,15 @@ class _$MapDetailImpl implements _MapDetail {
   @override
   final String? title;
   @override
+  final String? eventName;
+  @override
   final String? baseImagePath;
   @override
   final String? thumbnailPath;
 
   @override
   String toString() {
-    return 'MapDetail(mapId: $mapId, title: $title, baseImagePath: $baseImagePath, thumbnailPath: $thumbnailPath)';
+    return 'MapDetail(mapId: $mapId, title: $title, eventName: $eventName, baseImagePath: $baseImagePath, thumbnailPath: $thumbnailPath)';
   }
 
   @override
@@ -186,6 +202,8 @@ class _$MapDetailImpl implements _MapDetail {
             other is _$MapDetailImpl &&
             (identical(other.mapId, mapId) || other.mapId == mapId) &&
             (identical(other.title, title) || other.title == title) &&
+            (identical(other.eventName, eventName) ||
+                other.eventName == eventName) &&
             (identical(other.baseImagePath, baseImagePath) ||
                 other.baseImagePath == baseImagePath) &&
             (identical(other.thumbnailPath, thumbnailPath) ||
@@ -194,8 +212,14 @@ class _$MapDetailImpl implements _MapDetail {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, mapId, title, baseImagePath, thumbnailPath);
+  int get hashCode => Object.hash(
+    runtimeType,
+    mapId,
+    title,
+    eventName,
+    baseImagePath,
+    thumbnailPath,
+  );
 
   /// Create a copy of MapDetail
   /// with the given fields replaced by the non-null parameter values.
@@ -215,6 +239,7 @@ abstract class _MapDetail implements MapDetail {
   const factory _MapDetail({
     final int? mapId,
     final String? title,
+    final String? eventName,
     final String? baseImagePath,
     final String? thumbnailPath,
   }) = _$MapDetailImpl;
@@ -226,6 +251,8 @@ abstract class _MapDetail implements MapDetail {
   int? get mapId;
   @override
   String? get title;
+  @override
+  String? get eventName;
   @override
   String? get baseImagePath;
   @override

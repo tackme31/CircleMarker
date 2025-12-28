@@ -8,6 +8,7 @@ class MapDetail with _$MapDetail {
   const factory MapDetail({
     int? mapId,
     String? title,
+    String? eventName,
     String? baseImagePath,
     String? thumbnailPath,
   }) = _MapDetail;
