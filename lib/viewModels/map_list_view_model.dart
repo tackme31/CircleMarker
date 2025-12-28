@@ -44,7 +44,7 @@ class MapListViewModel extends _$MapListViewModel {
       // 1. 仮のMapDetailをDB挿入してmapIdを取得
       const tempMapDetail = MapDetail(
         title: 'New Map',
-        baseImagePath: null,
+        baseImagePath: '',
         thumbnailPath: null,
       );
       final insertedMap = await ref
