@@ -8,5 +8,6 @@ class MapListState with _$MapListState {
   const factory MapListState({
     @Default([]) List<MapWithCircleCount> maps,
     @Default('') String searchQuery,
+    @Default([]) List<String> selectedEventNames,
   }) = _MapListState;
 }

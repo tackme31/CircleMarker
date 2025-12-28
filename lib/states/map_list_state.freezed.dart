@@ -19,6 +19,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MapListState {
   List<MapWithCircleCount> get maps => throw _privateConstructorUsedError;
   String get searchQuery => throw _privateConstructorUsedError;
+  List<String> get selectedEventNames => throw _privateConstructorUsedError;
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.
@@ -34,7 +35,11 @@ abstract class $MapListStateCopyWith<$Res> {
     $Res Function(MapListState) then,
   ) = _$MapListStateCopyWithImpl<$Res, MapListState>;
   @useResult
-  $Res call({List<MapWithCircleCount> maps, String searchQuery});
+  $Res call({
+    List<MapWithCircleCount> maps,
+    String searchQuery,
+    List<String> selectedEventNames,
+  });
 }
 
 /// @nodoc
@@ -51,7 +56,11 @@ class _$MapListStateCopyWithImpl<$Res, $Val extends MapListState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? maps = null, Object? searchQuery = null}) {
+  $Res call({
+    Object? maps = null,
+    Object? searchQuery = null,
+    Object? selectedEventNames = null,
+  }) {
     return _then(
       _value.copyWith(
             maps: null == maps
@@ -62,6 +71,10 @@ class _$MapListStateCopyWithImpl<$Res, $Val extends MapListState>
                 ? _value.searchQuery
                 : searchQuery // ignore: cast_nullable_to_non_nullable
                       as String,
+            selectedEventNames: null == selectedEventNames
+                ? _value.selectedEventNames
+                : selectedEventNames // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
           )
           as $Val,
     );
@@ -77,7 +90,11 @@ abstract class _$$MapListStateImplCopyWith<$Res>
   ) = __$$MapListStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<MapWithCircleCount> maps, String searchQuery});
+  $Res call({
+    List<MapWithCircleCount> maps,
+    String searchQuery,
+    List<String> selectedEventNames,
+  });
 }
 
 /// @nodoc
@@ -93,7 +110,11 @@ class __$$MapListStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? maps = null, Object? searchQuery = null}) {
+  $Res call({
+    Object? maps = null,
+    Object? searchQuery = null,
+    Object? selectedEventNames = null,
+  }) {
     return _then(
       _$MapListStateImpl(
         maps: null == maps
@@ -104,6 +125,10 @@ class __$$MapListStateImplCopyWithImpl<$Res>
             ? _value.searchQuery
             : searchQuery // ignore: cast_nullable_to_non_nullable
                   as String,
+        selectedEventNames: null == selectedEventNames
+            ? _value._selectedEventNames
+            : selectedEventNames // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
       ),
     );
   }
@@ -115,7 +140,9 @@ class _$MapListStateImpl implements _MapListState {
   const _$MapListStateImpl({
     final List<MapWithCircleCount> maps = const [],
     this.searchQuery = '',
-  }) : _maps = maps;
+    final List<String> selectedEventNames = const [],
+  }) : _maps = maps,
+       _selectedEventNames = selectedEventNames;
 
   final List<MapWithCircleCount> _maps;
   @override
@@ -129,10 +156,19 @@ class _$MapListStateImpl implements _MapListState {
   @override
   @JsonKey()
   final String searchQuery;
+  final List<String> _selectedEventNames;
+  @override
+  @JsonKey()
+  List<String> get selectedEventNames {
+    if (_selectedEventNames is EqualUnmodifiableListView)
+      return _selectedEventNames;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedEventNames);
+  }
 
   @override
   String toString() {
-    return 'MapListState(maps: $maps, searchQuery: $searchQuery)';
+    return 'MapListState(maps: $maps, searchQuery: $searchQuery, selectedEventNames: $selectedEventNames)';
   }
 
   @override
@@ -142,7 +178,11 @@ class _$MapListStateImpl implements _MapListState {
             other is _$MapListStateImpl &&
             const DeepCollectionEquality().equals(other._maps, _maps) &&
             (identical(other.searchQuery, searchQuery) ||
-                other.searchQuery == searchQuery));
+                other.searchQuery == searchQuery) &&
+            const DeepCollectionEquality().equals(
+              other._selectedEventNames,
+              _selectedEventNames,
+            ));
   }
 
   @override
@@ -150,6 +190,7 @@ class _$MapListStateImpl implements _MapListState {
     runtimeType,
     const DeepCollectionEquality().hash(_maps),
     searchQuery,
+    const DeepCollectionEquality().hash(_selectedEventNames),
   );
 
   /// Create a copy of MapListState
@@ -165,12 +206,15 @@ abstract class _MapListState implements MapListState {
   const factory _MapListState({
     final List<MapWithCircleCount> maps,
     final String searchQuery,
+    final List<String> selectedEventNames,
   }) = _$MapListStateImpl;
 
   @override
   List<MapWithCircleCount> get maps;
   @override
   String get searchQuery;
+  @override
+  List<String> get selectedEventNames;
 
   /// Create a copy of MapListState
   /// with the given fields replaced by the non-null parameter values.
