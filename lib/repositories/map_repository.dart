@@ -145,12 +145,13 @@ class MapRepository {
         SELECT
           m.mapId,
           m.title,
+          m.eventName,
           m.baseImagePath,
           m.thumbnailPath,
           COUNT(c.circleId) AS circleCount
         FROM $_tableName m
         LEFT JOIN circle_detail c ON m.mapId = c.mapId
-        GROUP BY m.mapId, m.title, m.baseImagePath, m.thumbnailPath
+        GROUP BY m.mapId, m.title, m.eventName, m.baseImagePath, m.thumbnailPath
         ORDER BY m.mapId DESC
       ''';
 
@@ -200,13 +201,14 @@ class MapRepository {
         SELECT
           m.mapId,
           m.title,
+          m.eventName,
           m.baseImagePath,
           m.thumbnailPath,
           COUNT(c.circleId) AS circleCount
         FROM $_tableName m
         LEFT JOIN circle_detail c ON m.mapId = c.mapId
         WHERE LOWER(m.title) LIKE LOWER(?)
-        GROUP BY m.mapId, m.title, m.baseImagePath, m.thumbnailPath
+        GROUP BY m.mapId, m.title, m.eventName, m.baseImagePath, m.thumbnailPath
         ORDER BY m.mapId DESC
       ''';
 
@@ -290,6 +292,109 @@ class MapRepository {
       rethrow;
     } on Exception catch (e) {
       throw AppException('Unexpected error while updating base image path', e);
+    }
+  }
+
+  /// DBに含まれる重複のないイベント名一覧を取得
+  ///
+  /// 空文字とNULLは除外される（フィルターダイアログでは「無題のイベント」として扱う）
+  /// 返り値は降順ソート（新しいイベントが上に来る想定）
+  Future<List<String>> getDistinctEventNames() async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+
+      final result = await db.rawQuery('''
+        SELECT DISTINCT eventName
+        FROM $_tableName
+        WHERE eventName IS NOT NULL AND eventName != ''
+        ORDER BY eventName DESC
+      ''');
+
+      return result.map((row) => row['eventName'] as String).toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to load event names', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException('Unexpected error while loading event names', e);
+    }
+  }
+
+  /// イベント名とタイトルによる複合検索（サークル数付き）
+  ///
+  /// [searchQuery] タイトルの部分一致検索（空の場合は全件）
+  /// [selectedEventNames] イベント名フィルター（空リスト = 全イベント選択）
+  /// 「無題のイベント」選択時は空文字 OR NULL のマップを抽出
+  Future<List<MapWithCircleCount>> searchMapsWithEventFilter(
+    String searchQuery,
+    List<String> selectedEventNames,
+  ) async {
+    try {
+      final db = await _ref.read(databaseProvider.future);
+      final normalizedQuery = searchQuery.trim();
+
+      // WHERE句の構築
+      final whereClauses = <String>[];
+      final whereArgs = <dynamic>[];
+
+      // タイトル検索条件
+      if (normalizedQuery.isNotEmpty) {
+        whereClauses.add('LOWER(m.title) LIKE LOWER(?)');
+        whereArgs.add('%$normalizedQuery%');
+      }
+
+      // イベント名フィルター条件
+      if (selectedEventNames.isNotEmpty) {
+        final eventConditions = <String>[];
+
+        for (final eventName in selectedEventNames) {
+          if (eventName == '無題のイベント') {
+            eventConditions.add("(m.eventName IS NULL OR m.eventName = '')");
+          } else {
+            eventConditions.add('m.eventName = ?');
+            whereArgs.add(eventName);
+          }
+        }
+
+        whereClauses.add('(${eventConditions.join(' OR ')})');
+      }
+
+      final whereClause =
+          whereClauses.isEmpty ? '' : 'WHERE ${whereClauses.join(' AND ')}';
+
+      final sqlQuery = '''
+        SELECT
+          m.mapId,
+          m.title,
+          m.eventName,
+          m.baseImagePath,
+          m.thumbnailPath,
+          COUNT(c.circleId) AS circleCount
+        FROM $_tableName m
+        LEFT JOIN circle_detail c ON m.mapId = c.mapId
+        $whereClause
+        GROUP BY m.mapId, m.title, m.eventName, m.baseImagePath, m.thumbnailPath
+        ORDER BY m.mapId DESC
+      ''';
+
+      final result = await db.rawQuery(sqlQuery, whereArgs);
+
+      return result.map((row) {
+        final circleCount = row['circleCount'] as int;
+        final mapData = Map<String, dynamic>.from(row)..remove('circleCount');
+        final map = MapDetail.fromJson(mapData);
+
+        return MapWithCircleCount(map: map, circleCount: circleCount);
+      }).toList();
+    } on sqflite.DatabaseException catch (e) {
+      throw AppException('Failed to search maps with event filter', e);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException(
+        'Unexpected error while searching maps with event filter',
+        e,
+      );
     }
   }
 }

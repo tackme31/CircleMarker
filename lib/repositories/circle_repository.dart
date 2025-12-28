@@ -151,7 +151,7 @@ class CircleRepository {
 
       final query =
           '''
-        SELECT c.*, m.title AS mapTitle
+        SELECT c.*, m.title AS mapTitle, m.eventName AS eventName
         FROM $_tableName c
         LEFT JOIN map_detail m ON c.mapId = m.mapId
         $whereClause
@@ -165,6 +165,7 @@ class CircleRepository {
             (row) => CircleWithMapTitle(
               circle: CircleDetail.fromJson(row),
               mapTitle: row['mapTitle'] as String?,
+              eventName: row['eventName'] as String?,
             ),
           )
           .toList();
