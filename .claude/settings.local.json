@@ -8,7 +8,9 @@
       "Bash(flutter test:*)",
       "Bash(mkdir:*)",
       "Bash(flutter build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
