@@ -16,7 +16,11 @@ class MapListViewModel extends _$MapListViewModel {
     final maps = await ref
         .watch(mapRepositoryProvider)
         .getMapDetailsWithCircleCount();
-    return MapListState(maps: maps, searchQuery: '');
+    return MapListState(
+      maps: maps,
+      searchQuery: '',
+      selectedEventNames: [],
+    );
   }
 
   /// マップタイトルで検索
@@ -26,11 +30,18 @@ class MapListViewModel extends _$MapListViewModel {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
+      final currentState = state.value;
+      final selectedEventNames = currentState?.selectedEventNames ?? [];
+
       final maps = await ref
           .read(mapRepositoryProvider)
-          .searchMapsByTitleWithCircleCount(query);
+          .searchMapsWithEventFilter(query, selectedEventNames);
 
-      return MapListState(maps: maps, searchQuery: query);
+      return MapListState(
+        maps: maps,
+        searchQuery: query,
+        selectedEventNames: selectedEventNames,
+      );
     });
   }
 
@@ -44,6 +55,7 @@ class MapListViewModel extends _$MapListViewModel {
       // 1. 仮のMapDetailをDB挿入してmapIdを取得
       const tempMapDetail = MapDetail(
         title: 'New Map',
+        eventName: 'New Event',
         baseImagePath: '',
         thumbnailPath: null,
       );
@@ -85,9 +97,22 @@ class MapListViewModel extends _$MapListViewModel {
     // deleteCircles() の呼び出しは不要
     await ref.read(mapRepositoryProvider).deleteMapDetail(mapId);
 
-    // 現在の検索クエリで再検索
+    // 現在の検索クエリとフィルター状態で再検索
     final currentState = state.value;
-    await searchMaps(currentState?.searchQuery ?? '');
+    final searchQuery = currentState?.searchQuery ?? '';
+    final selectedEventNames = currentState?.selectedEventNames ?? [];
+
+    state = await AsyncValue.guard(() async {
+      final maps = await ref
+          .read(mapRepositoryProvider)
+          .searchMapsWithEventFilter(searchQuery, selectedEventNames);
+
+      return MapListState(
+        maps: maps,
+        searchQuery: searchQuery,
+        selectedEventNames: selectedEventNames,
+      );
+    });
 
     // サークルリストも更新
     ref.invalidate(circleListViewModelProvider);
@@ -108,12 +133,52 @@ class MapListViewModel extends _$MapListViewModel {
             imagePaths.thumbnail,
           );
 
-      // 現在の検索クエリで再検索
+      // 現在の検索クエリとフィルター状態で再検索
       final currentState = state.value;
-      await searchMaps(currentState?.searchQuery ?? '');
+      final searchQuery = currentState?.searchQuery ?? '';
+      final selectedEventNames = currentState?.selectedEventNames ?? [];
+
+      state = await AsyncValue.guard(() async {
+        final maps = await ref
+            .read(mapRepositoryProvider)
+            .searchMapsWithEventFilter(searchQuery, selectedEventNames);
+
+        return MapListState(
+          maps: maps,
+          searchQuery: searchQuery,
+          selectedEventNames: selectedEventNames,
+        );
+      });
     } on ImageOperationException catch (e) {
       debugPrint('Failed to update map image: $e');
       rethrow;
     }
+  }
+
+  /// イベント名フィルターを設定
+  ///
+  /// [eventNames] 選択されたイベント名のリスト（空リスト = 全イベント選択）
+  Future<void> setEventFilter(List<String> eventNames) async {
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      final currentState = state.value;
+      final searchQuery = currentState?.searchQuery ?? '';
+
+      final maps = await ref
+          .read(mapRepositoryProvider)
+          .searchMapsWithEventFilter(searchQuery, eventNames);
+
+      return MapListState(
+        maps: maps,
+        searchQuery: searchQuery,
+        selectedEventNames: eventNames,
+      );
+    });
+  }
+
+  /// イベント名フィルターをクリア
+  void clearEventFilter() {
+    setEventFilter([]);
   }
 }

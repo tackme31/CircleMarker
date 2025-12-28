@@ -6,7 +6,7 @@ part of 'circle_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$circleViewModelHash() => r'9d89f7d532cdddb0d970d0f74c0e7f307f38b82f';
+String _$circleViewModelHash() => r'f77af56e86f19413d1be7eb602bee1f25b2093d0';
 
 /// Copied from Dart SDK
 class _SystemHash {
