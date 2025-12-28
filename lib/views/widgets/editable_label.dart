@@ -5,13 +5,13 @@ import 'package:url_launcher/url_launcher.dart';
 class EditableLabel extends StatefulWidget {
   const EditableLabel({
     super.key,
-    required this.initialText,
+    this.initialText,
     this.style,
     this.maxLines = 1,
     this.onSubmit,
   });
 
-  final String initialText;
+  final String? initialText;
   final void Function(String)? onSubmit;
   final TextStyle? style;
   final int? maxLines;
@@ -29,7 +29,7 @@ class _EditableLabelState extends State<EditableLabel> {
   @override
   void initState() {
     super.initState();
-    _text = widget.initialText;
+    _text = widget.initialText ?? '';
     _controller = TextEditingController(text: _text);
     _focusNode = FocusNode();
 

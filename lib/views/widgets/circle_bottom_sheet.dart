@@ -64,7 +64,7 @@ class CircleBottomSheet extends ConsumerWidget {
                           children: [
                             const Text('CircleName: '),
                             EditableLabel(
-                              initialText: circle.circleName ?? 'No Name',
+                              initialText: circle.circleName,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -79,7 +79,7 @@ class CircleBottomSheet extends ConsumerWidget {
                             const Gap(8),
                             const Text('Space No:'),
                             EditableLabel(
-                              initialText: circle.spaceNo ?? 'No Space No',
+                              initialText: circle.spaceNo,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -94,7 +94,7 @@ class CircleBottomSheet extends ConsumerWidget {
                             const Gap(8),
                             const Text('Note:'),
                             EditableLabel(
-                              initialText: circle.note ?? 'No Note',
+                              initialText: circle.note,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -110,8 +110,7 @@ class CircleBottomSheet extends ConsumerWidget {
                             const Gap(8),
                             const Text('Description:'),
                             EditableLabel(
-                              initialText:
-                                  circle.description ?? 'No Description',
+                              initialText: circle.description,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
