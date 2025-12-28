@@ -194,10 +194,12 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
                     final circleWithMap = value.circles[index];
                     final circle = circleWithMap.circle;
                     final mapTitle = circleWithMap.mapTitle;
+                    final eventName = circleWithMap.eventName;
 
                     return CircleListItem(
                       circle: circle,
                       mapTitle: mapTitle,
+                      eventName: eventName,
                       onTap: () async {
                         _searchFocusNode.unfocus();
 

@@ -91,17 +91,15 @@ class _EditableLabelState extends State<EditableLabel> {
             _focusNode.requestFocus();
           });
         },
-        child: _text.isEmpty
-            ? Text('No Text', style: widget.style)
-            : Linkify(
-                onOpen: _onOpen,
-                text: _text,
-                style: widget.style,
-                linkStyle: widget.style?.copyWith(
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
+        child: Linkify(
+          onOpen: _onOpen,
+          text: _text.isEmpty ? 'No Text' : _text,
+          style: widget.style,
+          linkStyle: widget.style?.copyWith(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
+          ),
+        ),
       );
     }
   }

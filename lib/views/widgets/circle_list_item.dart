@@ -12,12 +12,14 @@ class CircleListItem extends StatelessWidget {
     super.key,
     required this.circle,
     required this.mapTitle,
+    required this.eventName,
     required this.onTap,
     required this.onNavigateToMap,
   });
 
   final CircleDetail circle;
   final String? mapTitle;
+  final String? eventName;
   final VoidCallback onTap;
   final VoidCallback onNavigateToMap;
 
@@ -82,9 +84,21 @@ class CircleListItem extends StatelessWidget {
 
   /// サブタイトル（マップ名 + スペース番号）
   Widget _buildSubtitle() {
-    final mapName = mapTitle ?? '';
+    var mapName = '無題のマップ';
+    if (mapTitle?.isNotEmpty == true && eventName?.isEmpty == true) {
+      mapName = mapTitle!;
+    }
+
+    if (mapTitle?.isEmpty == true && eventName?.isNotEmpty == true) {
+      mapName = eventName!;
+    }
+
+    if (mapTitle?.isNotEmpty == true && eventName?.isNotEmpty == true) {
+      mapName = '$eventName / $mapTitle';
+    }
+
     final spaceNo = circle.spaceNo?.isNotEmpty == true ? circle.spaceNo! : '';
 
-    return Text('$mapName\n$spaceNo', maxLines: 2);
+    return Text('$mapName\n$spaceNo', maxLines: 3);
   }
 }
