@@ -5,6 +5,7 @@ import 'package:circle_marker/views/widgets/circle_marker.dart';
 import 'package:circle_marker/views/widgets/editable_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -262,13 +263,30 @@ class _MapDetailScreenState extends ConsumerState<MapDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: switch (state) {
-          AsyncData(:final value) when value.mapDetail.title != null =>
-            EditableLabel(
-              initialText: value.mapDetail.title!,
-              onSubmit: (newTitle) async {
-                await viewModel.updateMapTile(newTitle);
-              },
-            ),
+          AsyncData(:final value) => Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: EditableLabel(
+                  initialText: value.mapDetail.eventName ?? '',
+                  onSubmit: (newEventName) async {
+                    await viewModel.updateMapEventName(newEventName);
+                  },
+                ),
+              ),
+              const Gap(4),
+              const Text("/", style: TextStyle(fontSize: 16)),
+              const Gap(4),
+              Flexible(
+                child: EditableLabel(
+                  initialText: value.mapDetail.title ?? '',
+                  onSubmit: (newTitle) async {
+                    await viewModel.updateMapTitle(newTitle);
+                  },
+                ),
+              ),
+            ],
+          ),
           AsyncError() => const Text('Error'),
           _ => const Text('Loading...'),
         },

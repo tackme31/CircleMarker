@@ -110,8 +110,20 @@ class MapDetailViewModel extends _$MapDetailViewModel {
   /// マップタイトルを更新する
   ///
   /// [title] 新しいタイトル
-  Future<void> updateMapTile(String title) async {
+  Future<void> updateMapTitle(String title) async {
     final updatedMap = state.value!.mapDetail.copyWith(title: title);
+    final result = await ref
+        .read(mapRepositoryProvider)
+        .updateMapDetail(updatedMap);
+
+    state = AsyncData(state.value!.copyWith(mapDetail: result));
+  }
+
+  /// マップのイベント名を更新する
+  ///
+  /// [eventName] 新しいイベント名
+  Future<void> updateMapEventName(String eventName) async {
+    final updatedMap = state.value!.mapDetail.copyWith(eventName: eventName);
     final result = await ref
         .read(mapRepositoryProvider)
         .updateMapDetail(updatedMap);
