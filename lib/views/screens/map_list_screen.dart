@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/utils/error_handler.dart';
+import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:circle_marker/viewModels/map_export_view_model.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
 import 'package:circle_marker/viewModels/markdown_output_view_model.dart';
@@ -219,8 +220,9 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              _buildMapDisplayTitle(
-                                                mapWithCount.map,
+                                              buildMapDisplayTitle(
+                                                mapWithCount.map.eventName,
+                                                mapWithCount.map.title,
                                               ),
                                               style: Theme.of(
                                                 context,
@@ -545,27 +547,6 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     }
   }
 
-  /// マップの表示タイトルを構築
-  ///
-  /// - eventName と title が両方ある場合: "{eventName}/{title}"
-  /// - eventName のみの場合: "{eventName}"
-  /// - title のみの場合: "{title}"
-  /// - 両方空の場合: "無題のマップ"
-  String _buildMapDisplayTitle(map) {
-    final eventName = map.eventName?.trim() ?? '';
-    final title = map.title?.trim() ?? '';
-
-    if (eventName.isEmpty && title.isEmpty) {
-      return '無題のマップ';
-    } else if (eventName.isEmpty) {
-      return title;
-    } else if (title.isEmpty) {
-      return eventName;
-    } else {
-      return '$eventName / $title';
-    }
-  }
-
   /// イベント名フィルターダイアログを表示
   Future<void> _showEventFilterDialog(
     BuildContext context,
@@ -588,43 +569,47 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
+            insetPadding: const EdgeInsets.all(8),
             title: const Text('イベントでフィルター'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CheckboxListTile(
-                    title: const Text('すべて選択'),
-                    value: selectedEventNames.isEmpty,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedEventNames.clear();
-                        } else {
-                          selectedEventNames.clear();
-                          selectedEventNames.addAll(allEventOptions);
-                        }
-                      });
-                    },
-                  ),
-                  const Divider(),
-                  ...allEventOptions.map((eventName) {
-                    final isSelected = selectedEventNames.contains(eventName);
-                    return CheckboxListTile(
-                      title: Text(eventName),
-                      value: isSelected,
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CheckboxListTile(
+                      title: const Text('すべて選択'),
+                      value: selectedEventNames.isEmpty,
                       onChanged: (value) {
                         setState(() {
                           if (value == true) {
-                            selectedEventNames.add(eventName);
+                            selectedEventNames.clear();
                           } else {
-                            selectedEventNames.remove(eventName);
+                            selectedEventNames.clear();
+                            selectedEventNames.addAll(allEventOptions);
                           }
                         });
                       },
-                    );
-                  }),
-                ],
+                    ),
+                    const Divider(),
+                    ...allEventOptions.map((eventName) {
+                      final isSelected = selectedEventNames.contains(eventName);
+                      return CheckboxListTile(
+                        title: Text(eventName),
+                        value: isSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value == true) {
+                              selectedEventNames.add(eventName);
+                            } else {
+                              selectedEventNames.remove(eventName);
+                            }
+                          });
+                        },
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
             actions: [

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:circle_marker/models/circle_detail.dart';
+import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:flutter/material.dart';
 
 /// サークルリストアイテムウィジェット
@@ -28,7 +29,7 @@ class CircleListItem extends StatelessWidget {
     return ListTile(
       leading: _buildCircleThumbnail(),
       title: _buildTitle(),
-      subtitle: _buildSubtitle(),
+      subtitle: Text(buildMapDisplayTitle(eventName, mapTitle)),
       trailing: IconButton(
         icon: const Icon(Icons.location_pin),
         onPressed: onNavigateToMap,
@@ -80,25 +81,5 @@ class CircleListItem extends StatelessWidget {
       circle.circleName?.isNotEmpty == true ? circle.circleName! : '名前なし',
       style: const TextStyle(fontWeight: FontWeight.bold),
     );
-  }
-
-  /// サブタイトル（マップ名 + スペース番号）
-  Widget _buildSubtitle() {
-    var mapName = '無題のマップ';
-    if (mapTitle?.isNotEmpty == true && eventName?.isEmpty == true) {
-      mapName = mapTitle!;
-    }
-
-    if (mapTitle?.isEmpty == true && eventName?.isNotEmpty == true) {
-      mapName = eventName!;
-    }
-
-    if (mapTitle?.isNotEmpty == true && eventName?.isNotEmpty == true) {
-      mapName = '$eventName / $mapTitle';
-    }
-
-    final spaceNo = circle.spaceNo?.isNotEmpty == true ? circle.spaceNo! : '';
-
-    return Text('$mapName\n$spaceNo', maxLines: 3);
   }
 }

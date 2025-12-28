@@ -1,6 +1,7 @@
 import 'package:circle_marker/repositories/map_repository.dart';
 import 'package:circle_marker/states/circle_list_state.dart';
 import 'package:circle_marker/utils/enums.dart';
+import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
 import 'package:circle_marker/views/widgets/circle_list_item.dart';
@@ -272,48 +273,54 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
+            insetPadding: const EdgeInsets.all(8),
             title: const Text('配置図でフィルター'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CheckboxListTile(
-                    title: const Text('すべて選択'),
-                    value: selectedMapIds.isEmpty,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedMapIds.clear();
-                        } else {
-                          selectedMapIds.clear();
-                          selectedMapIds.addAll(
-                            maps
-                                .where((m) => m.mapId != null)
-                                .map((m) => m.mapId!)
-                                .toList(),
-                          );
-                        }
-                      });
-                    },
-                  ),
-                  const Divider(),
-                  ...maps.where((m) => m.mapId != null).map((map) {
-                    final isSelected = selectedMapIds.contains(map.mapId!);
-                    return CheckboxListTile(
-                      title: Text(map.title ?? 'マップ名なし'),
-                      value: isSelected,
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CheckboxListTile(
+                      title: const Text('すべて選択'),
+                      value: selectedMapIds.isEmpty,
                       onChanged: (value) {
                         setState(() {
                           if (value == true) {
-                            selectedMapIds.add(map.mapId!);
+                            selectedMapIds.clear();
                           } else {
-                            selectedMapIds.remove(map.mapId!);
+                            selectedMapIds.clear();
+                            selectedMapIds.addAll(
+                              maps
+                                  .where((m) => m.mapId != null)
+                                  .map((m) => m.mapId!)
+                                  .toList(),
+                            );
                           }
                         });
                       },
-                    );
-                  }),
-                ],
+                    ),
+                    const Divider(),
+                    ...maps.where((m) => m.mapId != null).map((map) {
+                      final isSelected = selectedMapIds.contains(map.mapId!);
+                      return CheckboxListTile(
+                        title: Text(
+                          buildMapDisplayTitle(map.eventName, map.title),
+                        ),
+                        value: isSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value == true) {
+                              selectedMapIds.add(map.mapId!);
+                            } else {
+                              selectedMapIds.remove(map.mapId!);
+                            }
+                          });
+                        },
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
             actions: [
