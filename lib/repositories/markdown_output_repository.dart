@@ -1,5 +1,6 @@
 import 'package:circle_marker/repositories/circle_repository.dart';
 import 'package:circle_marker/repositories/map_repository.dart';
+import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,7 +40,8 @@ class MarkdownOutputRepository {
     final buffer = StringBuffer();
 
     // マップタイトル
-    buffer.writeln('## ${mapDetail.title}');
+    final title = buildMapDisplayTitle(mapDetail.eventName, mapDetail.title);
+    buffer.writeln('## $title');
 
     // 各サークル
     for (final circle in sortedCircles) {
