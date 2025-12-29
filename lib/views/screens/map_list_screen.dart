@@ -139,245 +139,256 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
               ),
             ],
           ],
-      ),
-      body: switch (state) {
-        AsyncData(:final value) => Column(
-          children: [
-            // フィルター状態表示
-            if (value.selectedEventNames.isNotEmpty)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                child: Wrap(
-                  spacing: 8.0,
-                  children: [
-                    Chip(
-                      label: Text(
-                        'フィルター: ${value.selectedEventNames.length}個のイベント',
-                      ),
-                      deleteIcon: const Icon(Icons.close, size: 18),
-                      onDeleted: () {
-                        ref
-                            .read(mapListViewModelProvider.notifier)
-                            .clearEventFilter();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            // マップリスト
-            Expanded(
-              child: value.maps.isEmpty
-                  ? _buildEmptySearchResult()
-                  : Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          final currentQuery = value.searchQuery;
-                          await ref
+        ),
+        body: switch (state) {
+          AsyncData(:final value) => Column(
+            children: [
+              // フィルター状態表示
+              if (value.selectedEventNames.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: Wrap(
+                    spacing: 8.0,
+                    children: [
+                      Chip(
+                        label: Text(
+                          'フィルター: ${value.selectedEventNames.length}個のイベント',
+                        ),
+                        deleteIcon: const Icon(Icons.close, size: 18),
+                        onDeleted: () {
+                          ref
                               .read(mapListViewModelProvider.notifier)
-                              .searchMaps(currentQuery);
+                              .clearEventFilter();
                         },
-                        child: ListView.separated(
-                          separatorBuilder: (context, index) => const Gap(12),
-                          itemCount: value.maps.length,
-                          itemBuilder: (context, index) {
-                            final mapWithCount = value.maps[index];
-                            final isSelected = _selectedMapIds
-                                .contains(mapWithCount.map.mapId);
-                            return Card(
-                              clipBehavior: Clip.antiAlias,
-                              color: isSelected
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                  : null,
-                              child: InkWell(
-                                onTap: () async {
-                                  if (_isSelectionMode) {
-                                    // 選択モード: 選択を切り替え
-                                    _toggleMapSelection(
-                                        mapWithCount.map.mapId!);
-                                  } else {
-                                    // 通常モード: 画面遷移
-                                    _searchFocusNode.unfocus();
+                      ),
+                    ],
+                  ),
+                ),
+              // マップリスト
+              Expanded(
+                child: value.maps.isEmpty
+                    ? _buildEmptySearchResult()
+                    : Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: RefreshIndicator(
+                          onRefresh: () async {
+                            final currentQuery = value.searchQuery;
+                            await ref
+                                .read(mapListViewModelProvider.notifier)
+                                .searchMaps(currentQuery);
+                          },
+                          child: ListView.separated(
+                            separatorBuilder: (context, index) => const Gap(12),
+                            itemCount: value.maps.length,
+                            itemBuilder: (context, index) {
+                              final mapWithCount = value.maps[index];
+                              final isSelected = _selectedMapIds.contains(
+                                mapWithCount.map.mapId,
+                              );
+                              return Card(
+                                clipBehavior: Clip.antiAlias,
+                                color: isSelected
+                                    ? Theme.of(
+                                        context,
+                                      ).colorScheme.primaryContainer
+                                    : null,
+                                child: InkWell(
+                                  onTap: () async {
+                                    if (_isSelectionMode) {
+                                      // 選択モード: 選択を切り替え
+                                      _toggleMapSelection(
+                                        mapWithCount.map.mapId!,
+                                      );
+                                    } else {
+                                      // 通常モード: 画面遷移
+                                      _searchFocusNode.unfocus();
 
-                                    await context.push(
-                                      '/mapList/${mapWithCount.map.mapId}',
-                                    );
-                                    await ref
-                                        .read(mapListViewModelProvider.notifier)
-                                        .refresh();
-                                  }
-                                },
-                                onLongPress: () {
-                                  if (!_isSelectionMode) {
-                                    // 選択モードに入る
-                                    _enterSelectionMode(
-                                        mapWithCount.map.mapId!);
-                                  }
-                                },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // サムネイル画像表示
-                                    Stack(
-                                      children: [
-                                        AspectRatio(
-                                          aspectRatio: 16 / 9,
-                                          child: _buildMapThumbnail(
-                                            mapWithCount.map,
-                                          ),
-                                        ),
-                                        // 選択インジケーター
-                                        if (isSelected)
-                                          Positioned(
-                                            left: 8,
-                                            top: 8,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              padding: const EdgeInsets.all(8),
-                                              child: Icon(
-                                                Icons.check,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary,
-                                                size: 20,
-                                              ),
-                                            ),
-                                          ),
-                                        // PopupMenuは選択モード中は非表示
-                                        if (!_isSelectionMode)
-                                          Positioned(
-                                            right: 0,
-                                            top: 0,
-                                            child: PopupMenuButton<String>(
-                                              onSelected: (value) async {
-                                                switch (value) {
-                                                  case 'markdown':
-                                                    await _generateMarkdown(
-                                                      mapWithCount.map.mapId!,
-                                                    );
-                                                    break;
-                                                  case 'export':
-                                                    _showExportDialog(
-                                                      mapWithCount.map.mapId!,
-                                                    );
-                                                    break;
-                                                  case 'image':
-                                                    await _setImage(
-                                                      mapWithCount.map.mapId!,
-                                                      picker,
-                                                    );
-                                                    break;
-                                                  case 'delete':
-                                                    _deleteMap(
-                                                        mapWithCount.map);
-                                                    break;
-                                                  default:
-                                                }
-                                              },
-                                              itemBuilder: (context) => [
-                                                const PopupMenuItem(
-                                                  value: 'markdown',
-                                                  child: Text('Markdownで出力'),
-                                                ),
-                                                const PopupMenuItem(
-                                                  value: 'export',
-                                                  child: Text('エクスポート'),
-                                                ),
-                                                const PopupMenuItem(
-                                                  value: 'image',
-                                                  child: Text('画像変更'),
-                                                ),
-                                                const PopupMenuItem(
-                                                  value: 'delete',
-                                                  child: Text('削除'),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(14),
-                                      child: Row(
+                                      await context.push(
+                                        '/mapList/${mapWithCount.map.mapId}',
+                                      );
+                                      await ref
+                                          .read(
+                                            mapListViewModelProvider.notifier,
+                                          )
+                                          .refresh();
+                                    }
+                                  },
+                                  onLongPress: () {
+                                    if (!_isSelectionMode) {
+                                      // 選択モードに入る
+                                      _enterSelectionMode(
+                                        mapWithCount.map.mapId!,
+                                      );
+                                    }
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // サムネイル画像表示
+                                      Stack(
                                         children: [
-                                          Expanded(
-                                            child: Text(
-                                              buildMapDisplayTitle(
-                                                mapWithCount.map.eventName,
-                                                mapWithCount.map.title,
+                                          AspectRatio(
+                                            aspectRatio: 16 / 9,
+                                            child: _buildMapThumbnail(
+                                              mapWithCount.map,
+                                            ),
+                                          ),
+                                          // 選択インジケーター
+                                          if (isSelected)
+                                            Positioned(
+                                              left: 8,
+                                              top: 8,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                padding: const EdgeInsets.all(
+                                                  8,
+                                                ),
+                                                child: Icon(
+                                                  Icons.check,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.onPrimary,
+                                                  size: 20,
+                                                ),
                                               ),
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.titleMedium,
                                             ),
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
+                                          // PopupMenuは選択モード中は非表示
+                                          if (!_isSelectionMode)
+                                            Positioned(
+                                              right: 0,
+                                              top: 0,
+                                              child: PopupMenuButton<String>(
+                                                onSelected: (value) async {
+                                                  switch (value) {
+                                                    case 'markdown':
+                                                      await _exportMarkdown({
+                                                        mapWithCount.map.mapId!,
+                                                      });
+                                                      break;
+                                                    case 'export':
+                                                      _showExportDialog(
+                                                        mapWithCount.map.mapId!,
+                                                      );
+                                                      break;
+                                                    case 'image':
+                                                      await _setImage(
+                                                        mapWithCount.map.mapId!,
+                                                        picker,
+                                                      );
+                                                      break;
+                                                    case 'delete':
+                                                      _deleteMap(
+                                                        mapWithCount.map,
+                                                      );
+                                                      break;
+                                                    default:
+                                                  }
+                                                },
+                                                itemBuilder: (context) => [
+                                                  const PopupMenuItem(
+                                                    value: 'markdown',
+                                                    child: Text('Markdownで出力'),
+                                                  ),
+                                                  const PopupMenuItem(
+                                                    value: 'export',
+                                                    child: Text('エクスポート'),
+                                                  ),
+                                                  const PopupMenuItem(
+                                                    value: 'image',
+                                                    child: Text('画像変更'),
+                                                  ),
+                                                  const PopupMenuItem(
+                                                    value: 'delete',
+                                                    child: Text('削除'),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.person,
-                                                  size: 16,
-                                                ),
-                                                const Gap(4),
-                                                Text(
-                                                  '${mapWithCount.circleCount}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .labelLarge
-                                                      ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                      Padding(
+                                        padding: const EdgeInsets.all(14),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                buildMapDisplayTitle(
+                                                  mapWithCount.map.eventName,
+                                                  mapWithCount.map.title,
+                                                ),
+                                                style: Theme.of(
+                                                  context,
+                                                ).textTheme.titleMedium,
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.person,
+                                                    size: 16,
+                                                  ),
+                                                  const Gap(4),
+                                                  Text(
+                                                    '${mapWithCount.circleCount}',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .labelLarge
+                                                        ?.copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-            ),
-          ],
-        ),
-        AsyncError(:final error) => Center(
-          child: Text('Something went wrong: $error'),
-        ),
-        _ => const Center(child: CircularProgressIndicator()),
-      },
-      floatingActionButton: _isSelectionMode
-          ? FloatingActionButton(
-              heroTag: 'batch_export',
-              onPressed: _batchExportMarkdown,
-              tooltip: '選択したマップをMarkdownで出力',
-              child: const Icon(Icons.numbers),
-            )
-          : FloatingActionButton(
-              heroTag: 'add',
-              onPressed: () => _addMap(picker),
-              child: const Icon(Icons.add),
-            ),
+              ),
+            ],
+          ),
+          AsyncError(:final error) => Center(
+            child: Text('Something went wrong: $error'),
+          ),
+          _ => const Center(child: CircularProgressIndicator()),
+        },
+        floatingActionButton: _isSelectionMode
+            ? FloatingActionButton(
+                heroTag: 'batch_export',
+                onPressed: () =>
+                    _exportMarkdown(_selectedMapIds, callback: _clearSelection),
+                tooltip: '選択したマップをMarkdownで出力',
+                child: const Icon(Icons.numbers),
+              )
+            : FloatingActionButton(
+                heroTag: 'add',
+                onPressed: () => _addMap(picker),
+                child: const Icon(Icons.add),
+              ),
       ),
     );
   }
@@ -600,41 +611,11 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     }
   }
 
-  /// Markdown出力を実行する
-  Future<void> _generateMarkdown(int mapId) async {
-    try {
-      await ref
-          .read(markdownOutputViewModelProvider.notifier)
-          .generateAndShare(mapId);
-
-      // エラー時のスナックバー表示
-      final state = ref.read(markdownOutputViewModelProvider);
-      if (state.errorMessage != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(state.errorMessage!),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (error, stackTrace) {
-      ErrorHandler.handleError(error, stackTrace);
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(ErrorHandler.getUserFriendlyMessage(error)),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5),
-        ),
-      );
-    }
-  }
-
   /// 選択したマップをまとめてMarkdown出力
-  Future<void> _batchExportMarkdown() async {
-    if (_selectedMapIds.isEmpty) return;
-
+  Future<void> _exportMarkdown(
+    Set<int> mapIds, {
+    VoidCallback? callback,
+  }) async {
     try {
       // ローディングフィードバック
       ScaffoldMessenger.of(context).showSnackBar(
@@ -656,7 +637,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
 
       await ref
           .read(markdownOutputViewModelProvider.notifier)
-          .generateAndShareBatch(_selectedMapIds.toList());
+          .generateAndShareBatch(mapIds.toList());
 
       if (!mounted) return;
 
@@ -671,8 +652,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
           ),
         );
       } else {
-        // 成功したら選択をクリア
-        _clearSelection();
+        callback?.call();
       }
     } catch (error, stackTrace) {
       ErrorHandler.handleError(error, stackTrace);
