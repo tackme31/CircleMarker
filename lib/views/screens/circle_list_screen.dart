@@ -21,17 +21,28 @@ class CircleListScreen extends ConsumerStatefulWidget {
 class _CircleListScreenState extends ConsumerState<CircleListScreen> {
   late final TextEditingController _searchController;
   final _searchFocusNode = FocusNode();
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      ref.read(circleListViewModelProvider.notifier).loadMore();
+    }
   }
 
   @override
@@ -196,8 +207,21 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
                             .refresh();
                       },
                       child: ListView.builder(
-                        itemCount: value.circles.length,
+                        controller: _scrollController,
+                        itemCount:
+                            value.circles.length +
+                            (value.isLoadingMore ? 1 : 0),
                         itemBuilder: (context, index) {
+                          // Show loading indicator at the bottom
+                          if (index == value.circles.length) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
                           final circleWithMap = value.circles[index];
                           final circle = circleWithMap.circle;
                           final mapTitle = circleWithMap.mapTitle;

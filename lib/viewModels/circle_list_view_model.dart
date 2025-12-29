@@ -25,6 +25,8 @@ class CircleListViewModel extends _$CircleListViewModel {
           sortType: sortType,
           sortDirection: sortDirection,
           mapIds: selectedMapIds.isEmpty ? null : selectedMapIds,
+          offset: 0,
+          limit: 20,
         );
     return CircleListState(
       circles: circles,
@@ -32,6 +34,10 @@ class CircleListViewModel extends _$CircleListViewModel {
       sortDirection: sortDirection,
       selectedMapIds: selectedMapIds,
       searchQuery: searchQuery,
+      hasMore: circles.length == 20,
+      currentOffset: 0,
+      pageSize: 20,
+      isLoadingMore: false,
     );
   }
 
@@ -118,5 +124,47 @@ class CircleListViewModel extends _$CircleListViewModel {
 
   void clearSearch() {
     searchCircles('');
+  }
+
+  Future<void> loadMore() async {
+    final currentState = state.value;
+    if (currentState == null ||
+        !currentState.hasMore ||
+        currentState.isLoadingMore) {
+      return;
+    }
+
+    // Set loading flag
+    state = AsyncValue.data(currentState.copyWith(isLoadingMore: true));
+
+    final nextOffset = currentState.currentOffset + currentState.pageSize;
+
+    try {
+      final newCircles = await ref
+          .read(circleRepositoryProvider)
+          .searchCirclesSorted(
+            searchQuery: currentState.searchQuery,
+            sortType: currentState.sortType,
+            sortDirection: currentState.sortDirection,
+            mapIds: currentState.selectedMapIds.isEmpty
+                ? null
+                : currentState.selectedMapIds,
+            offset: nextOffset,
+            limit: currentState.pageSize,
+          );
+
+      state = AsyncValue.data(
+        currentState.copyWith(
+          circles: [...currentState.circles, ...newCircles],
+          currentOffset: nextOffset,
+          hasMore: newCircles.length == currentState.pageSize,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e, st) {
+      // Clear loading flag on error
+      state = AsyncValue.data(currentState.copyWith(isLoadingMore: false));
+      state = AsyncValue.error(e, st);
+    }
   }
 }

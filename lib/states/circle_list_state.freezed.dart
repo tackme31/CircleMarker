@@ -21,7 +21,12 @@ mixin _$CircleListState {
   SortType get sortType => throw _privateConstructorUsedError;
   SortDirection get sortDirection => throw _privateConstructorUsedError;
   List<int> get selectedMapIds => throw _privateConstructorUsedError;
-  String get searchQuery => throw _privateConstructorUsedError;
+  String get searchQuery =>
+      throw _privateConstructorUsedError; // Pagination fields
+  bool get hasMore => throw _privateConstructorUsedError;
+  int get currentOffset => throw _privateConstructorUsedError;
+  int get pageSize => throw _privateConstructorUsedError;
+  bool get isLoadingMore => throw _privateConstructorUsedError;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.
@@ -43,6 +48,10 @@ abstract class $CircleListStateCopyWith<$Res> {
     SortDirection sortDirection,
     List<int> selectedMapIds,
     String searchQuery,
+    bool hasMore,
+    int currentOffset,
+    int pageSize,
+    bool isLoadingMore,
   });
 }
 
@@ -66,6 +75,10 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
     Object? sortDirection = null,
     Object? selectedMapIds = null,
     Object? searchQuery = null,
+    Object? hasMore = null,
+    Object? currentOffset = null,
+    Object? pageSize = null,
+    Object? isLoadingMore = null,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +102,22 @@ class _$CircleListStateCopyWithImpl<$Res, $Val extends CircleListState>
                 ? _value.searchQuery
                 : searchQuery // ignore: cast_nullable_to_non_nullable
                       as String,
+            hasMore: null == hasMore
+                ? _value.hasMore
+                : hasMore // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            currentOffset: null == currentOffset
+                ? _value.currentOffset
+                : currentOffset // ignore: cast_nullable_to_non_nullable
+                      as int,
+            pageSize: null == pageSize
+                ? _value.pageSize
+                : pageSize // ignore: cast_nullable_to_non_nullable
+                      as int,
+            isLoadingMore: null == isLoadingMore
+                ? _value.isLoadingMore
+                : isLoadingMore // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -110,6 +139,10 @@ abstract class _$$CircleListStateImplCopyWith<$Res>
     SortDirection sortDirection,
     List<int> selectedMapIds,
     String searchQuery,
+    bool hasMore,
+    int currentOffset,
+    int pageSize,
+    bool isLoadingMore,
   });
 }
 
@@ -132,6 +165,10 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
     Object? sortDirection = null,
     Object? selectedMapIds = null,
     Object? searchQuery = null,
+    Object? hasMore = null,
+    Object? currentOffset = null,
+    Object? pageSize = null,
+    Object? isLoadingMore = null,
   }) {
     return _then(
       _$CircleListStateImpl(
@@ -155,6 +192,22 @@ class __$$CircleListStateImplCopyWithImpl<$Res>
             ? _value.searchQuery
             : searchQuery // ignore: cast_nullable_to_non_nullable
                   as String,
+        hasMore: null == hasMore
+            ? _value.hasMore
+            : hasMore // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        currentOffset: null == currentOffset
+            ? _value.currentOffset
+            : currentOffset // ignore: cast_nullable_to_non_nullable
+                  as int,
+        pageSize: null == pageSize
+            ? _value.pageSize
+            : pageSize // ignore: cast_nullable_to_non_nullable
+                  as int,
+        isLoadingMore: null == isLoadingMore
+            ? _value.isLoadingMore
+            : isLoadingMore // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -169,6 +222,10 @@ class _$CircleListStateImpl implements _CircleListState {
     this.sortDirection = SortDirection.asc,
     final List<int> selectedMapIds = const [],
     this.searchQuery = '',
+    this.hasMore = false,
+    this.currentOffset = 0,
+    this.pageSize = 20,
+    this.isLoadingMore = false,
   }) : _circles = circles,
        _selectedMapIds = selectedMapIds;
 
@@ -199,10 +256,23 @@ class _$CircleListStateImpl implements _CircleListState {
   @override
   @JsonKey()
   final String searchQuery;
+  // Pagination fields
+  @override
+  @JsonKey()
+  final bool hasMore;
+  @override
+  @JsonKey()
+  final int currentOffset;
+  @override
+  @JsonKey()
+  final int pageSize;
+  @override
+  @JsonKey()
+  final bool isLoadingMore;
 
   @override
   String toString() {
-    return 'CircleListState(circles: $circles, sortType: $sortType, sortDirection: $sortDirection, selectedMapIds: $selectedMapIds, searchQuery: $searchQuery)';
+    return 'CircleListState(circles: $circles, sortType: $sortType, sortDirection: $sortDirection, selectedMapIds: $selectedMapIds, searchQuery: $searchQuery, hasMore: $hasMore, currentOffset: $currentOffset, pageSize: $pageSize, isLoadingMore: $isLoadingMore)';
   }
 
   @override
@@ -220,7 +290,14 @@ class _$CircleListStateImpl implements _CircleListState {
               _selectedMapIds,
             ) &&
             (identical(other.searchQuery, searchQuery) ||
-                other.searchQuery == searchQuery));
+                other.searchQuery == searchQuery) &&
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
+            (identical(other.currentOffset, currentOffset) ||
+                other.currentOffset == currentOffset) &&
+            (identical(other.pageSize, pageSize) ||
+                other.pageSize == pageSize) &&
+            (identical(other.isLoadingMore, isLoadingMore) ||
+                other.isLoadingMore == isLoadingMore));
   }
 
   @override
@@ -231,6 +308,10 @@ class _$CircleListStateImpl implements _CircleListState {
     sortDirection,
     const DeepCollectionEquality().hash(_selectedMapIds),
     searchQuery,
+    hasMore,
+    currentOffset,
+    pageSize,
+    isLoadingMore,
   );
 
   /// Create a copy of CircleListState
@@ -252,6 +333,10 @@ abstract class _CircleListState implements CircleListState {
     final SortDirection sortDirection,
     final List<int> selectedMapIds,
     final String searchQuery,
+    final bool hasMore,
+    final int currentOffset,
+    final int pageSize,
+    final bool isLoadingMore,
   }) = _$CircleListStateImpl;
 
   @override
@@ -263,7 +348,15 @@ abstract class _CircleListState implements CircleListState {
   @override
   List<int> get selectedMapIds;
   @override
-  String get searchQuery;
+  String get searchQuery; // Pagination fields
+  @override
+  bool get hasMore;
+  @override
+  int get currentOffset;
+  @override
+  int get pageSize;
+  @override
+  bool get isLoadingMore;
 
   /// Create a copy of CircleListState
   /// with the given fields replaced by the non-null parameter values.

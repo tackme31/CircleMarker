@@ -12,5 +12,10 @@ class CircleListState with _$CircleListState {
     @Default(SortDirection.asc) SortDirection sortDirection,
     @Default([]) List<int> selectedMapIds,
     @Default('') String searchQuery,
+    // Pagination fields
+    @Default(false) bool hasMore,
+    @Default(0) int currentOffset,
+    @Default(20) int pageSize,
+    @Default(false) bool isLoadingMore,
   }) = _CircleListState;
 }
