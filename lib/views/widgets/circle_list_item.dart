@@ -29,7 +29,13 @@ class CircleListItem extends StatelessWidget {
     return ListTile(
       leading: _buildCircleThumbnail(),
       title: _buildTitle(),
-      subtitle: Text(buildMapDisplayTitle(eventName, mapTitle)),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(buildMapDisplayTitle(eventName, mapTitle)),
+          Text(circle.spaceNo ?? 'No Space'),
+        ],
+      ),
       trailing: IconButton(
         icon: const Icon(Icons.location_pin),
         onPressed: onNavigateToMap,
