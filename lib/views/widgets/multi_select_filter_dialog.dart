@@ -59,9 +59,7 @@ class _MultiSelectFilterDialogState<T, K>
       if (_isAllSelected) {
         // 現在すべて選択 → すべて解除（全キーを追加）
         _selectedKeys.clear();
-        _selectedKeys.addAll(
-          widget.items.map(widget.keyExtractor),
-        );
+        _selectedKeys.addAll(widget.items.map(widget.keyExtractor));
       } else {
         // 現在部分選択 → すべて選択（リストをクリア）
         _selectedKeys.clear();

@@ -48,10 +48,7 @@ class MarkdownOutputViewModel extends _$MarkdownOutputViewModel {
       final markdown = await repository.generateBatchMarkdown(mapIds);
 
       // 共有（件数を表示）
-      await Share.share(
-        markdown,
-        subject: 'サークル一覧 (${mapIds.length}件のマップ)',
-      );
+      await Share.share(markdown, subject: 'サークル一覧 (${mapIds.length}件のマップ)');
 
       state = state.copyWith(isGenerating: false);
     } catch (e) {

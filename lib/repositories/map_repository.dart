@@ -359,10 +359,12 @@ class MapRepository {
         whereClauses.add('(${eventConditions.join(' OR ')})');
       }
 
-      final whereClause =
-          whereClauses.isEmpty ? '' : 'WHERE ${whereClauses.join(' AND ')}';
+      final whereClause = whereClauses.isEmpty
+          ? ''
+          : 'WHERE ${whereClauses.join(' AND ')}';
 
-      final sqlQuery = '''
+      final sqlQuery =
+          '''
         SELECT
           m.mapId,
           m.title,
