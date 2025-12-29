@@ -5,6 +5,7 @@ import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
 import 'package:circle_marker/views/widgets/circle_list_item.dart';
+import 'package:circle_marker/views/widgets/empty_search_result.dart';
 import 'package:circle_marker/views/widgets/multi_select_filter_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -186,59 +187,67 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
                 ),
               ),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  ref.read(circleListViewModelProvider.notifier).refresh();
-                },
-                child: ListView.builder(
-                  itemCount: value.circles.length,
-                  itemBuilder: (context, index) {
-                    final circleWithMap = value.circles[index];
-                    final circle = circleWithMap.circle;
-                    final mapTitle = circleWithMap.mapTitle;
-                    final eventName = circleWithMap.eventName;
-
-                    return CircleListItem(
-                      circle: circle,
-                      mapTitle: mapTitle,
-                      eventName: eventName,
-                      onTap: () async {
-                        _searchFocusNode.unfocus();
-
-                        if (circle.mapId == null || circle.circleId == null) {
-                          return;
-                        }
-
-                        await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => CircleBottomSheet(
-                            circle.mapId!,
-                            circle.circleId,
-                            circleId: circle.circleId!,
-                            width: 0.8,
-                            height: 0.7,
-                            onDelete: (circleId) => ref
-                                .read(circleListViewModelProvider.notifier)
-                                .removeCircle(circleId),
-                          ),
-                        );
-
+              child: value.circles.isEmpty
+                  ? const EmptySearchResult()
+                  : RefreshIndicator(
+                      onRefresh: () async {
                         ref
                             .read(circleListViewModelProvider.notifier)
                             .refresh();
                       },
-                      onNavigateToMap: () {
-                        if (circle.mapId != null && circle.circleId != null) {
-                          context.push(
-                            '/mapList/${circle.mapId}?circleId=${circle.circleId}',
+                      child: ListView.builder(
+                        itemCount: value.circles.length,
+                        itemBuilder: (context, index) {
+                          final circleWithMap = value.circles[index];
+                          final circle = circleWithMap.circle;
+                          final mapTitle = circleWithMap.mapTitle;
+                          final eventName = circleWithMap.eventName;
+
+                          return CircleListItem(
+                            circle: circle,
+                            mapTitle: mapTitle,
+                            eventName: eventName,
+                            onTap: () async {
+                              _searchFocusNode.unfocus();
+
+                              if (circle.mapId == null ||
+                                  circle.circleId == null) {
+                                return;
+                              }
+
+                              await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => CircleBottomSheet(
+                                  circle.mapId!,
+                                  circle.circleId,
+                                  circleId: circle.circleId!,
+                                  width: 0.8,
+                                  height: 0.7,
+                                  onDelete: (circleId) => ref
+                                      .read(
+                                        circleListViewModelProvider.notifier,
+                                      )
+                                      .removeCircle(circleId),
+                                ),
+                              );
+
+                              ref
+                                  .read(circleListViewModelProvider.notifier)
+                                  .refresh();
+                            },
+                            onNavigateToMap: () {
+                              if (circle.mapId != null &&
+                                  circle.circleId != null) {
+                                context.push(
+                                  '/mapList/${circle.mapId}?circleId=${circle.circleId}',
+                                );
+                              }
+                            },
                           );
-                        }
-                      },
-                    );
-                  },
-                ),
-              ),
+                        },
+                      ),
+                    ),
             ),
           ],
         ),

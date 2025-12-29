@@ -5,6 +5,7 @@ import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:circle_marker/viewModels/map_export_view_model.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
 import 'package:circle_marker/viewModels/markdown_output_view_model.dart';
+import 'package:circle_marker/views/widgets/empty_search_result.dart';
 import 'package:circle_marker/views/widgets/map_export_dialog.dart';
 import 'package:circle_marker/views/widgets/multi_select_filter_dialog.dart';
 import 'package:file_picker/file_picker.dart';
@@ -171,7 +172,7 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
               // マップリスト
               Expanded(
                 child: value.maps.isEmpty
-                    ? _buildEmptySearchResult()
+                    ? const EmptySearchResult()
                     : Container(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: RefreshIndicator(
@@ -402,23 +403,6 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
   void _clearSearch() {
     _searchController.clear();
     ref.read(mapListViewModelProvider.notifier).clearSearch();
-  }
-
-  /// 検索結果が0件の場合の表示
-  Widget _buildEmptySearchResult() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            '検索結果がありません',
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-          ),
-        ],
-      ),
-    );
   }
 
   /// マップを削除する
