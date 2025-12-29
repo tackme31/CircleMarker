@@ -7,7 +7,7 @@ part of 'markdown_output_view_model.dart';
 // **************************************************************************
 
 String _$markdownOutputViewModelHash() =>
-    r'bcf3f612412b3807fdef4ebbca8ad7e770e11081';
+    r'fe445da4b238f350854f378ffca5bde2cf37bb6d';
 
 /// See also [MarkdownOutputViewModel].
 @ProviderFor(MarkdownOutputViewModel)

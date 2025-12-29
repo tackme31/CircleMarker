@@ -24,6 +24,10 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
   late final TextEditingController _searchController;
   final _searchFocusNode = FocusNode();
 
+  // 選択モード状態
+  final Set<int> _selectedMapIds = {};
+  bool get _isSelectionMode => _selectedMapIds.isNotEmpty;
+
   @override
   void initState() {
     super.initState();
@@ -36,62 +40,104 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     super.dispose();
   }
 
+  /// 選択モードに入る
+  void _enterSelectionMode(int mapId) {
+    setState(() {
+      _selectedMapIds.add(mapId);
+    });
+  }
+
+  /// マップの選択を切り替え
+  void _toggleMapSelection(int mapId) {
+    setState(() {
+      if (_selectedMapIds.contains(mapId)) {
+        _selectedMapIds.remove(mapId);
+      } else {
+        _selectedMapIds.add(mapId);
+      }
+    });
+  }
+
+  /// 選択をクリア
+  void _clearSelection() {
+    setState(() {
+      _selectedMapIds.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mapListViewModelProvider);
     final ImagePicker picker = ImagePicker();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: TextField(
-            focusNode: _searchFocusNode,
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'マップを検索',
-              prefixIcon: const Icon(Icons.search),
-              prefixIconConstraints: const BoxConstraints(
-                minHeight: 0,
-                minWidth: 0,
+    return PopScope(
+      canPop: !_isSelectionMode,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (!didPop && _isSelectionMode) {
+          _clearSelection();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: _isSelectionMode
+              ? Text('${_selectedMapIds.length}件選択中')
+              : Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: TextField(
+                    focusNode: _searchFocusNode,
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'マップを検索',
+                      prefixIcon: const Icon(Icons.search),
+                      prefixIconConstraints: const BoxConstraints(
+                        minHeight: 0,
+                        minWidth: 0,
+                      ),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: _clearSearch,
+                            )
+                          : null,
+                      suffixIconConstraints: const BoxConstraints(
+                        minHeight: 0,
+                        minWidth: 0,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 0,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: _onSearchSubmitted,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                  ),
+                ),
+          leading: _isSelectionMode
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: _clearSelection,
+                )
+              : null,
+          actions: [
+            if (!_isSelectionMode) ...[
+              state.when(
+                data: (data) => IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () => _showEventFilterDialog(context, ref, data),
+                ),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
               ),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: _clearSearch,
-                    )
-                  : null,
-              suffixIconConstraints: const BoxConstraints(
-                minHeight: 0,
-                minWidth: 0,
+              IconButton(
+                onPressed: _importMap,
+                icon: const Icon(Icons.file_upload),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 0,
-              ),
-              border: InputBorder.none,
-            ),
-            textInputAction: TextInputAction.search,
-            onSubmitted: _onSearchSubmitted,
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-        ),
-        actions: [
-          state.when(
-            data: (data) => IconButton(
-              icon: const Icon(Icons.filter_list),
-              onPressed: () => _showEventFilterDialog(context, ref, data),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-          IconButton(
-            onPressed: _importMap,
-            icon: const Icon(Icons.file_upload),
-          ),
-        ],
+            ],
+          ],
       ),
       body: switch (state) {
         AsyncData(:final value) => Column(
@@ -139,18 +185,39 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                           itemCount: value.maps.length,
                           itemBuilder: (context, index) {
                             final mapWithCount = value.maps[index];
+                            final isSelected = _selectedMapIds
+                                .contains(mapWithCount.map.mapId);
                             return Card(
                               clipBehavior: Clip.antiAlias,
+                              color: isSelected
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                  : null,
                               child: InkWell(
                                 onTap: () async {
-                                  _searchFocusNode.unfocus();
+                                  if (_isSelectionMode) {
+                                    // 選択モード: 選択を切り替え
+                                    _toggleMapSelection(
+                                        mapWithCount.map.mapId!);
+                                  } else {
+                                    // 通常モード: 画面遷移
+                                    _searchFocusNode.unfocus();
 
-                                  await context.push(
-                                    '/mapList/${mapWithCount.map.mapId}',
-                                  );
-                                  await ref
-                                      .read(mapListViewModelProvider.notifier)
-                                      .refresh();
+                                    await context.push(
+                                      '/mapList/${mapWithCount.map.mapId}',
+                                    );
+                                    await ref
+                                        .read(mapListViewModelProvider.notifier)
+                                        .refresh();
+                                  }
+                                },
+                                onLongPress: () {
+                                  if (!_isSelectionMode) {
+                                    // 選択モードに入る
+                                    _enterSelectionMode(
+                                        mapWithCount.map.mapId!);
+                                  }
                                 },
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,54 +231,79 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
                                             mapWithCount.map,
                                           ),
                                         ),
-                                        Positioned(
-                                          right: 0,
-                                          top: 0,
-                                          child: PopupMenuButton<String>(
-                                            onSelected: (value) async {
-                                              switch (value) {
-                                                case 'markdown':
-                                                  await _generateMarkdown(
-                                                    mapWithCount.map.mapId!,
-                                                  );
-                                                  break;
-                                                case 'export':
-                                                  _showExportDialog(
-                                                    mapWithCount.map.mapId!,
-                                                  );
-                                                  break;
-                                                case 'image':
-                                                  await _setImage(
-                                                    mapWithCount.map.mapId!,
-                                                    picker,
-                                                  );
-                                                  break;
-                                                case 'delete':
-                                                  _deleteMap(mapWithCount.map);
-                                                  break;
-                                                default:
-                                              }
-                                            },
-                                            itemBuilder: (context) => [
-                                              const PopupMenuItem(
-                                                value: 'markdown',
-                                                child: Text('Markdownで出力'),
+                                        // 選択インジケーター
+                                        if (isSelected)
+                                          Positioned(
+                                            left: 8,
+                                            top: 8,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                shape: BoxShape.circle,
                                               ),
-                                              const PopupMenuItem(
-                                                value: 'export',
-                                                child: Text('エクスポート'),
+                                              padding: const EdgeInsets.all(8),
+                                              child: Icon(
+                                                Icons.check,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimary,
+                                                size: 20,
                                               ),
-                                              const PopupMenuItem(
-                                                value: 'image',
-                                                child: Text('画像変更'),
-                                              ),
-                                              const PopupMenuItem(
-                                                value: 'delete',
-                                                child: Text('削除'),
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
+                                        // PopupMenuは選択モード中は非表示
+                                        if (!_isSelectionMode)
+                                          Positioned(
+                                            right: 0,
+                                            top: 0,
+                                            child: PopupMenuButton<String>(
+                                              onSelected: (value) async {
+                                                switch (value) {
+                                                  case 'markdown':
+                                                    await _generateMarkdown(
+                                                      mapWithCount.map.mapId!,
+                                                    );
+                                                    break;
+                                                  case 'export':
+                                                    _showExportDialog(
+                                                      mapWithCount.map.mapId!,
+                                                    );
+                                                    break;
+                                                  case 'image':
+                                                    await _setImage(
+                                                      mapWithCount.map.mapId!,
+                                                      picker,
+                                                    );
+                                                    break;
+                                                  case 'delete':
+                                                    _deleteMap(
+                                                        mapWithCount.map);
+                                                    break;
+                                                  default:
+                                                }
+                                              },
+                                              itemBuilder: (context) => [
+                                                const PopupMenuItem(
+                                                  value: 'markdown',
+                                                  child: Text('Markdownで出力'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: 'export',
+                                                  child: Text('エクスポート'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: 'image',
+                                                  child: Text('画像変更'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: 'delete',
+                                                  child: Text('削除'),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                       ],
                                     ),
                                     Padding(
@@ -273,10 +365,18 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'add',
-        onPressed: () => _addMap(picker),
-        child: const Icon(Icons.add),
+      floatingActionButton: _isSelectionMode
+          ? FloatingActionButton(
+              heroTag: 'batch_export',
+              onPressed: _batchExportMarkdown,
+              tooltip: '選択したマップをMarkdownで出力',
+              child: const Icon(Icons.numbers),
+            )
+          : FloatingActionButton(
+              heroTag: 'add',
+              onPressed: () => _addMap(picker),
+              child: const Icon(Icons.add),
+            ),
       ),
     );
   }
@@ -520,6 +620,64 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
       ErrorHandler.handleError(error, stackTrace);
 
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ErrorHandler.getUserFriendlyMessage(error)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  /// 選択したマップをまとめてMarkdown出力
+  Future<void> _batchExportMarkdown() async {
+    if (_selectedMapIds.isEmpty) return;
+
+    try {
+      // ローディングフィードバック
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              Gap(16),
+              Text('Markdown生成中...'),
+            ],
+          ),
+          duration: Duration(seconds: 30),
+        ),
+      );
+
+      await ref
+          .read(markdownOutputViewModelProvider.notifier)
+          .generateAndShareBatch(_selectedMapIds.toList());
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      final state = ref.read(markdownOutputViewModelProvider);
+      if (state.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        // 成功したら選択をクリア
+        _clearSelection();
+      }
+    } catch (error, stackTrace) {
+      ErrorHandler.handleError(error, stackTrace);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ErrorHandler.getUserFriendlyMessage(error)),

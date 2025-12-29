@@ -6,7 +6,7 @@ part of 'map_list_view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$mapListViewModelHash() => r'017aa0e3687c46293b1c293b59ef269bb071182b';
+String _$mapListViewModelHash() => r'a8d8159bb15ad8f9918b0b7bd432bbec3bfb22f0';
 
 /// See also [MapListViewModel].
 @ProviderFor(MapListViewModel)

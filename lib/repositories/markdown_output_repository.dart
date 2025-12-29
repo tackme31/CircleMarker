@@ -71,4 +71,31 @@ class MarkdownOutputRepository {
 
     return buffer.toString();
   }
+
+  /// 複数のマップをまとめてMarkdown形式で出力する
+  ///
+  /// [mapIds] 出力するマップIDのリスト
+  /// マップ間は水平線（---）で区切る
+  Future<String> generateBatchMarkdown(List<int> mapIds) async {
+    if (mapIds.isEmpty) {
+      throw ArgumentError('mapIds cannot be empty');
+    }
+
+    final buffer = StringBuffer();
+    final sortedMapIds = [...mapIds]..sort();
+
+    for (var i = 0; i < sortedMapIds.length; i++) {
+      final mapId = sortedMapIds[i];
+      final markdown = await generateMarkdown(mapId);
+      buffer.write(markdown);
+
+      // マップ間に区切り線を挿入（最後のマップ以外）
+      if (i < sortedMapIds.length - 1) {
+        buffer.writeln('---');
+        buffer.writeln();
+      }
+    }
+
+    return buffer.toString();
+  }
 }

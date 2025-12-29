@@ -30,4 +30,35 @@ class MarkdownOutputViewModel extends _$MarkdownOutputViewModel {
       );
     }
   }
+
+  /// 複数のマップをまとめてMarkdown出力して共有
+  Future<void> generateAndShareBatch(List<int> mapIds) async {
+    if (mapIds.isEmpty) {
+      state = state.copyWith(
+        isGenerating: false,
+        errorMessage: 'マップが選択されていません',
+      );
+      return;
+    }
+
+    state = state.copyWith(isGenerating: true, errorMessage: null);
+
+    try {
+      final repository = ref.read(markdownOutputRepositoryProvider);
+      final markdown = await repository.generateBatchMarkdown(mapIds);
+
+      // 共有（件数を表示）
+      await Share.share(
+        markdown,
+        subject: 'サークル一覧 (${mapIds.length}件のマップ)',
+      );
+
+      state = state.copyWith(isGenerating: false);
+    } catch (e) {
+      state = state.copyWith(
+        isGenerating: false,
+        errorMessage: 'Markdown出力失敗: $e',
+      );
+    }
+  }
 }

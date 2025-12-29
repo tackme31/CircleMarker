@@ -6,7 +6,7 @@ part of 'image_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$imageRepositoryHash() => r'd3020822efdc8cc0f77e2ed9a0963e7530416d0a';
+String _$imageRepositoryHash() => r'e6e086c91e5c1b5fa7a262f97d112deb4061f9e7';
 
 /// 画像の保存・圧縮を管理するリポジトリ
 ///
