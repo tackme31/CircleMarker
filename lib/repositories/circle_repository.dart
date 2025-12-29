@@ -97,10 +97,16 @@ class CircleRepository {
         WHERE (
           LOWER(c.circleName) LIKE LOWER(?) OR
           LOWER(c.spaceNo) LIKE LOWER(?) OR
-          LOWER(m.title) LIKE LOWER(?)
+          LOWER(m.title) LIKE LOWER(?) OR
+          LOWER(m.eventName) LIKE LOWER(?)
         )
       ''';
-        whereArgs.addAll([searchPattern, searchPattern, searchPattern]);
+        whereArgs.addAll([
+          searchPattern,
+          searchPattern,
+          searchPattern,
+          searchPattern,
+        ]);
       }
 
       // Add map filter if provided
