@@ -6,6 +6,7 @@ import 'package:circle_marker/viewModels/map_export_view_model.dart';
 import 'package:circle_marker/viewModels/map_list_view_model.dart';
 import 'package:circle_marker/viewModels/markdown_output_view_model.dart';
 import 'package:circle_marker/views/widgets/map_export_dialog.dart';
+import 'package:circle_marker/views/widgets/multi_select_filter_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -720,72 +721,18 @@ class _MapListScreenState extends ConsumerState<MapListScreen> {
     // 「無題のイベント」を選択肢に追加
     final allEventOptions = ['無題のイベント', ...eventNames];
 
-    final selectedEventNames = List<String>.from(state.selectedEventNames);
-
     await showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            insetPadding: const EdgeInsets.all(8),
-            title: const Text('イベントでフィルター'),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CheckboxListTile(
-                      title: const Text('すべて選択'),
-                      value: selectedEventNames.isEmpty,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedEventNames.clear();
-                          } else {
-                            selectedEventNames.clear();
-                            selectedEventNames.addAll(allEventOptions);
-                          }
-                        });
-                      },
-                    ),
-                    const Divider(),
-                    ...allEventOptions.map((eventName) {
-                      final isSelected = selectedEventNames.contains(eventName);
-                      return CheckboxListTile(
-                        title: Text(eventName),
-                        value: isSelected,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              selectedEventNames.add(eventName);
-                            } else {
-                              selectedEventNames.remove(eventName);
-                            }
-                          });
-                        },
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('キャンセル'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await ref
-                      .read(mapListViewModelProvider.notifier)
-                      .setEventFilter(selectedEventNames);
-                },
-                child: const Text('適用'),
-              ),
-            ],
-          );
+      builder: (context) => MultiSelectFilterDialog<String, String>(
+        title: 'イベントでフィルター',
+        items: allEventOptions,
+        initialSelection: state.selectedEventNames,
+        keyExtractor: (eventName) => eventName,
+        displayTextBuilder: (eventName) => eventName,
+        onApply: (selectedEventNames) async {
+          await ref
+              .read(mapListViewModelProvider.notifier)
+              .setEventFilter(selectedEventNames);
         },
       ),
     );

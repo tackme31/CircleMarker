@@ -5,6 +5,7 @@ import 'package:circle_marker/utils/map_name_formatter.dart';
 import 'package:circle_marker/viewModels/circle_list_view_model.dart';
 import 'package:circle_marker/views/widgets/circle_bottom_sheet.dart';
 import 'package:circle_marker/views/widgets/circle_list_item.dart';
+import 'package:circle_marker/views/widgets/multi_select_filter_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -266,79 +267,22 @@ class _CircleListScreenState extends ConsumerState<CircleListScreen> {
     final maps = await ref.read(mapRepositoryProvider).getMapDetails();
     if (!context.mounted) return;
 
-    final selectedMapIds = List<int>.from(state.selectedMapIds);
+    // mapIdがnullでないマップのみをフィルター
+    final validMaps = maps.where((m) => m.mapId != null).toList();
 
     await showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            insetPadding: const EdgeInsets.all(8),
-            title: const Text('配置図でフィルター'),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CheckboxListTile(
-                      title: const Text('すべて選択'),
-                      value: selectedMapIds.isEmpty,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedMapIds.clear();
-                          } else {
-                            selectedMapIds.clear();
-                            selectedMapIds.addAll(
-                              maps
-                                  .where((m) => m.mapId != null)
-                                  .map((m) => m.mapId!)
-                                  .toList(),
-                            );
-                          }
-                        });
-                      },
-                    ),
-                    const Divider(),
-                    ...maps.where((m) => m.mapId != null).map((map) {
-                      final isSelected = selectedMapIds.contains(map.mapId!);
-                      return CheckboxListTile(
-                        title: Text(
-                          buildMapDisplayTitle(map.eventName, map.title),
-                        ),
-                        value: isSelected,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value == true) {
-                              selectedMapIds.add(map.mapId!);
-                            } else {
-                              selectedMapIds.remove(map.mapId!);
-                            }
-                          });
-                        },
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('キャンセル'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await ref
-                      .read(circleListViewModelProvider.notifier)
-                      .setMapFilter(selectedMapIds);
-                },
-                child: const Text('適用'),
-              ),
-            ],
-          );
+      builder: (context) => MultiSelectFilterDialog(
+        title: '配置図でフィルター',
+        items: validMaps,
+        initialSelection: state.selectedMapIds,
+        keyExtractor: (map) => map.mapId!,
+        displayTextBuilder: (map) =>
+            buildMapDisplayTitle(map.eventName, map.title),
+        onApply: (selectedMapIds) async {
+          await ref
+              .read(circleListViewModelProvider.notifier)
+              .setMapFilter(selectedMapIds);
         },
       ),
     );
