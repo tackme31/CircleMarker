@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -60,6 +61,26 @@ class ImageRepository extends _$ImageRepository {
     return '$mapDir/circles/${circleId}_menu.jpg';
   }
 
+  /// 画像キャッシュをクリアする
+  ///
+  /// [imagePath] クリア対象の画像パス
+  ///
+  /// 画像を差し替える際、同じパスで異なる画像になるとImageProviderのキャッシュ問題が発生するため、
+  /// 画像の保存・コピー前にキャッシュをクリアする
+  void _clearImageCache(String imagePath) {
+    try {
+      final imageFile = File(imagePath);
+      if (imageFile.existsSync()) {
+        final fileImage = FileImage(imageFile);
+        fileImage.evict();
+        debugPrint('Cleared image cache for: $imagePath');
+      }
+    } catch (e) {
+      // キャッシュクリアの失敗はログのみ(処理は継続)
+      debugPrint('Failed to clear image cache for $imagePath: $e');
+    }
+  }
+
   /// マップ画像を保存し、サムネイルを生成する
   ///
   /// [sourcePath] 元画像のパス
@@ -79,6 +100,10 @@ class ImageRepository extends _$ImageRepository {
     await originalDir.create(recursive: true);
 
     try {
+      // キャッシュクリア(画像差し替え時のキャッシュ問題対策)
+      _clearImageCache(originalPath);
+      _clearImageCache(thumbnailPath);
+
       // 元画像を保存
       await File(sourcePath).copy(originalPath);
 
@@ -125,6 +150,9 @@ class ImageRepository extends _$ImageRepository {
     await circleDir.create(recursive: true);
 
     try {
+      // キャッシュクリア(画像差し替え時のキャッシュ問題対策)
+      _clearImageCache(outputPath);
+
       final result = await FlutterImageCompress.compressAndGetFile(
         sourcePath,
         outputPath,
@@ -170,6 +198,9 @@ class ImageRepository extends _$ImageRepository {
     }
 
     try {
+      // キャッシュクリア(画像差し替え時のキャッシュ問題対策)
+      _clearImageCache(outputPath);
+
       await inputFile.copy(outputPath);
 
       return outputPath;
