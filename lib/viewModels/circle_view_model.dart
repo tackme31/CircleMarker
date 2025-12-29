@@ -77,7 +77,7 @@ class CircleViewModel extends _$CircleViewModel {
       final circle = await future;
 
       // ImageRepository で画像を圧縮保存（mapIdとcircleIdを渡す）
-      final compressedPath = await ref
+      final path = await ref
           .read(imageRepositoryProvider.notifier)
           .saveCircleImage(
             imagePath,
@@ -87,7 +87,7 @@ class CircleViewModel extends _$CircleViewModel {
 
       await ref
           .read(circleRepositoryProvider)
-          .updateImagePath(circle.circleId!, compressedPath);
+          .updateImagePath(circle.circleId!, path);
 
       ref.invalidateSelf();
     } on ImageOperationException catch (e) {
@@ -102,7 +102,7 @@ class CircleViewModel extends _$CircleViewModel {
       final circle = await future;
 
       // ImageRepository で画像を圧縮保存（mapIdとcircleIdを渡す）
-      final compressedPath = await ref
+      final path = await ref
           .read(imageRepositoryProvider.notifier)
           .saveCircleMenuImage(
             menuImagePath,
@@ -112,7 +112,7 @@ class CircleViewModel extends _$CircleViewModel {
 
       await ref
           .read(circleRepositoryProvider)
-          .updateMenuImagePath(circle.circleId!, compressedPath);
+          .updateMenuImagePath(circle.circleId!, path);
 
       ref.invalidateSelf();
     } on ImageOperationException catch (e) {
